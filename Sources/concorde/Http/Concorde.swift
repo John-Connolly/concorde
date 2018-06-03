@@ -53,9 +53,4 @@ final class HTTPHandler: ChannelInboundHandler {
         case .body, .end: break
         }
     }
-
-    private func head() -> HTTPPart<HTTPResponseHead, IOData> {
-        let head = HTTPResponseHead(version: .init(major: 1, minor: 1), status: .ok, headers: HTTPHeaders())
-        return HTTPServerResponsePart.head(head)
-    }
 }

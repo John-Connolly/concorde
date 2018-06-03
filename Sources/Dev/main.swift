@@ -17,7 +17,7 @@ let vehicle = get("/car") { req -> AnyResponse in
     return AnyResponse(item: car)
 }
 
-let plane = router(register: [hello, vehicle]) |> concorde
+let flightPlan = router(register: [hello, vehicle])
+let plane = flightPlan |> concorde
 let wings = Configuration(port: 8080)
-
 plane <*> wings

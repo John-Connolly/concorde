@@ -21,26 +21,6 @@ public func router(register routes: [(Request) -> (AnyResponse?)]) -> (Request, 
     }
 }
 
-public struct AnyResponse {
-    let contentType: String
-    let data: Data
-}
-
-public extension AnyResponse {
-
-    public init<T: Encodable>(item: T) {
-        let data = try! JSONEncoder().encode(item)
-        self.data = data
-        self.contentType = "application/json"
-    }
-
-    public init(item: String) {
-        self.data = item.data(using: .utf8) ?? Data()
-        self.contentType = "text/plain"
-    }
-
-}
-
 public func route(method: HTTPMethod) -> (String, @escaping (Request) -> (AnyResponse)) -> (Request) -> (AnyResponse?) {
     return { path, work in
         return { req in
@@ -94,7 +74,7 @@ public struct Response {
 
     private func head(_ response: AnyResponse) -> HTTPPart<HTTPResponseHead, IOData> {
         var head = HTTPResponseHead(version: .init(major: 1, minor: 1), status: .ok, headers: HTTPHeaders())
-        head.headers.add(name: "Content-Type", value: response.contentType)
+        head.headers.add(name: "Content-Type", value: response.contentType.rawValue)
         head.headers.add(name: "Content-Length", value: response.data.count |> String.init)
         return HTTPServerResponsePart.head(head)
     }
