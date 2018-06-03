@@ -1,7 +1,7 @@
 import XCTest
 
-import concordTests
+import concordeTests
 
 var tests = [XCTestCaseEntry]()
-tests += concordTests.allTests()
+tests += concordeTests.allTests()
 XCTMain(tests)

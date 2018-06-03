@@ -4,16 +4,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "concord",
+    name: "concorde",
     products: [
-        .library(name: "concord", targets: ["concord"]),
+        .library(name: "concorde", targets: ["concorde"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git", from: "1.8.0")
     ],
     targets: [
-        .target(name: "Dev", dependencies: ["concord"]),
-        .target(name: "concord", dependencies: ["NIO", "NIOHTTP1"]),
-        .testTarget(name: "concordTests", dependencies: ["concord"]),
+        .target(name: "Dev", dependencies: ["concorde"]),
+        .target(name: "concorde", dependencies: ["NIO", "NIOHTTP1"]),
+        .testTarget(name: "concordeTests", dependencies: ["concorde"]),
     ]
 )

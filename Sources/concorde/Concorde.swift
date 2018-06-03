@@ -1,7 +1,7 @@
 import NIO
 import NIOHTTP1
 
-public let concord = create >>> start
+public let concorde = create >>> start
 
 private let loopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 
