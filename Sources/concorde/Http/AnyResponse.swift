@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import NIOHTTP1
 
 public struct AnyResponse {
     let contentType: MimeType
+    var status: HTTPResponseStatus = .ok
     let data: Data
 }
 
@@ -22,6 +24,12 @@ public extension AnyResponse {
     public init(item: String) {
         self.data = item.data(using: .utf8) ?? Data()
         self.contentType = .plain
+    }
+
+    public init(item: String, status: HTTPResponseStatus) {
+        self.data = item.data(using: .utf8) ?? Data()
+        self.contentType = .plain
+        self.status = status
     }
 
 }
