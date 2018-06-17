@@ -29,6 +29,10 @@ let vehicle = get("/car") { req -> AnyResponse in
     return AnyResponse(item: cars)
 }
 
+let token = get("/loaderio-95e2de71ba5cfa095645d825903bc632/") { req -> AnyResponse in
+    return AnyResponse(item: "loaderio-95e2de71ba5cfa095645d825903bc632")
+}
+
 let largerResp = get("/large") { req -> AnyResponse in
     return AnyResponse(item: cars + cars + cars + cars + cars + cars)
 }
