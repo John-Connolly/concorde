@@ -36,11 +36,6 @@ public func route(method: HTTPMethod) -> (String, @escaping (Request) -> (AnyRes
     }
 }
 
-
-//public typealias MiddleWare = (Request) -> Response
-
-// Currently just for a get request.
-// Need to include body data here.
 public struct Request {
     public let head: HTTPRequestHead
     public let body: Data?
