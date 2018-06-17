@@ -25,6 +25,7 @@ let hello = get("/hello") { req -> AnyResponse in
 }
 
 let vehicle = get("/car") { req -> AnyResponse in
+    print("Car called!")
     return AnyResponse(item: cars)
 }
 
