@@ -1,7 +1,7 @@
 import Foundation
 import concorde
 
-let flightPlan = router(register: [hello, vehicle, largerResp])
+let flightPlan = router(register: [hello, vehicle, largerResp, update])
 let plane = flightPlan |> concorde
 let wings = Configuration(port: 8080)
 

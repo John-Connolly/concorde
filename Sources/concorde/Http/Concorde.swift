@@ -1,3 +1,4 @@
+import Foundation
 import NIO
 import NIOHTTP1
 
@@ -45,15 +46,16 @@ private func start(_ bootstrap: ServerBootstrap) -> Reader<Configuration, Never>
 
 enum ServerState {
     case idle
-    case waitingForRequestBody
+    case waitingForRequestBody(HTTPRequestHead)
     case sendingResponse
 
-    mutating func receivedHead() {
-        self = .waitingForRequestBody
+
+    mutating func recievedGetRequest() {
+        self = .sendingResponse
     }
 
-    mutating func sending() {
-        self = .sendingResponse
+    mutating func receivedHead(_ head: HTTPRequestHead) {
+        self = .waitingForRequestBody(head)
     }
 
     mutating func done() {
@@ -77,9 +79,21 @@ final class HTTPHandler: ChannelInboundHandler {
         let request = unwrapInboundIn(data)
         switch request {
         case .head(let header):
-            router(Request(head: header), write(ctx))
-        case .body: break
-        case .end: break
+            if header.method == .GET {
+                router(Request(head: header, body: nil), write(ctx))
+                state.recievedGetRequest()
+                return
+            }
+            state.receivedHead(header)
+        case .body(let body):
+            switch state {
+            case .idle, .sendingResponse: break
+            case .waitingForRequestBody(let header):
+                let data = body.getBytes(at: 0, length: body.readableBytes).flatMap(Data.init)
+                router(Request(head: header, body: data), write(ctx))
+            }
+        case .end:
+            state.done()
         }
     }
 
@@ -93,9 +107,7 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
-        if buffer.readableBytes > 0 {
-            ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: nil)
-        }
+        ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: nil)
         ctx.writeAndFlush(wrapOutboundOut(.end(nil)), promise: nil)
     }
 

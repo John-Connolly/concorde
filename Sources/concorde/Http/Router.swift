@@ -42,10 +42,12 @@ public func route(method: HTTPMethod) -> (String, @escaping (Request) -> (AnyRes
 // Currently just for a get request.
 // Need to include body data here.
 public struct Request {
-    let head: HTTPRequestHead
+    public let head: HTTPRequestHead
+    public let body: Data?
 
-    public init(head: HTTPRequestHead) {
+    public init(head: HTTPRequestHead, body: Data?) {
         self.head = head
+        self.body = body
     }
 
     public var method: HTTPMethod {

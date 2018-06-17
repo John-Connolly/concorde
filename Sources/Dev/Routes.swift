@@ -13,6 +13,8 @@ struct Car: Encodable {
     let name: String
 }
 
+let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
+
 let cars = [Car(wheels: 4, name: "Ford"), Car(wheels: 4, name: "Chevvy")]
 
 let get = route(method: .GET)
@@ -29,3 +31,12 @@ let lots = cars + cars + cars + cars + cars + cars
 let largerResp = get("/large") { req -> AnyResponse in
     return AnyResponse(item: lots)
 }
+
+
+let post = route(method: .POST)
+
+let update = post("/update") { req -> AnyResponse in
+    let body = req.body.flatMap(utf8String)
+    return AnyResponse(item: body ?? "")
+}
+
