@@ -25,7 +25,6 @@ let hello = get("/hello") { req -> AnyResponse in
 }
 
 let vehicle = get("/car") { req -> AnyResponse in
-    print("Car called!")
     return AnyResponse(item: cars)
 }
 
@@ -37,9 +36,8 @@ let largerResp = get("/large") { req -> AnyResponse in
     return AnyResponse(item: cars + cars + cars + cars + cars + cars)
 }
 
-
 let update = post("/update") { req -> AnyResponse in
-    let body = req.body.flatMap(utf8String)
+    let body = req.body >>- utf8String
     return AnyResponse(item: body ?? "")
 }
 
