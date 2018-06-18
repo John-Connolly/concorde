@@ -8,7 +8,7 @@
 import Foundation
 import concorde
 
-struct Car: Encodable {
+struct Car: Codable {
     let wheels: Int
     let name: String
 }

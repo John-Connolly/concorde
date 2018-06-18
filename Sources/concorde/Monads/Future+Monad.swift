@@ -16,16 +16,3 @@ public func >>- <A, B>(a: EventLoopFuture<A>, f: @escaping (A) -> EventLoopFutur
         return f(value)
     }
 }
-
-infix operator >>>: MonadicPrecedenceLeft
-public func >>> <A,B,C>(f: @escaping(A) -> B, g: @escaping (B) -> C) -> (A) -> C {
-    return { a in
-        return f(a) |> g
-    }
-}
-
-infix operator |>: MonadicPrecedenceLeft
-
-public func |> <A,B>(a: A, f: @escaping (A) -> B) -> B {
-    return f(a)
-}
