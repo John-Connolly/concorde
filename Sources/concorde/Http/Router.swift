@@ -35,17 +35,3 @@ public func route(method: HTTPMethod) -> (String, @escaping (Request) -> (AnyRes
         }
     }
 }
-
-public struct Request {
-    public let head: HTTPRequestHead
-    public let body: Data?
-
-    public init(head: HTTPRequestHead, body: Data?) {
-        self.head = head
-        self.body = body
-    }
-
-    public var method: HTTPMethod {
-        return head.method
-    }
-}

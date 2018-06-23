@@ -14,7 +14,6 @@ let url = "/Users/32"
 
 let urlType = URL(string: url)!
 
-
 enum Route: String {
     case home = "hello"
 }

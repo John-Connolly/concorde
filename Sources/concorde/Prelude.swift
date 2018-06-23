@@ -9,7 +9,7 @@ import Foundation
 
 infix operator >>>: MonadicPrecedenceLeft
 /// Forward composition h(x) = (f ∘ g)
-public func >>> <A,B,C>(f: @escaping(A) -> B, g: @escaping (B) -> C) -> (A) -> C {
+public func >>> <A,B,C>(f: @escaping (A) -> B, g: @escaping (B) -> C) -> (A) -> C {
     return { a in
         return f(a) |> g
     }
