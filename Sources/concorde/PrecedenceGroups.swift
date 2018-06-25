@@ -12,3 +12,9 @@ precedencegroup MonadicPrecedenceLeft {
     lowerThan: LogicalDisjunctionPrecedence
     higherThan: AssignmentPrecedence
 }
+
+precedencegroup ParserPrecedence {
+    associativity: left
+    higherThan: AdditionPrecedence
+}
+

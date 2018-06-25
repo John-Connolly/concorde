@@ -12,6 +12,17 @@ public struct AnyResponse {
     let contentType: MimeType
     var status: HTTPResponseStatus = .ok
     let data: Data
+
+    public static var error: AnyResponse {
+        return .init(contentType: .plain,
+                     status: .badRequest,
+                     data: "Bad request".data(using: .utf8) ?? Data())
+    }
+
+    public static var notFound: AnyResponse {
+        return .init(item: "Not Found",
+                     status: .notFound)
+    }
 }
 
 public extension AnyResponse {

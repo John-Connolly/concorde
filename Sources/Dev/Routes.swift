@@ -25,11 +25,11 @@ let hello = get("/hello") { req -> AnyResponse in
 }
 
 let vehicle = get("/car") { req -> AnyResponse in
-    return AnyResponse(item: cars)
+    return cars |> AnyResponse.init(item:)
 }
 
 let token = get("/loaderio-95e2de71ba5cfa095645d825903bc632/") { req -> AnyResponse in
-    return AnyResponse(item: "loaderio-95e2de71ba5cfa095645d825903bc632")
+    return "loaderio-95e2de71ba5cfa095645d825903bc632" |> AnyResponse.init(item:)
 }
 
 let largerResp = get("/large") { req -> AnyResponse in
@@ -37,7 +37,6 @@ let largerResp = get("/large") { req -> AnyResponse in
 }
 
 let update = post("/update") { req -> AnyResponse in
-    let body = req.body >>- utf8String
-    return AnyResponse(item: body ?? "")
+    return (req.body >>- utf8String <^> AnyResponse.init(item:)) ?? .error
 }
 

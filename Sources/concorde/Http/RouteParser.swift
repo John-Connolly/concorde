@@ -7,8 +7,6 @@
 
 import Foundation
 
-typealias Stream = String.SubSequence
-typealias Parser<A> = (Stream) -> (A, Stream)?
 
 let url = "/Users/32"
 
@@ -26,30 +24,67 @@ extension Route {
     }
 }
 
-func char(predicate: @escaping (Character) -> Bool) -> Parser<Character> {
-    let parser: Parser<Character> = { stream -> (Character, Stream)? in
-        guard let char = stream.first, predicate(char) else {
-            return nil
-        }
-        return (char, stream.dropFirst())
-    }
-    return parser
+public struct RouteParser<A> {
+    public typealias Stream = [String] // Change to slice
+    public let parse: (Stream) -> (A, Stream)?
 }
 
-func parse<A>(_ item: Stream, with parser: Parser<A>) -> (A, String)? {
-    guard let (result, remainder) = parser(item) else { return nil }
-    return (result, String(remainder))
+extension RouteParser {
+
+    public func run(_ string: String) -> (A, Stream)? {
+        let url = URL(string: string)
+        let components = url?.pathComponents ?? []
+        return parse(components)
+    }
+
+    public var many: RouteParser<[A]> {
+        return RouteParser<[A]> { input in
+            var result: [A] = []
+            var remainder = input
+            while let (element, newRemainder) = self.parse(remainder) {
+                result.append(element)
+                remainder = newRemainder
+            }
+            return (result, remainder)
+        }
+    }
+
+    public func map<T>(_ transform: @escaping (A) -> T) -> RouteParser<T> {
+        return RouteParser<T> { input in
+            guard let (result, remainder) = self.parse(input) else { return nil }
+            return (transform(result), remainder)
+        }
+    }
+
+    public func followed<B>(by other: RouteParser<B>) -> RouteParser<(A, B)> {
+        return RouteParser<(A, B)> { input in
+            guard let (result1, remainder1) = self.parse(input) else { return nil }
+            guard let (result2, remainder2) = other.parse(remainder1) else { return nil }
+            return ((result1, result2), remainder2)
+        }
+    }
 }
 
-func parse<A>(with parse: @escaping Parser<A>) -> Parser<[A]> {
-    let parser: Parser<[A]> = { stream in
-        var result: [A] = []
-        var remainder = stream
-        while let (element, newRemainder) = parse(remainder) {
-            result.append(element)
-            remainder = newRemainder
-        }
-        return (result, remainder)
+
+public func path(_ matching: String) -> RouteParser<String> {
+    return RouteParser { input in
+        guard let path = input.first, path == matching else { return nil }
+        return (path, Array(input.dropFirst()))
     }
-    return parser
 }
+
+public let int: RouteParser<Int> = {
+    return RouteParser { input in
+        guard let int = input.first.flatMap(Int.init) else { return nil }
+        return (int, Array(input.dropFirst()))
+    }
+}()
+
+public let string: RouteParser<String> = {
+    return RouteParser { input in
+        guard let string = input.first else { return nil }
+        return (string, Array(input.dropFirst()))
+    }
+}()
+
+

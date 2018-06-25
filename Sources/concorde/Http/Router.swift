@@ -18,7 +18,7 @@ public func router(register routes: [(Request) -> (AnyResponse?)]) -> (Request, 
             responder(resp)
             return
         }
-        responder(AnyResponse(item: "Not Found", status: .notFound))
+        responder(.notFound)
     }
 }
 
