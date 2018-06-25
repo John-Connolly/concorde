@@ -8,7 +8,7 @@ A Swift µframework for building web apps.
 	
 let get = route(method: .GET)
 let hello = get("/") { req -> AnyResponse in
-    return AnyResponse(item: "hello word")
+    return AnyResponse(item: "hello world")
 }
 
 let flightPlan = router(register: [hello])
