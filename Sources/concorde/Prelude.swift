@@ -21,8 +21,6 @@ public func |> <A,B>(a: A, f: @escaping (A) -> B) -> B {
     return f(a)
 }
 
-
-
 public func id<A>(_ a: A) -> A {
     return a
 }
@@ -30,8 +28,3 @@ public func id<A>(_ a: A) -> A {
 public func const<A, B>(_ a: A) -> (B) -> A {
     return { _ in a }
 }
-
-
-
-
-

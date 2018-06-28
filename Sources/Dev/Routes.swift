@@ -14,22 +14,24 @@ struct Car: Codable {
 }
 
 let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
+let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632/"
 
 let siteMap = [
     curry(users) <^> (path("users") *> string) <*> int |> get,
     cars <^> (path("cars") *> int) |> get,
-    pure(hello) <*> (path("hello") *> end) |> get
+    pure(hello) <*> (path("hello") *> end) |> get,
+    pure(verify) <*> (path(verifyToken) *> end) |> get,
 ]
-
-func hello() -> (Request) -> AnyResponse {
-    return { req in
-        return "hello world" |> AnyResponse.init(item:)
-    }
-}
 
 func users(name: String, id: Int) -> (Request) -> AnyResponse {
     return { request in
         return "hello \(name)! your id is: \(id)" |> AnyResponse.init(item:)
+    }
+}
+
+func hello() -> (Request) -> AnyResponse {
+    return { req in
+        return "hello world" |> AnyResponse.init(item:)
     }
 }
 
@@ -41,8 +43,14 @@ func cars(amount: Int) -> (Request) -> AnyResponse {
     }
 }
 
+func verify() -> (Request) -> AnyResponse {
+    return { req in
+        return "loaderio-95e2de71ba5cfa095645d825903bc632" |> AnyResponse.init(item:)
+    }
+}
+
 //let token = get("/loaderio-95e2de71ba5cfa095645d825903bc632/") { req -> AnyResponse in
-//    return "loaderio-95e2de71ba5cfa095645d825903bc632" |> AnyResponse.init(item:)
+//    return
 //}
 
 //let update = post("/update") { req -> AnyResponse in
