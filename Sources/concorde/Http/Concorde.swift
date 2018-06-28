@@ -93,7 +93,7 @@ final class HTTPHandler: ChannelInboundHandler {
                 router(Request(head: header, body: data), write(ctx))
             }
         case .end:
-            state.done()
+            state.done() /// BUG: close connection!
         }
     }
 

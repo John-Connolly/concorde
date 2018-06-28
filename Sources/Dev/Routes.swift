@@ -18,9 +18,10 @@ let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 
 let siteMap = [
     curry(users) <^> (path("users") *> string) <*> int |> get,
-    cars <^> (path("cars") *> int) |> get,
+    cars <^> (path("cars") *> UInt) |> get,
     pure(hello) <*> (path("hello") *> end) |> get,
     pure(verify) <*> (path(verifyToken) *> end) |> get,
+    pure(update) <*> (path("post") *> end) |> post,
 ]
 
 func users(name: String, id: Int) -> (Request) -> AnyResponse {
@@ -35,11 +36,12 @@ func hello() -> (Request) -> AnyResponse {
     }
 }
 
-func cars(amount: Int) -> (Request) -> AnyResponse {
+
+func cars(amount: UInt) -> (Request) -> AnyResponse {
     return { req in
-        return (1...amount).map { n in
-            return Car(wheels: n, name: (n % 2 == 0 ? "Ford" : "GM"))
-        } |> AnyResponse.init(item:)
+        return amount < 1000 ? (0...amount).map { n in
+                return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
+        } |> AnyResponse.init(item:) : ("To many cars" |> AnyResponse.init(item:))
     }
 }
 
@@ -49,11 +51,9 @@ func verify() -> (Request) -> AnyResponse {
     }
 }
 
-//let token = get("/loaderio-95e2de71ba5cfa095645d825903bc632/") { req -> AnyResponse in
-//    return
-//}
-
-//let update = post("/update") { req -> AnyResponse in
-//    return (req.body >>- utf8String <^> AnyResponse.init(item:)) ?? .error
-//}
-//
+/// Post req
+func update() -> (Request) -> AnyResponse {
+    return { req in
+        return (req.body >>- utf8String <^> AnyResponse.init(item:)) ?? .error
+    }
+}

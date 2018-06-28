@@ -17,7 +17,6 @@ extension Route {
     public func run(_ string: String) -> (A, Stream)? {
         let url = URL(string: string)
         let components = url?.pathComponents ?? []
-
         return parse(components.dropFirst())
     }
 
@@ -49,7 +48,6 @@ extension Route {
     }
 }
 
-
 public func path(_ matching: String) -> Route<String> {
     return Route { input in
         guard let path = input.first, path == matching else { return nil }
@@ -65,6 +63,16 @@ public let end: Route<()> = Route { input in
 public let int: Route<Int> = Route { input in
     guard let int = input.first.flatMap(Int.init) else { return nil }
     return (int, input.dropFirst())
+}
+
+public let UInt: Route<UInt> = Route { input in
+    guard let uint = input.first.flatMap(Swift.UInt.init) else { return nil }
+    return (uint, input.dropFirst())
+}
+
+public let double: Route<Double> = Route { input in
+    guard let double = input.first.flatMap(Double.init) else { return nil }
+    return (double, input.dropFirst())
 }
 
 public let string: Route<String> = Route { input in
