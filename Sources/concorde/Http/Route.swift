@@ -1,5 +1,5 @@
 //
-//  RouteParser.swift
+//  Route.swift
 //  Concorde
 //
 //  Created by John Connolly on 2018-06-03.
@@ -8,37 +8,22 @@
 import Foundation
 
 
-let url = "/Users/32"
-
-let urlType = URL(string: url)!
-
-enum Route: String {
-    case home = "hello"
+public struct Route<A> {
+    public typealias Stream = ArraySlice<String> // Change to slice
+    public let parse: (Stream) -> (A, Stream)?
 }
 
 extension Route {
 
-    init?(_ route: String) {
-        //case .home: return nil
-        return nil
-    }
-}
-
-public struct RouteParser<A> {
-    public typealias Stream = [String] // Change to slice
-    public let parse: (Stream) -> (A, Stream)?
-}
-
-extension RouteParser {
-
     public func run(_ string: String) -> (A, Stream)? {
         let url = URL(string: string)
         let components = url?.pathComponents ?? []
-        return parse(components)
+
+        return parse(components.dropFirst())
     }
 
-    public var many: RouteParser<[A]> {
-        return RouteParser<[A]> { input in
+    public var many: Route<[A]> {
+        return Route<[A]> { input in
             var result: [A] = []
             var remainder = input
             while let (element, newRemainder) = self.parse(remainder) {
@@ -49,15 +34,15 @@ extension RouteParser {
         }
     }
 
-    public func map<T>(_ transform: @escaping (A) -> T) -> RouteParser<T> {
-        return RouteParser<T> { input in
+    public func map<T>(_ transform: @escaping (A) -> T) -> Route<T> {
+        return Route<T> { input in
             guard let (result, remainder) = self.parse(input) else { return nil }
             return (transform(result), remainder)
         }
     }
 
-    public func followed<B>(by other: RouteParser<B>) -> RouteParser<(A, B)> {
-        return RouteParser<(A, B)> { input in
+    public func followed<B>(by other: Route<B>) -> Route<(A, B)> {
+        return Route<(A, B)> { input in
             guard let (result1, remainder1) = self.parse(input) else { return nil }
             guard let (result2, remainder2) = other.parse(remainder1) else { return nil }
             return ((result1, result2), remainder2)
@@ -66,24 +51,24 @@ extension RouteParser {
 }
 
 
-public func path(_ matching: String) -> RouteParser<String> {
-    return RouteParser { input in
+public func path(_ matching: String) -> Route<String> {
+    return Route { input in
         guard let path = input.first, path == matching else { return nil }
-        return (path, Array(input.dropFirst()))
+        return (path, input.dropFirst())
     }
 }
 
-public let int: RouteParser<Int> = {
-    return RouteParser { input in
+public let int: Route<Int> = {
+    return Route { input in
         guard let int = input.first.flatMap(Int.init) else { return nil }
-        return (int, Array(input.dropFirst()))
+        return (int, input.dropFirst())
     }
 }()
 
-public let string: RouteParser<String> = {
-    return RouteParser { input in
+public let string: Route<String> = {
+    return Route { input in
         guard let string = input.first else { return nil }
-        return (string, Array(input.dropFirst()))
+        return (string, input.dropFirst())
     }
 }()
 

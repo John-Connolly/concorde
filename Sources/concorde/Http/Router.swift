@@ -22,16 +22,19 @@ public func router(register routes: [(Request) -> (AnyResponse?)]) -> (Request, 
     }
 }
 
-public func route(method: HTTPMethod) -> (String, @escaping (Request) -> (AnyResponse)) -> (Request) -> (AnyResponse?) {
-    return { path, work in
+public func register(method: HTTPMethod) -> (Route<(Request) -> AnyResponse>) -> (Request) -> (AnyResponse?) {
+    return { route in
         return { req in
-            guard method == req.method else {
+            guard req.method == method else {
                 return nil
             }
-            guard req.head.uri.hasPrefix(path) else {
+
+            guard let matchedRoute = route.run(req.head.uri)?.0 else {
                 return nil
             }
-            return work(req)
+            return matchedRoute(req)
         }
     }
 }
+
+
