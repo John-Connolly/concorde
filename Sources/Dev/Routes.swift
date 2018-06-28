@@ -14,7 +14,7 @@ struct Car: Codable {
 }
 
 let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
-let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632/"
+let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 
 let siteMap = [
     curry(users) <^> (path("users") *> string) <*> int |> get,
