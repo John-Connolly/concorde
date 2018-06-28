@@ -16,9 +16,9 @@ struct Car: Codable {
 let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
 
 let siteMap = [
-    curry(users) <^> (path("users") *> string) <*> int |> get,
-    cars <^> path("cars") *> int |> get,
-    hello |> pure <*> path("hello") *> end |> get
+    curry(users) <^> (path("users") *> string) <*> int |> get
+//    cars <^> path("cars") *> int |> get,
+//    hello |> pure <*> path("hello") *> end |> get
 ]
 
 func hello() -> (Request) -> AnyResponse {
