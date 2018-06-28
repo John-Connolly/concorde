@@ -17,4 +17,3 @@ precedencegroup ParserPrecedence {
     associativity: left
     higherThan: AdditionPrecedence
 }
-

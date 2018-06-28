@@ -9,6 +9,9 @@ import Foundation
 import NIO
 import NIOHTTP1
 
+public let get = register(method: .GET)
+public let post = register(method: .POST)
+
 public func router(register routes: [(Request) -> (AnyResponse?)]) -> (Request, (AnyResponse) -> ()) -> () {
     return { request, responder in
         for route in routes {

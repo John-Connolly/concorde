@@ -15,15 +15,17 @@ struct Car: Codable {
 
 let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
 
-let cars = [Car(wheels: 4, name: "Ford"), Car(wheels: 4, name: "Chevvy")]
-
-let get = register(method: .GET)
-
 let siteMap = [
-    curry(users) <^> (path("users") *> string) <*> int |> get
-
+    users |> curry <^> (path("users") *> string) <*> int |> get,
+    cars <^> path("cars") *> int |> get,
+    hello |> pure <*> path("hello") *> end |> get
 ]
 
+func hello() -> (Request) -> AnyResponse {
+    return { req in
+        return "hello world" |> AnyResponse.init(item:)
+    }
+}
 
 func users(name: String, id: Int) -> (Request) -> AnyResponse {
     return { request in
@@ -31,11 +33,19 @@ func users(name: String, id: Int) -> (Request) -> AnyResponse {
     }
 }
 
+func cars(amount: Int) -> (Request) -> AnyResponse {
+    return { req in
+        return (1...amount).map { n in
+            return Car(wheels: n, name: (n % 2 == 0 ? "Ford" : "GM"))
+        } |> AnyResponse.init(item:)
+    }
+}
+
 
 
 
 //let post = route(method: .POST)
-//
+
 //let hello = get("/hello") { req -> AnyResponse in
 //    return AnyResponse(item: "hello word")
 //}

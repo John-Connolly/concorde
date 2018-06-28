@@ -7,9 +7,8 @@
 
 import Foundation
 
-
 public struct Route<A> {
-    public typealias Stream = ArraySlice<String> // Change to slice
+    public typealias Stream = ArraySlice<String>
     public let parse: (Stream) -> (A, Stream)?
 }
 
@@ -58,18 +57,17 @@ public func path(_ matching: String) -> Route<String> {
     }
 }
 
-public let int: Route<Int> = {
-    return Route { input in
-        guard let int = input.first.flatMap(Int.init) else { return nil }
-        return (int, input.dropFirst())
-    }
-}()
+public let end: Route<()> = Route { input in
+    guard input.count == 0 else { return nil }
+    return ((), input)
+}
 
-public let string: Route<String> = {
-    return Route { input in
-        guard let string = input.first else { return nil }
-        return (string, input.dropFirst())
-    }
-}()
+public let int: Route<Int> = Route { input in
+    guard let int = input.first.flatMap(Int.init) else { return nil }
+    return (int, input.dropFirst())
+}
 
-
+public let string: Route<String> = Route { input in
+    guard let string = input.first else { return nil }
+    return (string, input.dropFirst())
+}
