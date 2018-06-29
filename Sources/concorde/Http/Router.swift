@@ -25,7 +25,7 @@ public func router(register routes: [(Request) -> (AnyResponse?)]) -> (Request, 
     }
 }
 
-public func register(method: HTTPMethod) -> (Route<(Request) -> AnyResponse>) -> (Request) -> (AnyResponse?) {
+public func register(method: HTTPMethod) -> (Route<(Request) -> AnyResponse>) -> (Request) -> AnyResponse? {
     return { route in
         return { req in
             guard req.method == method else {

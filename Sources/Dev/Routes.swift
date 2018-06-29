@@ -40,7 +40,7 @@ func hello() -> (Request) -> AnyResponse {
 func cars(amount: UInt) -> (Request) -> AnyResponse {
     return { req in
         return amount < 1000 ? (0...amount).map { n in
-                return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
+            return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
         } |> AnyResponse.init(item:) : ("To many cars" |> AnyResponse.init(item:))
     }
 }
