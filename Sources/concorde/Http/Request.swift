@@ -21,3 +21,9 @@ public struct Request {
         return head.method
     }
 }
+
+public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> T? {
+    return { data in
+        return try? JSONDecoder().decode(type, from: data)
+    }
+}

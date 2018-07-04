@@ -27,12 +27,12 @@ public struct AnyResponse {
 
 public extension AnyResponse {
 
-    public init<T: Encodable>(item: T) {
+    public init<T: Encodable>(_ item: T) {
         self.data = (try? JSONEncoder().encode(item)) ?? Data()
         self.contentType = .json
     }
 
-    public init(item: String) {
+    public init(_ item: String) {
         self.data = item.data(using: .utf8) ?? Data()
         self.contentType = .plain
     }

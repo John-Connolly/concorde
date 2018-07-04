@@ -22,38 +22,50 @@ let siteMap = [
     pure(hello) <*> (path("hello") *> end) |> get,
     pure(verify) <*> (path(verifyToken) *> end) |> get,
     pure(update) <*> (path("post") *> end) |> post,
+    pure(addCar) <*> (path("addCar") *> end) |> post,
+    pure(addItem) <*> (path("addItem") *> end) |> post,
+    pure(allTodoItems) <*> (path("allTodos") *> end) |> get,
 ]
 
 func users(name: String, id: Int) -> (Request) -> AnyResponse {
     return { request in
-        return "hello \(name)! your id is: \(id)" |> AnyResponse.init(item:)
+        return "hello \(name)! your id is: \(id)" |> AnyResponse.init
     }
 }
 
 func hello() -> (Request) -> AnyResponse {
     return { req in
-        return "hello world" |> AnyResponse.init(item:)
+        return "hello world" |> AnyResponse.init
     }
 }
-
 
 func cars(amount: UInt) -> (Request) -> AnyResponse {
     return { req in
         return amount < 1000 ? (0...amount).map { n in
             return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
-        } |> AnyResponse.init(item:) : ("To many cars" |> AnyResponse.init(item:))
+        } |> AnyResponse.init : ("To many cars" |> AnyResponse.init)
     }
 }
 
 func verify() -> (Request) -> AnyResponse {
     return { req in
-        return "loaderio-95e2de71ba5cfa095645d825903bc632" |> AnyResponse.init(item:)
+        return "loaderio-95e2de71ba5cfa095645d825903bc632" |> AnyResponse.init
     }
 }
 
 /// Post req
 func update() -> (Request) -> AnyResponse {
     return { req in
-        return (req.body >>- utf8String <^> AnyResponse.init(item:)) ?? .error
+        return (req.body >>- utf8String <^> AnyResponse.init) ?? .error
     }
 }
+
+/// Post req
+func addCar() -> (Request) -> AnyResponse {
+    return { req in
+        return (req.body >>- decode(Car.self) <^> AnyResponse.init) ?? .error
+    }
+}
+
+
+
