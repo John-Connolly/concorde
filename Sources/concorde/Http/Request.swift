@@ -6,11 +6,14 @@
 //
 
 import Foundation
+import NIO
 import NIOHTTP1
 
-public struct Request {
+public final class Request {
     public let head: HTTPRequestHead
     public let body: Data?
+
+    public var stream: ((ByteBuffer) -> ())?
 
     public init(head: HTTPRequestHead, body: Data?) {
         self.head = head

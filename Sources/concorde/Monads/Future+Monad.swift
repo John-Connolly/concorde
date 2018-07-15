@@ -11,7 +11,7 @@ import NIO
 infix operator >>-: MonadicPrecedenceLeft
 
 /// flatmaps a Future if the future throws an error f with never be called.
-public func >>- <A, B>(a: EventLoopFuture<A>, f: @escaping (A) -> EventLoopFuture<B>) -> EventLoopFuture<B> {
+public func >>- <A, B>(a: Future<A>, f: @escaping (A) -> Future<B>) -> Future<B> {
     return a.then { value in
         return f(value)
     }

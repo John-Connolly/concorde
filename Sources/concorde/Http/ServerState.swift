@@ -10,7 +10,7 @@ import NIOHTTP1
 
 enum ServerState {
     case idle
-    case waitingForRequestBody(HTTPRequestHead)
+    case waitingForRequestBody(HTTPRequestHead, Request)
     case sendingResponse
 
 
@@ -18,8 +18,8 @@ enum ServerState {
         self = .sendingResponse
     }
 
-    mutating func receivedHead(_ head: HTTPRequestHead) {
-        self = .waitingForRequestBody(head)
+    mutating func receivedHead(_ head: HTTPRequestHead, request: Request) {
+        self = .waitingForRequestBody(head, request)
     }
 
     mutating func done() {

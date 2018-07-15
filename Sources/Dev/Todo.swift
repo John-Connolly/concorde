@@ -26,12 +26,18 @@ let db = KeyValueStore<String, TodoItem>()
 /// Post req
 func addItem() -> (Request) -> AnyResponse {
     return { req in
-         return (req.body >>- decode(TodoItem.self))
-            .map { item in
-                db.add(key: item.id, value: item)
-            }.map {
-                return db.all().count |> (String.init >>> AnyResponse.init)
-            } ?? .error
+
+        req.stream = { bytes in
+            print(bytes.readableBytes)
+        }
+        
+//         return (req.body >>- decode(TodoItem.self))
+//            .map { item in
+//                db.add(key: item.id, value: item)
+//            }.map {
+//                return db.all().count |> (String.init >>> AnyResponse.init)
+//            } ?? .error
+        return .error
     }
 }
 

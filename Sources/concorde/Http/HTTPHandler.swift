@@ -21,33 +21,43 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
     func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-        let request = unwrapInboundIn(data)
-        switch request {
+        let serverRequestPart = unwrapInboundIn(data)
+
+        switch serverRequestPart {
         case .head(let header):
             if header.method == .GET {
                 router(Request(head: header, body: nil), write(ctx))
                 state.recievedGetRequest()
                 return
             }
-            state.receivedHead(header)
+            state.receivedHead(header, request: Request(head: header, body: nil)) // Fix body
         case .body(let body):
             switch state {
             case .idle, .sendingResponse: break
-            case .waitingForRequestBody(let header):
-                let data = body.getBytes(at: 0, length: body.readableBytes).flatMap(Data.init)
-                router(Request(head: header, body: data), write(ctx))
+            case .waitingForRequestBody(_,let request): ()
+
+//                request.stream?(body)
+//                router(request, write(ctx))
+
+
+//                print("recieved data", body.readableBytes)
+//                let data = body.getBytes(at: 0, length: body.readableBytes).flatMap(Data.init)
+
+//                Request(head: header, body: nil), write(ctx)
             }
         case .end:
+            print("end")
             state.done() /// BUG: close connection!
         }
     }
 
     func write(_ ctx: ChannelHandlerContext) -> (AnyResponse) -> () {
         return { response in
-            _ = ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: nil)
-            var buffer = ctx.channel.allocator.buffer(capacity: response.data.count)
-            buffer.write(bytes: response.data)
-            self.writeAndflush(buffer: buffer, ctx: ctx)
+            print(response)
+//            _ = ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: nil)
+//            var buffer = ctx.channel.allocator.buffer(capacity: response.data.count)
+//            buffer.write(bytes: response.data)
+//            self.writeAndflush(buffer: buffer, ctx: ctx)
         }
     }
 
@@ -64,3 +74,6 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
 }
+
+
+
