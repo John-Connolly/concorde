@@ -26,12 +26,12 @@ final class HTTPHandler: ChannelInboundHandler {
         switch serverRequestPart {
         case .head(let header):
             if header.method == .GET {
-                router(Request(ctx.eventLoop, head: header, body: nil), write(ctx))
+                router(Request(ctx.eventLoop, head: header), write(ctx))
                 state.recievedGetRequest()
                 return
             }
 
-            let request = Request(ctx.eventLoop, head: header, body: nil)
+            let request = Request(ctx.eventLoop, head: header)
             state.receivedHead(header, request: request) // Fix body
             router(request, write(ctx))
         case .body(let body):

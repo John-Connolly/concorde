@@ -28,7 +28,11 @@ public struct AnyResponse {
 public extension AnyResponse {
 
     public init<T: Encodable>(_ item: T) {
-        self.data = (try? JSONEncoder().encode(item)) ?? Data()
+        guard let data = try? JSONEncoder().encode(item) else {
+            self = .error
+            return
+        }
+        self.data = data
         self.contentType = .json
     }
 

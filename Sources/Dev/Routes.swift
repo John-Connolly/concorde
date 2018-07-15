@@ -53,19 +53,19 @@ func verify() -> (Request) -> AnyResponse {
     }
 }
 
-/// Post req
-func update() -> (Request) -> AnyResponse {
-    return { req in
-        return (req.body >>- utf8String <^> AnyResponse.init) ?? .error
-    }
-}
-
-/// Post req
-func addCar() -> (Request) -> AnyResponse {
-    return { req in
-        return (req.body >>- decode(Car.self) <^> AnyResponse.init) ?? .error
-    }
-}
-
+///// Post req
+//func update() -> (Request) -> AnyResponse {
+//    return { req in
+//        return (req.body >>- utf8String <^> AnyResponse.init) ?? .error
+//    }
+//}
+//
+///// Post req
+//func addCar() -> (Request) -> AnyResponse {
+//    return { req in
+//        return (req.body >>- decode(Car.self) <^> AnyResponse.init) ?? .error
+//    }
+//}
+//
 
 

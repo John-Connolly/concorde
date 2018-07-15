@@ -11,14 +11,12 @@ import NIOHTTP1
 
 public final class Request {
     public let head: HTTPRequestHead
-    public let body: Data?
     public let eventLoop: EventLoop
 
     public let stream = BodyStream()
 
-    public init(_ eventLoop: EventLoop, head: HTTPRequestHead, body: Data?) {
+    public init(_ eventLoop: EventLoop, head: HTTPRequestHead) {
         self.head = head
-        self.body = body
         self.eventLoop = eventLoop
     }
 
@@ -29,6 +27,20 @@ public final class Request {
     public func future<T>(_ t: T) -> Future<T> {
         return eventLoop.newSucceededFuture(result: t)
     }
+
+    public func promise<T>() -> Promise<T> {
+        return eventLoop.newPromise()
+    }
+
+    /// Reads the entire body into memory then returns it.
+    public var body: Future<Data> {
+        let promise: Promise<Data> = self.promise()
+        stream.output(to: BodySink { data in
+            promise.succeed(result: data)
+        })
+        return promise.futureResult
+    }
+
 }
 
 public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> T? {

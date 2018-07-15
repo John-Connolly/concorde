@@ -42,15 +42,14 @@ public final class BodySink: InputStream {
 
     public func input(_ value: StreamInput<ByteBuffer>) {
         switch value {
-        case .input(let buffer): ()
+        case .input(let buffer):
             guard let data = buffer.getBytes(at: 0, length: buffer.readableBytes) else {
                 return
             }
             self.data.append(contentsOf: data)
         case .end:
             drain(data)
-        case .error(_):
-            ()
+        case .error(_): ()
         }
     }
 }
