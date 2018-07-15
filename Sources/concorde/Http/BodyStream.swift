@@ -8,34 +8,49 @@
 import Foundation
 import NIO
 
-public final class BodyStream: PushStream {
+public final class BodyStream: DuplexStream {
+    public typealias InputValue = ByteBuffer
+    public typealias OutputValue = ByteBuffer
 
-    typealias OutputValue = ByteBuffer
+    var input: ((StreamInput<ByteBuffer>) -> ())?
 
-
-    func output<S>(to inputStream: S) where S : PullStream, BodyStream.OutputValue == S.InputValue {
-
+    public func output<S>(to inputStream: S) where S : InputStream, BodyStream.OutputValue == S.InputValue {
+        input = { value in
+            inputStream.input(value)
+        }
     }
+
+    public func input(_ value: StreamInput<ByteBuffer>) {
+         self.input?(value)
+    }
+
 }
+
+
+public typealias DuplexStream = InputStream & PushStream
 
 public final class BodySink: InputStream {
 
-    typealias InputValue = ByteBuffer
+    public typealias InputValue = ByteBuffer
 
     var data = Data()
-    var drain: ((Data) -> ())?
+    let drain: ((Data) -> ())
 
-    func input(_ value: Input<ByteBuffer>) {
+    public init(drain: @escaping ((Data) -> ())) {
+        self.drain = drain
+    }
+
+    public func input(_ value: StreamInput<ByteBuffer>) {
         switch value {
-        case .input(let buffer):
+        case .input(let buffer): ()
             guard let data = buffer.getBytes(at: 0, length: buffer.readableBytes) else {
                 return
             }
             self.data.append(contentsOf: data)
-        case .done:
-            drain?(data)
+        case .end:
+            drain(data)
+        case .error(_):
+            ()
         }
     }
-
-
 }

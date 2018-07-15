@@ -7,13 +7,13 @@
 
 import Foundation
 
-enum StreamInput<Value> {
+public enum StreamInput<Value> {
     case input(Value)
-    case complete
+    case end
     case error(Error)
 }
 
-protocol InputStream: class {
+public protocol InputStream: class {
     associatedtype InputValue
-    func input(_ value: Input<InputValue>)
+    func input(_ value: StreamInput<InputValue>)
 }

@@ -12,11 +12,11 @@ import NIOHTTP1
 final class HTTPHandler: ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
-    let router: (Request, (AnyResponse) -> ()) -> ()
+    let router: (Request, (Future<AnyResponse>) -> ()) -> ()
 
     var state = ServerState.idle
 
-    init(with router: @escaping (Request, (AnyResponse) -> ()) -> ()) {
+    init(with router: @escaping (Request, (Future<AnyResponse>) -> ()) -> ()) {
         self.router = router
     }
 
@@ -26,38 +26,38 @@ final class HTTPHandler: ChannelInboundHandler {
         switch serverRequestPart {
         case .head(let header):
             if header.method == .GET {
-                router(Request(head: header, body: nil), write(ctx))
+                router(Request(ctx.eventLoop, head: header, body: nil), write(ctx))
                 state.recievedGetRequest()
                 return
             }
-            state.receivedHead(header, request: Request(head: header, body: nil)) // Fix body
+
+            let request = Request(ctx.eventLoop, head: header, body: nil)
+            state.receivedHead(header, request: request) // Fix body
+            router(request, write(ctx))
         case .body(let body):
             switch state {
             case .idle, .sendingResponse: break
-            case .waitingForRequestBody(_,let request): ()
-
-//                request.stream?(body)
-//                router(request, write(ctx))
-
-
-//                print("recieved data", body.readableBytes)
-//                let data = body.getBytes(at: 0, length: body.readableBytes).flatMap(Data.init)
-
-//                Request(head: header, body: nil), write(ctx)
+            case .waitingForRequestBody(_,let request):
+                request.stream.input(.input(body))
             }
         case .end:
-            print("end")
-            state.done() /// BUG: close connection!
+            switch state {
+            case .idle, .sendingResponse: break
+            case .waitingForRequestBody(_,let request): ()
+                request.stream.input(.end)
+            state.done()
+            }
         }
     }
 
-    func write(_ ctx: ChannelHandlerContext) -> (AnyResponse) -> () {
+    func write(_ ctx: ChannelHandlerContext) -> (Future<AnyResponse>) -> () {
         return { response in
-            print(response)
-//            _ = ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: nil)
-//            var buffer = ctx.channel.allocator.buffer(capacity: response.data.count)
-//            buffer.write(bytes: response.data)
-//            self.writeAndflush(buffer: buffer, ctx: ctx)
+            _ = response.map { resp in
+                ctx.write(self.wrapOutboundOut(.head(self.head(resp))), promise: nil)
+                var buffer = ctx.channel.allocator.buffer(capacity: resp.data.count)
+                buffer.write(bytes: resp.data)
+                self.writeAndflush(buffer: buffer, ctx: ctx)
+            }
         }
     }
 
@@ -74,6 +74,3 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
 }
-
-
-

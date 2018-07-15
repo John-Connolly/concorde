@@ -12,16 +12,22 @@ import NIOHTTP1
 public final class Request {
     public let head: HTTPRequestHead
     public let body: Data?
+    public let eventLoop: EventLoop
 
-    public var stream: ((ByteBuffer) -> ())?
+    public let stream = BodyStream()
 
-    public init(head: HTTPRequestHead, body: Data?) {
+    public init(_ eventLoop: EventLoop, head: HTTPRequestHead, body: Data?) {
         self.head = head
         self.body = body
+        self.eventLoop = eventLoop
     }
 
     public var method: HTTPMethod {
         return head.method
+    }
+
+    public func future<T>(_ t: T) -> Future<T> {
+        return eventLoop.newSucceededFuture(result: t)
     }
 }
 

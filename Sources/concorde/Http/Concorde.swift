@@ -6,7 +6,7 @@ public let concorde = create >>> start
 
 private let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 
-private func create(router: @escaping (Request, (AnyResponse) -> ()) -> ()) -> ServerBootstrap {
+private func create(router: @escaping (Request, (Future<AnyResponse>) -> ()) -> ()) -> ServerBootstrap {
     // Specify backlog and enable SO_REUSEADDR for the server itself
     let bootstrap = ServerBootstrap(group: group)
     .serverChannelOption(ChannelOptions.backlog, value: 256)
