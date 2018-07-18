@@ -21,8 +21,10 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
     func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-        let serverRequestPart = unwrapInboundIn(data)
+//        ctx.read()
+//        ctx.channel.read()
 
+        let serverRequestPart = unwrapInboundIn(data)
         switch serverRequestPart {
         case .head(let header):
             if header.method == .GET {

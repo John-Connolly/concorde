@@ -19,10 +19,11 @@ let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 let siteMap = [
 //    curry(users) <^> (path("users") *> string) <*> int |> get,
 //    cars <^> (path("cars") *> UInt) |> get,
-//    pure(hello) <*> (path("hello") *> end) |> get,
+    pure(hello) <*> (path("hello") *> end) |> get,
 //    pure(verify) <*> (path(verifyToken) *> end) |> get,
 //    pure(update) <*> (path("post") *> end) |> post,
 //    pure(addCar) <*> (path("addCar") *> end) |> post,
+    pure(csvStream) <*> (path("csv") *> end) |> post,
     pure(addItem) <*> (path("addItem") *> end) |> post,
 //    pure(allTodoItems) <*> (path("allTodos") *> end) |> get,
 ]
@@ -33,9 +34,9 @@ func users(name: String, id: Int) -> (Request) -> AnyResponse {
     }
 }
 
-func hello() -> (Request) -> AnyResponse {
+func hello() -> (Request) -> Future<AnyResponse> {
     return { req in
-        return "hello world" |> AnyResponse.init
+        return "hello world" |> AnyResponse.init |> req.future
     }
 }
 
