@@ -18,7 +18,7 @@ let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 
 let siteMap = [
 //    curry(users) <^> (path("users") *> string) <*> int |> get,
-//    cars <^> (path("cars") *> UInt) |> get,
+    cars <^> (path("cars") *> UInt) |> get,
     pure(hello) <*> (path("hello") *> end) |> get,
 //    pure(verify) <*> (path(verifyToken) *> end) |> get,
 //    pure(update) <*> (path("post") *> end) |> post,
@@ -40,11 +40,11 @@ func hello() -> (Request) -> Future<AnyResponse> {
     }
 }
 
-func cars(amount: UInt) -> (Request) -> AnyResponse {
+func cars(amount: UInt) -> (Request) -> Future<AnyResponse> {
     return { req in
-        return amount < 1000 ? (0...amount).map { n in
+        return (amount < 1000 ? (0...amount).map { n in
             return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
-        } |> AnyResponse.init : ("To many cars" |> AnyResponse.init)
+        } |> AnyResponse.init : ("To many cars" |> AnyResponse.init)) |> req.future
     }
 }
 
