@@ -26,7 +26,6 @@ extension Route {
         self.uriFormat = uriFormat
     }
 
-
 }
 
 extension Route {
@@ -100,4 +99,3 @@ public func path(_ matching: String) -> RouteInverse<String> {
         return (matching, matching)
     }
 }
-

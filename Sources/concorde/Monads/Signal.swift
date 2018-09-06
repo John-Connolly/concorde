@@ -7,12 +7,6 @@
 
 import Foundation
 
-
-enum Result<T> {
-    case success(T)
-    case error(Error)
-}
-
 public struct Signal<T> {
 
     private var observers: [(Result<T>) -> ()] = []
