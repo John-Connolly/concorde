@@ -16,57 +16,63 @@ struct Car: Codable {
 let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
 let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 
-let siteMap = [
-//    curry(users) <^> (path("users") *> string) <*> int |> get,
-    cars <^> (path("cars") *> UInt) |> get,
-    pure(hello) <*> (path("hello") *> end) |> get,
-//    pure(verify) <*> (path(verifyToken) *> end) |> get,
-//    pure(update) <*> (path("post") *> end) |> post,
-//    pure(addCar) <*> (path("addCar") *> end) |> post,
+
+let type = (hello |> lift) |> pure
+
+let siteMap = [   //cars/20
+    curry(users) <^> (path("users") *> string) <*> int |> get, //users/john/234
+    curry(cars) <^> (path("cars") *> UInt) |> get,
+    pure(lift(hello)) <*> (path("hello") *> end) |> get,
+    pure(lift(verify)) <*> (path(verifyToken) *> end) |> get,
+    pure(lift(update)) <*> (path("post") *> end) |> post,
+    pure(lift(addCar)) <*> (path("addCar") *> end) |> post,
     pure(csvStream) <*> (path("csv") *> end) |> post,
     pure(addItem) <*> (path("addItem") *> end) |> post,
+    pure(csvStream) <*> (path("csv") *> end) |> post,
 //    pure(allTodoItems) <*> (path("allTodos") *> end) |> get,
 ]
 
-func users(name: String, id: Int) -> (Request) -> AnyResponse {
-    return { request in
-        return "hello \(name)! your id is: \(id)" |> AnyResponse.init
-    }
+func users(name: String, id: Int, req: Request) -> Future<AnyResponse> {
+    return "hello \(name)! your id is: \(id)" |> AnyResponse.init |> req.future
 }
 
-func hello() -> (Request) -> Future<AnyResponse> {
-    return { req in
-        return "hello world" |> AnyResponse.init |> req.future
-    }
+func hello(req: Request) -> Future<AnyResponse> {
+    return "hello world" |> AnyResponse.init |> req.future
 }
 
-func cars(amount: UInt) -> (Request) -> Future<AnyResponse> {
-    return { req in
-        return (amount < 1000 ? (0...amount).map { n in
-            return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
+func cars(amount: UInt, req: Request) -> Future<AnyResponse> {
+    return (amount < 500_000 ? (0...amount).map { n in
+        return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
         } |> AnyResponse.init : ("To many cars" |> AnyResponse.init)) |> req.future
-    }
 }
 
-func verify() -> (Request) -> AnyResponse {
-    return { req in
-        return "loaderio-95e2de71ba5cfa095645d825903bc632" |> AnyResponse.init
-    }
+func verify(req: Request) -> Future<AnyResponse> {
+    return "loaderio-95e2de71ba5cfa095645d825903bc632"
+            |> AnyResponse.init
+            |> req.future
 }
 
 ///// Post req
-//func update() -> (Request) -> AnyResponse {
-//    return { req in
-//        return (req.body >>- utf8String <^> AnyResponse.init) ?? .error
-//    }
-//}
-//
-///// Post req
-//func addCar() -> (Request) -> AnyResponse {
-//    return { req in
-//        return (req.body >>- decode(Car.self) <^> AnyResponse.init) ?? .error
-//    }
-//}
-//
+func update(req: Request) -> Future<AnyResponse> {
+    return req.body <^> utf8String <^> AnyResponse.init
+}
+
+/// Post req
+func addCar(req: Request) -> Future<AnyResponse> {
+    return (req.body <^> decode(Car.self) <^> AnyResponse.init) 
+}
 
 
+//enum Sitemap {
+//
+//    case usersRoute
+//
+//
+//    var route: (Request) -> Future<AnyResponse>? {
+//        switch self {
+//        case .usersRoute:
+//            return  curry(users) <^> (path("users") *> string) <*> int |> get
+//        }
+//    }
+//
+//}

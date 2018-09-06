@@ -29,3 +29,9 @@ public func pure<A>(_ a: A) -> Route<A> {
         return (a, stream)
     }
 }
+
+public func lift<A, B>(_ f: @escaping (A) -> B) -> () -> (A) -> B {
+    return { 
+        return f
+    }
+}
