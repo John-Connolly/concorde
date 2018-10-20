@@ -16,16 +16,13 @@ struct Car: Codable {
 let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
 let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 
-
-let type = (hello |> lift) |> pure
-
 let siteMap = [   //cars/20
     curry(users) <^> (path("users") *> string) <*> int |> get, //users/john/234
     curry(cars) <^> (path("cars") *> UInt) |> get,
-    pure(lift(hello)) <*> (path("hello") *> end) |> get,
-    pure(lift(verify)) <*> (path(verifyToken) *> end) |> get,
-    pure(lift(update)) <*> (path("post") *> end) |> post,
-    pure(lift(addCar)) <*> (path("addCar") *> end) |> post,
+    pure(unzurry(hello)) <*> (path("hello") *> end) |> get,
+    pure(unzurry(verify)) <*> (path(verifyToken) *> end) |> get,
+    pure(unzurry(update)) <*> (path("post") *> end) |> post,
+    pure(unzurry(addCar)) <*> (path("addCar") *> end) |> post,
     pure(csvStream) <*> (path("csv") *> end) |> post,
     pure(addItem) <*> (path("addItem") *> end) |> post,
     pure(csvStream) <*> (path("csv") *> end) |> post,
@@ -41,9 +38,12 @@ func hello(req: Request) -> Future<AnyResponse> {
 }
 
 func cars(amount: UInt, req: Request) -> Future<AnyResponse> {
-    return (amount < 500_000 ? (0...amount).map { n in
-        return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
-        } |> AnyResponse.init : ("To many cars" |> AnyResponse.init)) |> req.future
+    return (amount < 500_000
+        ? (0...amount)
+            .map { n in
+                return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
+            } |> AnyResponse.init
+        : ("To many cars" |> AnyResponse.init)) |> req.future
 }
 
 func verify(req: Request) -> Future<AnyResponse> {

@@ -9,19 +9,10 @@ import Foundation
 import concorde
 
 struct TodoItem: Codable {
-    let id: String
     let contents: String
     let title: String
-
-    init(contents: String, title: String) {
-        self.contents = contents
-        self.title = title
-        self.id = UUID().uuidString.prefix(10) |> String.init
-    }
 }
 
-
-let db = KeyValueStore<String, TodoItem>()
 
 /// Post req
 func addItem() -> (Request) -> Future<AnyResponse> {
@@ -44,10 +35,3 @@ func csvStream() -> (Request) -> Future<AnyResponse> {
         return promise.futureResult
     }
 }
-
-func allTodoItems() -> (Request) -> AnyResponse {
-    return { req in
-        return db.all() |> AnyResponse.init
-    }
-}
-

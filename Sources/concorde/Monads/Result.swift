@@ -10,6 +10,7 @@ import Foundation
 enum Result<T> {
     case Successful(T)
     case Failure(Error)
+    
     init(_ f: () throws -> T) {
         do {
             self = .Successful(try f())

@@ -7,6 +7,10 @@
 
 import Foundation
 
+public func curry<A,B>(_ f: @escaping (A) -> B) -> (A) -> B {
+    return f
+}
+
 public func curry<A,B,C>(_ f: @escaping (A, B) -> C) -> (A) -> (B) -> C {
     return { a in return { b in f(a,b) } }
 }

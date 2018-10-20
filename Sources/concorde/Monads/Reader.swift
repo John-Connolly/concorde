@@ -26,9 +26,3 @@ public struct Reader<E, A> {
         }
     }
 }
-
-/// Applicative
-infix operator <*>: MonadicPrecedenceLeft
-public func <*> <E, A>(f: Reader<E, A>, a: E) -> A {
-    return f.g(a)
-}
