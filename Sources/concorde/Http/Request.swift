@@ -35,7 +35,7 @@ public final class Request {
     /// Reads the entire body into memory then returns it.
     public var body: Future<Data> {
         let promise: Promise<Data> = self.promise()
-        stream.output(to: BodySink { data in
+        stream.connect(to: BodySink { data in
             promise.succeed(result: data)
         })
         return promise.futureResult

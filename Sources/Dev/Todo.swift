@@ -15,23 +15,18 @@ struct TodoItem: Codable {
 
 
 /// Post req
-func addItem() -> (Request) -> Future<AnyResponse> {
-    return { req in
-        return req.body
-            <^> decode(TodoItem.self)
-            <^> AnyResponse.init
-    }
+func addItem(req: Request) -> Future<Response> {
+    return req.body
+        <^> decode(TodoItem.self)
+        <^> Response.init
 }
 
-
-func csvStream() -> (Request) -> Future<AnyResponse> {
-    return { req in
-        let promise: Promise<AnyResponse> = req.promise()
-        let csvStream = CSVStream()
-        req.stream.output(to: csvStream)
-        csvStream.done = {
-            promise.succeed(result: "Hello" |> AnyResponse.init)
-        }
-        return promise.futureResult
+func csvStream(req: Request) -> Future<Response> {
+    let promise: Promise<Response> = req.promise()
+    let csvStream = CSVStream()
+    req.stream.connect(to: csvStream)
+    csvStream.done = {
+        promise.succeed(result: "Hello" |> Response.init)
     }
+    return promise.futureResult
 }

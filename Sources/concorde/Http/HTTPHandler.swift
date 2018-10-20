@@ -12,18 +12,15 @@ import NIOHTTP1
 final class HTTPHandler: ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
-    let router: (Request, (Future<AnyResponse>) -> ()) -> ()
+    let router: (Request, (Future<Response>) -> ()) -> ()
 
     var state = ServerState.idle
 
-    init(with router: @escaping (Request, (Future<AnyResponse>) -> ()) -> ()) {
+    init(with router: @escaping (Request, (Future<Response>) -> ()) -> ()) {
         self.router = router
     }
 
     func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-//        ctx.read()
-//        ctx.channel.read()
-
         let serverRequestPart = unwrapInboundIn(data)
         switch serverRequestPart {
         case .head(let header):
@@ -40,25 +37,25 @@ final class HTTPHandler: ChannelInboundHandler {
             switch state {
             case .idle, .sendingResponse: break
             case .waitingForRequestBody(_,let request):
-                request.stream.input(.input(body))
+                request.stream.yeild(.input(body))
             }
         case .end:
             switch state {
             case .idle, .sendingResponse: break
             case .waitingForRequestBody(_,let request): ()
-                request.stream.input(.end)
+                request.stream.yeild(.complete)
             state.done()
             }
         }
     }
 
-    func write(_ ctx: ChannelHandlerContext) -> (Future<AnyResponse>) -> () {
+    func write(_ ctx: ChannelHandlerContext) -> (Future<Response>) -> () {
         return { response in
             _ = response.map { resp in
                 ctx.write(self.wrapOutboundOut(.head(self.head(resp))), promise: nil)
                 var buffer = ctx.channel.allocator.buffer(capacity: resp.data.count)
                 buffer.write(bytes: resp.data)
-                self.writeAndflush(buffer: buffer, ctx: ctx)
+                self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
             }
         }
     }
@@ -68,7 +65,7 @@ final class HTTPHandler: ChannelInboundHandler {
         ctx.writeAndFlush(wrapOutboundOut(.end(nil)), promise: nil)
     }
 
-    private func head(_ response: AnyResponse) -> HTTPResponseHead {
+    private func head(_ response: Response) -> HTTPResponseHead {
         var head = HTTPResponseHead(version: .init(major: 1, minor: 1), status: response.status, headers: HTTPHeaders())
         head.headers.add(name: "Content-Type", value: response.contentType.rawValue)
         head.headers.add(name: "Content-Length", value: response.data.count |> String.init)

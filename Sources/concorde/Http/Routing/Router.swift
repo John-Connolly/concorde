@@ -12,7 +12,7 @@ import NIOHTTP1
 public let get = register(method: .GET)
 public let post = register(method: .POST)
 
-public func router(register routes: [(Request) -> (Future<AnyResponse>?)]) -> (Request, (Future<AnyResponse>) -> ()) -> () {
+public func router(register routes: [(Request) -> (Future<Response>?)]) -> (Request, (Future<Response>) -> ()) -> () {
     return { request, responder in
         for route in routes {
             guard let resp = route(request) else {
@@ -25,7 +25,7 @@ public func router(register routes: [(Request) -> (Future<AnyResponse>?)]) -> (R
     }
 }
 
-public func register(method: HTTPMethod) -> (Route<(Request) -> Future<AnyResponse>>) -> (Request) -> Future<AnyResponse>? {
+public func register(method: HTTPMethod) -> (Route<(Request) -> Future<Response>>) -> (Request) -> Future<Response>? {
     return { route in
         return { req in
             guard req.method == method else {

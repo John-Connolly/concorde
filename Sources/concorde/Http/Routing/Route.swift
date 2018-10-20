@@ -52,11 +52,11 @@ extension Route {
     }
 }
 
-public func prettyPrint(_ route: Route<(Request) -> Future<AnyResponse>>) -> String {
+public func prettyPrint(_ route: Route<(Request) -> Future<Response>>) -> String {
     return route.uriFormat
 }
 
-public func prettyPrint(_ routes: [Route<(Request) -> Future<AnyResponse>>]) -> [String] {
+public func prettyPrint(_ routes: [Route<(Request) -> Future<Response>>]) -> [String] {
     return routes.map { $0.uriFormat }
 }
 

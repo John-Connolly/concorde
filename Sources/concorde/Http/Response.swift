@@ -1,5 +1,5 @@
 //
-//  AnyResponse.swift
+//  Response.swift
 //  concorde
 //
 //  Created by John Connolly on 2018-06-03.
@@ -8,24 +8,24 @@
 import Foundation
 import NIOHTTP1
 
-public struct AnyResponse {
-    let contentType: MimeType
-    var status: HTTPResponseStatus = .ok
+public struct Response {
+    public let contentType: MimeType
+    public var status: HTTPResponseStatus = .ok
     let data: Data
 
-    public static var error: AnyResponse {
+    public static var error: Response {
         return .init(contentType: .plain,
                      status: .badRequest,
                      data: "Bad request".data(using: .utf8) ?? Data())
     }
 
-    public static var notFound: AnyResponse {
+    public static var notFound: Response {
         return .init(item: "Not Found",
                      status: .notFound)
     }
 }
 
-public extension AnyResponse {
+public extension Response {
 
     public init<T: Encodable>(_ item: T) {
         guard let data = try? JSONEncoder().encode(item) else {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MimeType: String {
+public enum MimeType: String {
     case json = "application/json"
     case plain = "text/plain"
 }
