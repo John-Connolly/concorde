@@ -9,11 +9,19 @@ import Foundation
 import Redis
 
 let preflightCheck: [(EventLoopGroup) -> Any] = [
-    conn,
+    redisConn,
+    psqlConn,
 ]
 
-func conn(group: EventLoopGroup) -> Future<RedisClient> {
+func redisConn(group: EventLoopGroup) -> Future<RedisClient> {
     return RedisClient.connect(on: group, onError: log)
+}
+
+import PostgreSQL
+
+func psqlConn(group: EventLoopGroup) -> Future<PostgreSQLConnection> {
+    let config = PostgreSQLDatabaseConfig(hostname: "localhost", username: "johnconnolly")
+    return PostgreSQLDatabase(config: config).newConnection(on: group)
 }
 
 func log(_ err: Error) {

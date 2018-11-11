@@ -10,9 +10,12 @@ import NIO
 
 public struct Configuration {
     let port: Int
+
     let resources: [(EventLoopGroup) -> Any]
+
     public init(port: Int, resources: [(EventLoopGroup) -> Any]) {
         self.port = port
         self.resources = resources
     }
+
 }

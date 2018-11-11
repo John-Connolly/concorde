@@ -24,7 +24,8 @@ let siteMap = [
     pure(unzurry(verify)) <*> (path(verifyToken) *> end) |> get,
     pure(unzurry(update)) <*> (path("post") *> end) |> post,
     curry(sendNums) <^> (path("nums") *> UInt) |> get,
-    curry(page) <^> (path("welcome") *> string) |> get
+    curry(page) <^> (path("welcome") *> string) |> get,
+    pure(unzurry(signUp)) <*> (path("register") *> end) |> post,
 ]
 
 func users(name: String, id: Int, req: Request) -> Future<Response> {
