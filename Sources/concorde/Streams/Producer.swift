@@ -11,8 +11,12 @@ import Foundation
 public typealias DuplexStream = Consumer & Producer
 
 public protocol Producer: class {
+
     associatedtype OutputValue
+
     func connect<S>(to inputStream: S) where S : Consumer, S.InputValue == OutputValue
+
     var yeild: ((StreamInput<OutputValue>) -> ())? { get set }
+
     func yeild(_ value: StreamInput<OutputValue>)
 }

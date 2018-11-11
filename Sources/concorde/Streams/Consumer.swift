@@ -14,6 +14,8 @@ public enum StreamInput<Value> {
 }
 
 public protocol Consumer: class {
+
     associatedtype InputValue
+
     func await(_ value: StreamInput<InputValue>)
 }

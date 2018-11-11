@@ -14,8 +14,8 @@ public typealias Promise = EventLoopPromise
 
 extension Future {
 
-//    static func wrap<T>(f: @escaping  () -> T) -> Future<T> {
-////        Future.ini
+//    static func wrap<T: ResponseRepresentable>(f: @escaping  () -> T) -> Future<T> {
+//        Future.
 //    }
 
 }

@@ -50,12 +50,19 @@ public extension Response {
 }
 
 protocol ResponseRepresentable {
-    var data: Data { get }
+    var resp: Response { get }
 }
 
-//extension String:  {
-//
-//    func data() {
-//
-//    }
-//}
+extension ResponseRepresentable where Self: Codable {
+
+    var resp: Response {
+        return Response(self)
+    }
+}
+
+extension String: ResponseRepresentable {
+
+    var resp: Response {
+        return Response(self)
+    }
+}
