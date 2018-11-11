@@ -66,8 +66,6 @@ func sendNums(n: UInt, req: Request) -> Future<Response> {
     }
 }
 
-
-
 func testRoute() -> Resp<String> {
     return impure("Hello!")
 }

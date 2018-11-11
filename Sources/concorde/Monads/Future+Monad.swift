@@ -15,11 +15,3 @@ public func >>- <A, B>(a: Future<A>, f: @escaping (A) -> Future<B>) -> Future<B>
         return f(value)
     }
 }
-
-infix operator >=>: MonadicPrecedenceLeft
-
-public func >=> <A, B, C>(f: @escaping (A) -> Future<B>, g: @escaping (B) -> Future<C>) -> (A) -> Future<C> {
-    return { a in
-        return f(a).then { g($0) }
-    }
-}

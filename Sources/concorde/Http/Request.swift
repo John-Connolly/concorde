@@ -32,6 +32,10 @@ public struct Request {
         return eventLoop.newPromise()
     }
 
+    public func wrap(f: () -> ResponseRepresentable) -> Future<Response> {
+        return future(f().resp)
+    }
+
     /// Reads the entire body into memory then returns it.
     public var body: Future<Data> {
         let promise: Promise<Data> = self.promise()

@@ -9,7 +9,9 @@ import Foundation
 
 public struct Configuration {
     let port: Int
+    let resouces: [() -> Any]
     public init(port: Int) {
         self.port = port
+        self.resouces = []
     }
 }

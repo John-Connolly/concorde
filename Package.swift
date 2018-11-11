@@ -9,10 +9,11 @@ let package = Package(
         .library(name: "concorde", targets: ["concorde"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio.git", from: "1.8.0")
+        .package(url: "https://github.com/apple/swift-nio.git", from: "1.8.0"),
+        .package(url: "https://github.com/pointfreeco/swift-html.git", from: "0.1.3")
     ],
     targets: [
-        .target(name: "Dev", dependencies: ["concorde"]),
+        .target(name: "Dev", dependencies: ["concorde","Html"]),//
         .target(name: "concorde", dependencies: ["NIO", "NIOHTTP1"]),
         .testTarget(name: "concordeTests", dependencies: ["concorde"]),
     ]

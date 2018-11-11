@@ -54,13 +54,13 @@ public extension Response {
 
 }
 
-protocol ResponseRepresentable {
+public protocol ResponseRepresentable {
     var resp: Response { get }
 }
 
 extension ResponseRepresentable where Self: Codable {
 
-    var resp: Response {
+    public var resp: Response {
         return Response(self)
     }
     
@@ -68,7 +68,7 @@ extension ResponseRepresentable where Self: Codable {
 
 extension String: ResponseRepresentable {
 
-    var resp: Response {
+    public var resp: Response {
         return Response(self)
     }
 }
