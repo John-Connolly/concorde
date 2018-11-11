@@ -41,6 +41,11 @@ public extension Response {
         self.contentType = .plain
     }
 
+    public init(item: String, type: MimeType) {
+        self.data = item.data(using: .utf8) ?? Data()
+        self.contentType = type
+    }
+
     public init(item: String, status: HTTPResponseStatus) {
         self.data = item.data(using: .utf8) ?? Data()
         self.contentType = .plain

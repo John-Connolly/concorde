@@ -30,15 +30,11 @@ private func create(router: @escaping (Request, (Future<Response>) -> ()) -> ())
     return bootstrap
 }
 
+// Fix this!!
 private func start(_ bootstrap: ServerBootstrap) -> Reader<Configuration, Never> {
     return Reader<Configuration, Never> { config in
-        Result(bootstrap.bind(host: "localhost", port: config.port).wait)
-            .flatMap { channel -> Result<Void> in
-                print("Server running on:", channel.localAddress ?? "")
-                return Result(channel.closeFuture.wait)
-            }.onError { error in
-                fatalError("Could not start Sever:\(error)")
-            }
+        let channel = try! bootstrap.bind(host: "localhost", port: config.port).wait()
+        try! channel.closeFuture.wait()
         exit(0)
     }
 }

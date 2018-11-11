@@ -10,4 +10,5 @@ import Foundation
 public enum MimeType: String {
     case json = "application/json"
     case plain = "text/plain"
+    case html = "text/html"
 }
