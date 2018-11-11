@@ -9,10 +9,8 @@ let siteMap = [
     curry(users) <^> (path("users") *> string) <*> int |> get,
 ]
 
-func users(name: String, id: Int) -> (Request) -> AnyResponse {
-    return { request in
-        return "hello \(name)! your id is: \(id)" |> AnyResponse.init(item:)
-    }
+func users(name: String, id: Int, req: Request) -> AnyResponse {
+    return "hello \(name)! your id is: \(id)" |> AnyResponse.init(item:)
 }
 
 

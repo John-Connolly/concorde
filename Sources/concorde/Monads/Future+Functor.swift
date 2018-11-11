@@ -8,9 +8,6 @@
 import Foundation
 import NIO
 
-public typealias Future = EventLoopFuture
-public typealias Promise = EventLoopPromise
-
 infix operator <^>: MonadicPrecedenceLeft
 
 public func <^> <A, B>(a: Future<A>, f: @escaping (A) -> B) -> Future<B> {

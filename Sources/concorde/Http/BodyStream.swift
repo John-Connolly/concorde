@@ -55,10 +55,6 @@ public final class CSVStream: DuplexStream {
         switch value {
         case .input(_):
             print("Input!")
-//            guard let bytes = input.getBytes(at: 0, length: input.readableBytes) else {
-//                return
-//            }
-//            print((bytes |> (Data.init >>> utf8String)) ?? "")
         case .complete:
             done?()
         case .error(_): ()
@@ -68,8 +64,6 @@ public final class CSVStream: DuplexStream {
     }
 
 }
-
-
 
 public final class BodySink: Consumer {
 

@@ -48,3 +48,14 @@ public extension Response {
     }
 
 }
+
+protocol ResponseRepresentable {
+    var data: Data { get }
+}
+
+//extension String:  {
+//
+//    func data() {
+//
+//    }
+//}

@@ -8,35 +8,35 @@
 import Foundation
 
 enum Result<T> {
-    case Successful(T)
-    case Failure(Error)
+    case success(T)
+    case failure(Error)
     
     init(_ f: () throws -> T) {
         do {
-            self = .Successful(try f())
+            self = .success(try f())
         } catch {
-            self = .Failure(error)
+            self = .failure(error)
         }
     }
 
     func map<U>(_ f: (T) -> U) -> Result<U> {
         switch self {
-        case .Successful(let value): return .Successful(f(value))
-        case .Failure(let error): return .Failure(error)
+        case .success(let value): return .success(f(value))
+        case .failure(let error): return .failure(error)
         }
     }
     
     func flatMap<U>(_ f: (T) -> Result<U>) -> Result<U> {
         switch self {
-        case .Successful(let value): return f(value)
-        case .Failure(let error): return .Failure(error)
+        case .success(let value): return f(value)
+        case .failure(let error): return .failure(error)
         }
     }
 
     func onError(_ f: (Error) -> ()) {
         switch self {
-        case .Successful: return
-        case .Failure(let error): return f(error)
+        case .success: return
+        case .failure(let error): return f(error)
         }
     }
 }

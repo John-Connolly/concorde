@@ -16,8 +16,7 @@ struct Car: Codable {
 let utf8String = .utf8 |> flip(curry(String.init(data:encoding:)))
 let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 
-
-let siteMap = [   //cars/20
+let siteMap = [
     curry(users) <^> (path("users") *> string) <*> int |> get, //users/john/234
     curry(cars) <^> (path("cars") *> UInt) |> get,
     pure(unzurry(hello)) <*> (path("hello") *> end) |> get,
@@ -26,7 +25,7 @@ let siteMap = [   //cars/20
     pure(unzurry(addCar)) <*> (path("addCar") *> end) |> post,
     pure(unzurry(csvStream)) <*> (path("csv") *> end) |> post,
     pure(unzurry(addItem)) <*> (path("addItem") *> end) |> post,
-//    pure(allTodoItems) <*> (path("allTodos") *> end) |> get,
+    curry(sendNums) <^> (path("nums") *> UInt) |> get
 ]
 
 func users(name: String, id: Int, req: Request) -> Future<Response> {
@@ -65,20 +64,21 @@ func addCar(req: Request) -> Future<Response> {
     csvStream.done = {
         promise.succeed(result: Response.init("Hello"))
     }
-    return promise.futureResult //(req.body <^> decode(Car.self) <^> Response.init)
+    return promise.futureResult
+}
+
+struct Num: Codable {
+    let n: UInt
+}
+
+func sendNums(n: UInt, req: Request) -> Future<Response> {
+    return req.future {
+        (0...n).map(Num.init) |> Response.init
+    }
 }
 
 
-//enum Sitemap {
-//
-//    case usersRoute
-//
-//
-//    var route: (Request) -> Future<AnyResponse>? {
-//        switch self {
-//        case .usersRoute:
-//            return  curry(users) <^> (path("users") *> string) <*> int |> get
-//        }
-//    }
-//
-//}
+
+func testRoute() -> Resp<String> {
+    return impure("Hello!")
+}

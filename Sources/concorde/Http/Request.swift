@@ -9,7 +9,7 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-public final class Request {
+public struct Request {
     public let head: HTTPRequestHead
     public let eventLoop: EventLoop
 
@@ -39,6 +39,10 @@ public final class Request {
             promise.succeed(result: data)
         })
         return promise.futureResult
+    }
+
+    public func future<T>(_ f: @escaping () -> T) -> Future<T> {
+        return eventLoop.newSucceededFuture(result: f())
     }
 
 }

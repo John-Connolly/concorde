@@ -31,9 +31,10 @@ extension Route {
 extension Route {
 
     public func run(_ string: String) -> (A, Stream)? {
-        let url = URL(string: string)
-        let components = url?.pathComponents ?? []
-        return parse(components.dropFirst())
+        guard let url = URL(string: string) else { return nil }
+        let queryString = url.query?.components(separatedBy: "&") ?? []
+        let combined = url.pathComponents + queryString
+        return parse(combined.dropFirst())
     }
 
     public func map<T>(_ transform: @escaping (A) -> T) -> Route<T> {
@@ -135,6 +136,13 @@ public let UInt32: Route<UInt32> = Route(uriFormat: ":UInt32") { input in
 public let UInt64: Route<UInt64> = Route(uriFormat: ":UInt64") { input in
     guard let uint = input.first.flatMap(Swift.UInt64.init) else { return nil }
     return (uint, input.dropFirst())
+}
+
+func query(_ param: String) -> Route<String> {
+    return Route(uriFormat: "/" + "?\(param)=") { input in
+        guard let path = input.first, path == param else { return nil }
+        return (path, input.dropFirst())
+    }
 }
 
 
