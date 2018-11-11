@@ -10,10 +10,11 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git", from: "1.8.0"),
-        .package(url: "https://github.com/pointfreeco/swift-html.git", from: "0.1.3")
+        .package(url: "https://github.com/pointfreeco/swift-html.git", from: "0.1.3"),
+        .package(url: "https://github.com/vapor/redis.git", from: "3.0.0"),
     ],
     targets: [
-        .target(name: "Dev", dependencies: ["concorde","Html"]),//
+        .target(name: "Dev", dependencies: ["concorde","Html", "Redis"]),//
         .target(name: "concorde", dependencies: ["NIO", "NIOHTTP1"]),
         .testTarget(name: "concordeTests", dependencies: ["concorde"]),
     ]

@@ -9,15 +9,17 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-public struct Request {
+public final class Request {
     public let head: HTTPRequestHead
     public let eventLoop: EventLoop
+    let cache: ThreadCache
 
     public let stream = BodyStream()
 
-    public init(_ eventLoop: EventLoop, head: HTTPRequestHead) {
+    public init(_ eventLoop: EventLoop, head: HTTPRequestHead, cache: ThreadCache) {
         self.head = head
         self.eventLoop = eventLoop
+        self.cache = cache
     }
 
     public var method: HTTPMethod {
@@ -34,6 +36,10 @@ public struct Request {
 
     public func wrap(f: () -> ResponseRepresentable) -> Future<Response> {
         return future(f().resp)
+    }
+
+    public func cached<T>(_ type: T.Type) -> EventLoopFuture<T> {
+        return cache.items.compactMap { $0 as? EventLoopFuture<T> }.first!
     }
 
     /// Reads the entire body into memory then returns it.

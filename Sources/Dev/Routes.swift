@@ -19,6 +19,7 @@ let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 let siteMap = [
     curry(users) <^> (path("users") *> string) <*> int |> get, //users/john/234
 //    curry(cars) <^> (path("cars") *> UInt) |> get,
+    pure(unzurry(redisRoute)) <*> (path("redis") *> end) |> get,
     pure(unzurry(hello)) <*> (path("hello") *> end) |> get,
     pure(unzurry(verify)) <*> (path(verifyToken) *> end) |> get,
     pure(unzurry(update)) <*> (path("post") *> end) |> post,

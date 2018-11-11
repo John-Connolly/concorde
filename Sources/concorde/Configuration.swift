@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import NIO
 
 public struct Configuration {
     let port: Int
-    let resouces: [() -> Any]
-    public init(port: Int) {
+    let resources: [(EventLoopGroup) -> Any]
+    public init(port: Int, resources: [(EventLoopGroup) -> Any]) {
         self.port = port
-        self.resouces = []
+        self.resources = resources
     }
 }

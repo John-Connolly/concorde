@@ -4,9 +4,24 @@ import NIOHTTP1
 
 public let concorde = create >>> start
 
-private let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
+let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 
-private func create(router: @escaping (Request, (Future<Response>) -> ()) -> ()) -> ServerBootstrap {
+private func create(router: @escaping (Request, (Future<Response>) -> ()) -> (),
+                    config: Configuration) -> ServerBootstrap {
+
+    let variable = ThreadSpecificVariable<ThreadCache>()
+
+    for _ in 0..<System.coreCount {
+        let loop = group.next()
+
+        loop.submit {
+            let cons = config.resources.map { $0(loop) }
+            variable.currentValue = ThreadCache(items: cons)
+            }.whenFailure { error in
+                fatalError("Could not boot eventloop: \(error)")
+        }
+    }
+
     // Specify backlog and enable SO_REUSEADDR for the server itself
     let bootstrap = ServerBootstrap(group: group)
     .serverChannelOption(ChannelOptions.backlog, value: 256)
@@ -17,7 +32,7 @@ private func create(router: @escaping (Request, (Future<Response>) -> ()) -> ())
             // Ensure we don't read faster then we can write by adding the BackPressureHandler into the pipeline.
             channel.pipeline.configureHTTPServerPipeline().then { _ in
                 channel.pipeline.add(handler: BackPressureHandler()).then { _ in
-                    channel.pipeline.add(handler: HTTPHandler(with: router))
+                    channel.pipeline.add(handler: HTTPHandler(with: router, and: variable))
                 }
             }
         }
@@ -36,5 +51,19 @@ private func start(_ bootstrap: ServerBootstrap) -> Reader<Configuration, Never>
         let channel = try! bootstrap.bind(host: "localhost", port: config.port).wait()
         try! channel.closeFuture.wait()
         exit(0)
+    }
+}
+
+
+func createCaches(eventLoop: EventLoop) {
+    let variable = ThreadSpecificVariable<ThreadCache>()
+    variable.currentValue = ThreadCache(items: [])
+}
+
+public final class ThreadCache {
+    let items: [Any]
+
+    init(items: [Any]) {
+        self.items = items
     }
 }

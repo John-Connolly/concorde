@@ -15,22 +15,26 @@ final class HTTPHandler: ChannelInboundHandler {
     let router: (Request, (Future<Response>) -> ()) -> ()
 
     var state = ServerState.idle
+    let threadVariable: ThreadSpecificVariable<ThreadCache>
 
-    init(with router: @escaping (Request, (Future<Response>) -> ()) -> ()) {
+    init(with router: @escaping (Request, (Future<Response>) -> ()) -> (),
+         and threadVariable: ThreadSpecificVariable<ThreadCache>) {
         self.router = router
+        self.threadVariable = threadVariable
     }
 
     func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let serverRequestPart = unwrapInboundIn(data)
         switch serverRequestPart {
         case .head(let header):
+            let cache = threadVariable.currentValue!
             if header.method == .GET {
-                router(Request(ctx.eventLoop, head: header), write(ctx))
+                router(Request(ctx.eventLoop, head: header, cache: cache), write(ctx))
                 state.recievedGetRequest()
                 return
             }
 
-            let request = Request(ctx.eventLoop, head: header)
+            let request = Request(ctx.eventLoop, head: header, cache: cache)
             state.receivedHead(header, request: request) // Fix body
             router(request, write(ctx))
         case .body(let body):
@@ -68,7 +72,7 @@ final class HTTPHandler: ChannelInboundHandler {
     private func head(_ response: Response) -> HTTPResponseHead {
         var head = HTTPResponseHead(version: .init(major: 1, minor: 1), status: response.status, headers: HTTPHeaders())
         head.headers.add(name: "Content-Type", value: response.contentType.rawValue)
-        head.headers.add(name: "Content-Length", value: response.data.count |> String.init)
+        head.headers.add(name: "Content-Length", value: String(response.data.count))
         return head
     }
 
