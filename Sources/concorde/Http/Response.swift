@@ -23,6 +23,12 @@ public struct Response {
         return .init(item: "Not Found",
                      status: .notFound)
     }
+
+    public static func error(_ error: Error) -> Response {
+        return  .init(contentType: .plain,
+                      status: .badRequest,
+                      data: error.localizedDescription.data(using: .utf8) ?? Data())
+    }
 }
 
 public extension Response {

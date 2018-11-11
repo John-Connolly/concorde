@@ -55,13 +55,20 @@ final class HTTPHandler: ChannelInboundHandler {
 
     func write(_ ctx: ChannelHandlerContext) -> (Future<Response>) -> () {
         return { response in
-            _ = response.map { resp in
-                ctx.write(self.wrapOutboundOut(.head(self.head(resp))), promise: nil)
-                var buffer = ctx.channel.allocator.buffer(capacity: resp.data.count)
-                buffer.write(bytes: resp.data)
-                self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
+            response.map { resp in
+                self.write(resp, on: ctx)
+            }.whenFailure { error in
+                let resp = Response.error(error)
+                self.write(resp, on: ctx)
             }
         }
+    }
+
+    private func write(_ response: Response, on ctx: ChannelHandlerContext) {
+        ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: nil)
+        var buffer = ctx.channel.allocator.buffer(capacity: response.data.count)
+        buffer.write(bytes: response.data)
+        self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
     }
 
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {

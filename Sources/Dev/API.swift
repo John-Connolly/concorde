@@ -44,17 +44,28 @@ func converting<T: Codable>(_ item: T) -> Response {
     return Response(item)
 }
 
+extension String: Error { }
 func signUp(req: Request) -> Future<Response> {
     let user = req.body <^> decode(User.self)
     let t = psql(with: req).flatMap { conn in
-        user.flatMap { user in
-            add(with: conn, user: user!)
+        user.flatMap { user -> Future<[User]>  in
+            if let user = user {
+                return add(with: conn, user: user)
+            } else {
+                 throw "error"
+            }
         }
     }
     return t <^> converting
 }
 
 
-func items(req: Request, userId: Int) {
-
+func selectItems() -> String {
+    return """
+    SELECT * items WHERE userid = $1
+    """
 }
+
+//func items(req: Request, userId: Int) {
+//    psql(with: req)
+//}
