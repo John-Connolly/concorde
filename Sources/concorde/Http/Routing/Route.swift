@@ -58,7 +58,7 @@ public func prettyPrint(_ route: Route<(Request) -> Future<Response>>) -> String
 }
 
 public func prettyPrint(_ routes: [Route<(Request) -> Future<Response>>]) -> [String] {
-    return routes.map { $0.uriFormat }
+    return routes.map(prettyPrint)
 }
 
 public func path(_ matching: String) -> Route<String> {

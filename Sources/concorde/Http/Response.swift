@@ -58,6 +58,7 @@ extension ResponseRepresentable where Self: Codable {
     var resp: Response {
         return Response(self)
     }
+    
 }
 
 extension String: ResponseRepresentable {

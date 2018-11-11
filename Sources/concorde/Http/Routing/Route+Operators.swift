@@ -7,12 +7,9 @@
 
 import Foundation
 
-
-
 infix operator <*>: ParserPrecedence
 infix operator <^>: ParserPrecedence
 infix operator *>: ParserPrecedence
-
 
 public func *> <A, B>(lhs: Route<A>, rhs: Route<B>) -> Route<B> {
     return const(id) <^> lhs <*> rhs
