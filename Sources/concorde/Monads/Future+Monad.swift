@@ -27,3 +27,14 @@ func flatMapTT<A,B>(f: @escaping (A) -> Future<B>) -> (Future<Optional<A>>) -> F
         }
     }
 }
+
+public func flatten<T>(_ future: Future<Result<T>>) -> Future<T> {
+    return future.then { result -> Future<T> in
+        switch result {
+        case .success(let value):
+            return future.eventLoop.newSucceededFuture(result: value)
+        case .failure(let error):
+            return future.eventLoop.newFailedFuture(error: error)
+        }
+    }
+}

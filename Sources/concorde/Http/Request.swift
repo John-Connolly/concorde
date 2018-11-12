@@ -57,8 +57,10 @@ public final class Request {
 
 }
 
-public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> T? {
+public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T> {
     return { data in
-        return try? JSONDecoder().decode(type, from: data)
+        return Result {
+            try JSONDecoder().decode(type, from: data)
+        }
     }
 }

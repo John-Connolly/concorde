@@ -8,10 +8,4 @@
 import Foundation
 import NIO
 
-//final class Context {
-//
-//    let req: Request
-//    let eventLoop: EventLoop
-//
-//
-//}
+

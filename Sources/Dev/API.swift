@@ -60,17 +60,8 @@ extension String: LocalizedError {
 }
 
 func signUp(req: Request) -> Future<Response> {
-    let user = req.body <^> decode(User.self)
-    let t = psql(with: req).flatMap { conn in
-        user.flatMap { user -> Future<[User]>  in
-            if let user = user {
-                return add(with: conn, user: user)
-            } else {
-                 throw "error"
-            }
-        }
-    }
-    return t <^> converting
+    let user = (req.body <^> decode(User.self)) |> flatten
+    return zip(psql(with: req), user).flatMap(add) <^> converting
 }
 
 func selectItems() -> String {
