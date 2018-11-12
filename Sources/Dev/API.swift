@@ -16,9 +16,14 @@ struct User: Codable {
     let password: String
 }
 
+struct SignedInUser {
+    let id: Int?
+    let token: String
+}
+
 struct Item: Codable {
     let id: Int?
-    let userId: Int
+    let userid: Int
     let title: String
     let date: Int
     let content: String
@@ -29,7 +34,11 @@ func psql(with req: Request) -> Future<PostgreSQLConnection> {
 }
 
 func add(with conn: PostgreSQLConnection, user: User) -> Future<[User]> {
-    return conn.raw(insertUser()).bind(user.username).bind(user.password).all(decoding: User.self)
+    return conn
+        .raw(insertUser())
+        .bind(user.username)
+        .bind(user.password)
+        .all(decoding: User.self)
 }
 
 func insertUser() -> String {
@@ -44,7 +53,12 @@ func converting<T: Codable>(_ item: T) -> Response {
     return Response(item)
 }
 
-extension String: Error { }
+extension String: LocalizedError {
+    public var errorDescription: String? {
+        return self
+    }
+}
+
 func signUp(req: Request) -> Future<Response> {
     let user = req.body <^> decode(User.self)
     let t = psql(with: req).flatMap { conn in
@@ -59,13 +73,18 @@ func signUp(req: Request) -> Future<Response> {
     return t <^> converting
 }
 
-
 func selectItems() -> String {
     return """
-    SELECT * items WHERE userid = $1
+        SELECT * FROM items WHERE userid = $1
     """
 }
 
-//func items(req: Request, userId: Int) {
-//    psql(with: req)
-//}
+func getItems(userId: Int) -> (PostgreSQLConnection) -> Future<[Item]> {
+    return { conn in
+        conn.raw(selectItems()).bind(userId).all(decoding: Item.self)
+    }
+}
+
+func items(userId: Int, req: Request) -> Future<Response> {
+    return (psql(with: req) >>- getItems(userId: userId)) <^> converting
+}

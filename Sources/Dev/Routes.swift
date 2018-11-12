@@ -26,6 +26,7 @@ let siteMap = [
     curry(sendNums) <^> (path("nums") *> UInt) |> get,
     curry(page) <^> (path("welcome") *> string) |> get,
     pure(unzurry(signUp)) <*> (path("register") *> end) |> post,
+    curry(items) <^> (path("items") *> int) |> get,
 ]
 
 func users(name: String, id: Int, req: Request) -> Future<Response> {
