@@ -18,8 +18,6 @@ let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 
 let siteMap = [
     curry(users) <^> (path("users") *> string) <*> int |> get, //users/john/234
-//    curry(cars) <^> (path("cars") *> UInt) |> get,
-    pure(unzurry(redisRoute)) <*> (path("redis") *> end) |> get,
     pure(unzurry(hello)) <*> (path("hello") *> end) |> get,
     pure(unzurry(verify)) <*> (path(verifyToken) *> end) |> get,
     pure(unzurry(update)) <*> (path("post") *> end) |> post,
@@ -33,19 +31,6 @@ func users(name: String, id: Int, req: Request) -> Future<Response> {
     return "hello \(name)! your id is: \(id)" |> Response.init |> req.future
 }
 
-func hello(req: Request) -> Future<Response> {
-    return "hello world" |> Response.init |> req.future
-}
-
-//func cars(amount: UInt, req: Request) -> Future<Response> {
-//    return (amount < 500_000
-//        ? (0...amount)
-//            .map { n in
-//                return Car(wheels: Int(n), name: (n % 2 == 0 ? "Ford" : "GM"))
-//            } |> Response.init
-//        : ("To many cars" |> Response.init)) |> req.future
-//}
-
 func verify(req: Request) -> Future<Response> {
     return "loaderio-95e2de71ba5cfa095645d825903bc632"
             |> Response.init
@@ -56,8 +41,6 @@ func verify(req: Request) -> Future<Response> {
 func update(req: Request) -> Future<Response> {
     return req.body <^> utf8String <^> Response.init
 }
-
-
 
 struct Num: Codable {
     let n: UInt

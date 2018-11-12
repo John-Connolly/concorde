@@ -53,6 +53,7 @@ final class HTTPHandler: ChannelInboundHandler {
         }
     }
 
+
     func write(_ ctx: ChannelHandlerContext) -> (Future<Response>) -> () {
         return { response in
             response.map { resp in
@@ -72,8 +73,8 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
-        ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: nil)
-        ctx.writeAndFlush(wrapOutboundOut(.end(nil)), promise: nil)
+        ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
+        ctx.writeAndFlush(wrapOutboundOut(.end(nil)), promise: .none)
     }
 
     private func head(_ response: Response) -> HTTPResponseHead {

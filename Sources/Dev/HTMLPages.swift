@@ -26,22 +26,3 @@ func page(name: String, req: Request) -> Future<Response> {
             |> flip(curry(Response.init(item:type:)))(.html)
             |> req.future
 }
-
-
-import Redis
-
-func redis(req: Request) -> Future<RedisClient> {
-    return req.cached(RedisClient.self)
-}
-
-func redisQuery(_ client: RedisClient) -> Future<RedisData> {
-    return client.rawGet("hello")
-}
-
-let getRedis = redis >=> redisQuery
-
-func redisRoute(req: Request) -> Future<Response> {
-    return getRedis(req).map { data in
-        return Response(data.string ?? "")
-    }
-}

@@ -30,7 +30,7 @@ private func create(router: @escaping (Request, (Future<Response>) -> ()) -> (),
         // Set the handlers that are appled to the accepted Channels
         .childChannelInitializer { channel in
             // Ensure we don't read faster then we can write by adding the BackPressureHandler into the pipeline.
-            channel.pipeline.configureHTTPServerPipeline().then { _ in
+            channel.pipeline.configureHTTPServerPipeline(withPipeliningAssistance: false).then { _ in
                 channel.pipeline.add(handler: BackPressureHandler()).then { _ in
                     channel.pipeline.add(handler: HTTPHandler(with: router, and: variable))
                 }
