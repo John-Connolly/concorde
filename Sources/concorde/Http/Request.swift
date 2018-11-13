@@ -9,7 +9,7 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-public final class Request {
+public struct Request {
     public let head: HTTPRequestHead
     public let eventLoop: EventLoop
     let cache: ThreadCache
