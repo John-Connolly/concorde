@@ -66,7 +66,7 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
     private func write(_ response: Response, on ctx: ChannelHandlerContext) {
-        ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: nil)
+        ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: .none)
         var buffer = ctx.channel.allocator.buffer(capacity: response.data.count)
         buffer.write(bytes: response.data)
         self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
@@ -74,7 +74,7 @@ final class HTTPHandler: ChannelInboundHandler {
 
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
         ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
-        ctx.writeAndFlush(wrapOutboundOut(.end(nil)), promise: .none)
+        ctx.writeAndFlush(wrapOutboundOut(.end(.none)), promise: .none)
     }
 
     private func head(_ response: Response) -> HTTPResponseHead {

@@ -17,9 +17,7 @@ func redisQuery(_ client: RedisClient, id: Int) -> Future<RedisData> {
     return client.rawGet("\(id)")
 }
 
-
 func authorize(req: Request) -> Future<Response>? {
-
     return .none
 }
 

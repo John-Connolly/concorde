@@ -14,6 +14,7 @@ let wings = Configuration(port: 8080, resources: [])
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
 
+// wrk -t6 -c400 -d30s http://localhost:8080/hello
 // swift build -c release
 //.build/release/dev
 

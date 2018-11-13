@@ -17,8 +17,8 @@ private func create(router: @escaping (Request, (Future<Response>) -> ()) -> (),
         loop.submit {
             let cons = config.resources.map { $0(loop) }
             variable.currentValue = ThreadCache(items: cons)
-            }.whenFailure { error in
-                fatalError("Could not boot eventloop: \(error)")
+        }.whenFailure { error in
+            fatalError("Could not boot eventloop: \(error)")
         }
     }
 
@@ -48,22 +48,9 @@ private func create(router: @escaping (Request, (Future<Response>) -> ()) -> (),
 // Fix this!!
 private func start(_ bootstrap: ServerBootstrap) -> Reader<Configuration, Never> {
     return Reader<Configuration, Never> { config in
+        print("Listening on localhost:\(config.port)")
         let channel = try! bootstrap.bind(host: "localhost", port: config.port).wait()
         try! channel.closeFuture.wait()
         exit(0)
-    }
-}
-
-
-func createCaches(eventLoop: EventLoop) {
-    let variable = ThreadSpecificVariable<ThreadCache>()
-    variable.currentValue = ThreadCache(items: [])
-}
-
-public final class ThreadCache {
-    let items: [Any]
-
-    init(items: [Any]) {
-        self.items = items
     }
 }
