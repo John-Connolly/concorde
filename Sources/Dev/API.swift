@@ -29,8 +29,8 @@ struct Item: Codable {
     let content: String
 }
 
-func psql(with req: Request) -> Future<PostgreSQLConnection> {
-    return req.cached(PostgreSQLConnection.self)
+func psql(with conn: Conn) -> Future<PostgreSQLConnection> {
+    return conn.cached(PostgreSQLConnection.self)
 }
 
 func add(with conn: PostgreSQLConnection, user: User) -> Future<[User]> {
@@ -59,10 +59,10 @@ extension String: LocalizedError {
     }
 }
 
-func signUp(req: Request) -> Future<Response> {
-    let user = (req.body <^> decode(User.self)) |> flatten
-    return zip(psql(with: req), user).flatMap(add) <^> converting
-}
+//func signUp(conn: Conn) -> Future<Response> {
+//    let user = (conn.body <^> decode(User.self)) |> flatten
+//    return zip(psql(with: req), user).flatMap(add) <^> converting
+//}
 
 func selectItems() -> String {
     return """
@@ -76,6 +76,6 @@ func getItems(userId: Int) -> (PostgreSQLConnection) -> Future<[Item]> {
     }
 }
 
-func items(userId: Int, req: Request) -> Future<Response> {
-    return (psql(with: req) >>- getItems(userId: userId)) <^> converting
+func items(userId: Int, conn: Conn) -> Future<Response> {
+    return (psql(with: conn) >>- getItems(userId: userId)) <^> converting
 }

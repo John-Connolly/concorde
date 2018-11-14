@@ -11,7 +11,7 @@ import NIOHTTP1
 public struct Response {
     public let contentType: MimeType
     public var status: HTTPResponseStatus = .ok
-    let data: Data
+    public internal(set) var data: Data
 
     public static var error: Response {
         return .init(contentType: .plain,

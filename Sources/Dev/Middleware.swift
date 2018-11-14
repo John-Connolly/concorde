@@ -9,8 +9,8 @@ import Foundation
 import concorde
 import Redis
 
-func redis(req: Request) -> Future<RedisClient> {
-    return req.cached(RedisClient.self)
+func redis(conn: Conn) -> Future<RedisClient> {
+    return conn.cached(RedisClient.self)
 }
 
 func redisQuery(_ client: RedisClient, id: Int) -> Future<RedisData> {

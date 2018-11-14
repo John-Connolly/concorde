@@ -1,13 +1,11 @@
 import Foundation
 import concorde
 
-func hello(req: Request) -> Future<Response> {
-    return req.future(Response("hello"))
+func hello(conn: Conn) -> Future<Conn> {
+    return (write(status: .ok) >=> write(body: "Hello"))(conn)
 }
 
 let route = pure(unzurry(hello)) <*> (path("hello") *> end) |> get
-
-//print(prettyPrint(route))
 
 let flightPlan = router(register: [route])
 let wings = Configuration(port: 8080, resources: [])

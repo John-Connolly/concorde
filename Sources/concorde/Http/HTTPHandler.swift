@@ -12,12 +12,12 @@ import NIOHTTP1
 final class HTTPHandler: ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
-    let router: (Request, (Future<Response>) -> ()) -> ()
+    let router: (Conn, (Future<Conn>) -> ()) -> ()
 
     var state = ServerState.idle
     let threadVariable: ThreadSpecificVariable<ThreadCache>
 
-    init(with router: @escaping (Request, (Future<Response>) -> ()) -> (),
+    init(with router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
          and threadVariable: ThreadSpecificVariable<ThreadCache>) {
         self.router = router
         self.threadVariable = threadVariable
@@ -29,14 +29,23 @@ final class HTTPHandler: ChannelInboundHandler {
         case .head(let header):
             let cache = threadVariable.currentValue!
             if header.method == .GET {
-                router(Request(ctx.eventLoop, head: header, cache: cache), write(ctx))
+                let request = Request(head: header)
+                let conn = Conn(cache: cache,
+                                eventLoop: ctx.eventLoop,
+                                request: request,
+                                response: Response.notFound)
+                router(conn, write(ctx))
                 state.recievedGetRequest()
                 return
             }
 
-            let request = Request(ctx.eventLoop, head: header, cache: cache)
+            let request = Request(head: header)
+            let conn = Conn(cache: cache,
+                             eventLoop: ctx.eventLoop,
+                             request: request,
+                             response: Response.notFound)
             state.receivedHead(header, request: request) // Fix body
-            router(request, write(ctx))
+            router(conn, write(ctx))
         case .body(let body):
             switch state {
             case .idle, .sendingResponse: break
@@ -54,10 +63,10 @@ final class HTTPHandler: ChannelInboundHandler {
     }
 
 
-    func write(_ ctx: ChannelHandlerContext) -> (Future<Response>) -> () {
+    func write(_ ctx: ChannelHandlerContext) -> (Future<Conn>) -> () {
         return { response in
             response.map { resp in
-                self.write(resp, on: ctx)
+                self.write(resp.response, on: ctx)
             }.whenFailure { error in
                 let resp = Response.error(error)
                 self.write(resp, on: ctx)

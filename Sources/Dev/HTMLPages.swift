@@ -20,9 +20,9 @@ func generate(with name: String) -> Node {
 }
 
 
-func page(name: String, req: Request) -> Future<Response> {
+func page(name: String, conn: Conn) -> Future<Response> {
     return generate(with: name)
             |> render
             |> flip(curry(Response.init(item:type:)))(.html)
-            |> req.future
+            |> conn.future
 }

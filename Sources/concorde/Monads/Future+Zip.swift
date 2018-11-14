@@ -19,7 +19,6 @@ public func zip<A, B, C>(_ a: Future<A>,
     return  zip(zip(a, b), c).map { ($0.0, $0.1, $1) }
 }
 
-
 public func zip<A, B, C, D>(_ a: Future<A>,
                   _ b: Future<B>,
                   _ c: Future<C>,

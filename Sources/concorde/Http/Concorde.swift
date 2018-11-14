@@ -6,7 +6,7 @@ public let concorde = create >>> start
 
 let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 
-private func create(router: @escaping (Request, (Future<Response>) -> ()) -> (),
+private func create(router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
                     config: Configuration) -> ServerBootstrap {
 
     let variable = ThreadSpecificVariable<ThreadCache>()
