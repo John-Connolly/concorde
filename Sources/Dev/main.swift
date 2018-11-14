@@ -1,8 +1,17 @@
 import Foundation
 import concorde
 
+
+func authorize(_ bool: Bool) -> Middleware {
+    return { conn in
+        return bool
+            ? conn.future(conn)
+            : conn.failed(with: .custom(.unauthorized))
+    }
+}
+
 func hello(conn: Conn) -> Future<Conn> {
-    return (write(status: .ok) >=> write(body: "Hello"))(conn)
+    return (authorize(!true) >=> write(status: .ok) >=> write(body: "Hello"))(conn)
 }
 
 let route = pure(unzurry(hello)) <*> (path("hello") *> end) |> get

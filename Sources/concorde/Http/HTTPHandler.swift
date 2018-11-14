@@ -62,14 +62,22 @@ final class HTTPHandler: ChannelInboundHandler {
         }
     }
 
-
     func write(_ ctx: ChannelHandlerContext) -> (Future<Conn>) -> () {
         return { response in
             response.map { resp in
                 self.write(resp.response, on: ctx)
             }.whenFailure { error in
-                let resp = Response.error(error)
-                self.write(resp, on: ctx)
+                if let error = error as? ResponseError {
+                    switch error {
+                    case .internalServerError: () // TODO: Handle these!
+                    case .abort: ()
+                    case .custom(let response):
+                        self.write(response, on: ctx)
+                    }
+                } else {
+                    let resp = Response.error(error)
+                    self.write(resp, on: ctx)
+                }
             }
         }
     }

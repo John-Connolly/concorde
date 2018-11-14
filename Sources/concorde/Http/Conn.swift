@@ -39,12 +39,20 @@ public final class Conn {
         return future(f().resp)
     }
 
-    public func cached<T>(_ type: T.Type) -> EventLoopFuture<T> {
-        return cache.items.first(where: { $0 as? EventLoopFuture<T> != nil } ) as! EventLoopFuture<T>
+    public func cached<T>(_ type: T.Type) -> Future<T> {
+        return cache.items.first(where: { $0 as? Future<T> != nil } ) as! Future<T>
     }
 
     public func future<T>(_ f: @escaping () -> T) -> Future<T> {
         return eventLoop.newSucceededFuture(result: f())
+    }
+
+    public func failed<T>(with error: Error) -> Future<T> {
+        return eventLoop.newFailedFuture(error: error)
+    }
+
+    public func failed<T>(with error: ResponseError) -> Future<T> {
+        return eventLoop.newFailedFuture(error: error)
     }
 
 }
@@ -62,5 +70,32 @@ public func write(body: String) -> Middleware {
     return { conn in
         conn.response.data = body.data(using: .utf8) ?? Data()
         return conn.future(conn)
+    }
+}
+
+public func write<T: Codable>(body: T) -> Middleware {
+    return { conn in
+        switch encode(body) {
+        case .success(let value):
+            conn.response.data = value
+            conn.response.contentType = .json
+            return conn.future(conn)
+        case .failure(let error):
+            return conn.failed(with: error)
+        }
+    }
+}
+
+public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T> {
+    return { data in
+        return Result {
+            try JSONDecoder().decode(type, from: data)
+        }
+    }
+}
+
+public func encode<T: Encodable>(_ item: T) -> Result<Data> {
+    return Result {
+        return try JSONEncoder().encode(item)
     }
 }

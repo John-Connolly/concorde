@@ -9,7 +9,7 @@ import Foundation
 import NIOHTTP1
 
 public struct Response {
-    public let contentType: MimeType
+    public internal(set) var contentType: MimeType
     public var status: HTTPResponseStatus = .ok
     public internal(set) var data: Data
 
@@ -28,6 +28,11 @@ public struct Response {
         return  .init(contentType: .plain,
                       status: .badRequest,
                       data: error.localizedDescription.data(using: .utf8) ?? Data())
+    }
+
+    public static var unauthorized: Response {
+        return .init(item: "Unauthorized",
+                     status: .unauthorized)
     }
 }
 

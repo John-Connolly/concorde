@@ -22,7 +22,8 @@ public struct Request {
         return head.method
     }
 
-    /// Reads the entire body into memory then returns it.
+
+/// Reads the entire body into memory then returns it.
 //    public var body: Future<Data> {
 //        let promise: Promise<Data> = self.promise()
 //        stream.connect(to: BodySink { data in
@@ -31,12 +32,4 @@ public struct Request {
 //        return promise.futureResult
 //    }
 
-}
-
-public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T> {
-    return { data in
-        return Result {
-            try JSONDecoder().decode(type, from: data)
-        }
-    }
 }
