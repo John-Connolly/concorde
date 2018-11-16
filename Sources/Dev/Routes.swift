@@ -17,6 +17,7 @@ let siteMap = [
 //    curry(users) <^> (path("users") *> string) <*> int |> get, //users/john/234
 //    pure(unzurry(hello)) <*> (path("hello") *> end) |> get,
     pure(unzurry(verify)) <*> (path(verifyToken) *> end) |> get,
+    curry(queryParam) <^> (path("auth") *> query("token")) |> get
 //    pure(unzurry(update)) <*> (path("post") *> end) |> post,
 //    curry(sendNums) <^> (path("nums") *> UInt) |> get,
 //    curry(page) <^> (path("welcome") *> string) |> get,
@@ -34,4 +35,9 @@ let verifyToken = "loaderio-95e2de71ba5cfa095645d825903bc632.txt"
 func verify(conn: Conn) -> Future<Conn> {
     let token = "loaderio-95e2de71ba5cfa095645d825903bc632"
     return (write(status: .ok) >=> write(body: token))(conn)
+}
+
+
+func queryParam(token: String, conn: Conn)  -> Future<Conn> {
+     return (write(status: .ok) >=> write(body: "hello"))(conn)
 }

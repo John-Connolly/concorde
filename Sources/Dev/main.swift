@@ -16,7 +16,7 @@ func hello(conn: Conn) -> Future<Conn> {
 
 let route = pure(unzurry(hello)) <*> (path("hello") *> end) |> get
 
-let flightPlan = router(register: [route])
+let flightPlan = router(register: siteMap)
 let wings = Configuration(port: 8080, resources: [])
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)

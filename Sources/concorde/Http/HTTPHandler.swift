@@ -33,7 +33,7 @@ final class HTTPHandler: ChannelInboundHandler {
                 let conn = Conn(cache: cache,
                                 eventLoop: ctx.eventLoop,
                                 request: request,
-                                response: Response.notFound)
+                                response: .empty)
                 router(conn, write(ctx))
                 state.recievedGetRequest()
                 return
@@ -43,7 +43,7 @@ final class HTTPHandler: ChannelInboundHandler {
             let conn = Conn(cache: cache,
                              eventLoop: ctx.eventLoop,
                              request: request,
-                             response: Response.notFound)
+                             response: .empty)
             state.receivedHead(header, request: request) // Fix body
             router(conn, write(ctx))
         case .body(let body):

@@ -84,7 +84,7 @@ public func write<T: Codable>(body: T) -> Middleware {
             return conn.failed(with: error)
         }
     }
-}
+} 
 
 public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T> {
     return { data in

@@ -24,6 +24,12 @@ public struct Response {
                      status: .notFound)
     }
 
+    public static var empty: Response {
+        return .init(contentType: .plain,
+                     status: .ok,
+                     data: Data())
+    }
+
     public static func error(_ error: Error) -> Response {
         return  .init(contentType: .plain,
                       status: .badRequest,

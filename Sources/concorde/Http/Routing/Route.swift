@@ -138,10 +138,13 @@ public let UInt64: Route<UInt64> = Route(uriFormat: ":UInt64") { input in
     return (uint, input.dropFirst())
 }
 
-func query(_ param: String) -> Route<String> {
+public func query(_ param: String) -> Route<String> {
     return Route(uriFormat: "/" + "?\(param)=") { input in
-        guard let path = input.first, path == param else { return nil }
-        return (path, input.dropFirst())
+        let components = input.first?.split(separator: "=")
+        guard let key = components?.first,
+              let value = components?.last,
+              key == param else { return nil }
+        return (String(value), input.dropFirst())
     }
 }
 
