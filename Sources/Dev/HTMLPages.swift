@@ -8,112 +8,152 @@
 //import Foundation
 //import concorde
 import Html
+//import Css
 
 let stylesheet: StaticString = """
 body {
-padding: 0.5rem;
-line-height: 1.35;
-font-family: SanFranciscoDisplay-Regular;
+padding-top: 40px;
+padding-bottom: 40px;
+background-color: #FFFFFF;
 }
-blockquote {
-border-left: 2px #777 solid;
-font-style: italic;
-color: #777;
-margin-left: 1rem;
-padding-left: 0.5rem;
+
+.login {
+max-width: 330px;
+padding: 15px;
+margin: 0 auto;
 }
-pre {
-background-color: #f3f3f3;
-padding: 0.5rem;
-overflow-x: scroll;
+
+
+.login .logo {
+margin-bottom: 20px;
+text-align: center;
 }
-code {
-background-color: #f3f3f3;
-padding: 0.25rem;
+
+.btn-primary {
+background-color: #FFD62F;
+border: none;
+color: white;
 }
-li:not(:last-child) {
-margin-bottom: 0.25rem;
+
+.btn-primary:hover {
+box-shadow: 0 6px 12px rgba(0,0,0,.2);
+background-color: #FFD62F;
 }
-h2 {
-margin-top: 2rem;
-margin-bottom: 0;
+
+.login .form-control {
+position: relative;
+height: auto;
+-webkit-box-sizing: border-box;
+box-sizing: border-box;
+padding: 10px;
+font-size: 16px;
+}
+.login .form-control:focus {
+z-index: 2;
+}
+.login input[type="email"] {
+margin-bottom: -1px;
+border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+}
+.login input[type="password"] {
+margin-bottom: 10px;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
 }
 """
 
-func html() -> String {
-    let node =  html([
-        head([style(stylesheet)]),
 
-        body([
-            h1(["swift-html-vapor"]),
-            blockquote([
-                "A Vapor plugin for type-safe, transformable HTML views using ",
-                a([href("https://github.com/pointfreeco/swift-html")], ["swift-html"])
-                ]),
+// Login
 
-            h2(["Motivation"]),
-            p(["""
-The most popular choice for rendering HTML in a Vapor web app is to use the Leaf templating language,
-but it exposes your application to runtime errors and invalid HTML. Our plugin prevents these
-runtime issues at compile-time by embedding HTML directly into Swift’s powerful type system. It uses the
-swift-html DSL for constructing HTML documents using plain Swift data structures.
-"""
-                ]),
-
-            h2(["Usage"]),
-            p(["""
-To use the plugin all you have to do is return a `Node` value from your router callback:
-"""]),
-            pre(["""
-import HtmlVaporSupport
-import Vapor
-let app = try Application()
-let router = try app.make(Router.self)
-router.get("/") { _ in
-  h1(["Hello, type-safe HTML on Vapor!"])
+func headStyle(style styleString: StaticString) -> ChildOf<Tag.Html> {
+    return head([
+        title("Swift-Q"),
+        boostrapCss(),
+        boostrapJs(),
+        style(styleString)
+        ])
 }
-try app.run()
-"""
-                ]),
 
-            h2(["Take it for a spin"]),
-            p(["""
-We've included a sample Vapor application in this repo to show off its usage. To run the app
-immediately, simply do:
-"""]),
-            ul([
-                li([code(["swift run HtmlVaporSupportExample"])]),
-                li(["Open your browser to ", code(["http://localhost:8080"])])
-                ]),
-            p(["""
-The HTML for that page is constructed and rendered with swift-html!
-"""]),
-            p(["""
-If you want to run the app in Xcode so that you can play around with the HTML, try this:
-"""]),
-            ul([
-                li([code(["git clone https://github.com/pointfreeco/swift-html-vapor"])]),
-                li([code(["cd swift-html-vapor"])]),
-                li([code(["make xcodeproj"])]),
-                li(["Select the ", code(["HtmlVaporSupportExample"]), " target"]),
-                li(["Build and run ", code(["cmd+R"])]),
-                li(["Open your browser to ", code(["http://localhost:8080`"])])
-                ])
+func loginPage() -> String {
+    let node = html([
+        headStyle(style: stylesheet),
+          body([
+                div([Attribute("class", "container")], [
+                    form()
+                    ]),
             ])
+
         ])
 
     return render(node)
 }
 
 
-// Login
 
+//<div class="logo">
+//<img src="/logo.png" width="64px">
 
-func loginPage() {
-    let node = html([
-
-
+func form() -> Node {
+    let node = form([Attribute("action", "/login"),
+                     Attribute("method", "post"),
+                     Attribute("class", "login"),
+                     Attribute("role", "form")], [
+                        label(for: "email"),
+                        bInput(name: "email", placeholder: "Email address"),
+                        label(for: "password"),
+                        bInput(name: "password", placeholder: "Password"),
+                        button(with: "Sign In")
         ])
+    return node
+}
 
+func image(name: String) -> Node {
+    return img(src: name, alt: "", [
+        //width="64px"
+        ])
+}
 
+func label(for name: String) -> Node {
+    return label([
+        Attribute("for", name),
+        Attribute("class", "sr-only"),], [
+            .raw("Email address")
+        ]
+    )
+}
+
+func button(with name: String) -> Node {
+    return button([
+         Attribute("class", "btn btn-lg btn-primary btn-block"),
+         Attribute("type", "submit"),
+        ], [
+            .raw(name)
+        ])
+}
+
+func bInput(name: String, placeholder: String) -> Node {
+    return input([
+        Attribute("name", name),
+        Attribute("class", "form-control"),
+        Attribute("id", "name"),
+        Attribute("placeholder", placeholder)
+        ])
+}
+
+func boostrapCss() -> ChildOf<Tag.Head> {
+    return link([
+        Attribute("rel", "stylesheet"),
+        Attribute("href", "https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"),
+        Attribute("integrity", "sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"),
+        Attribute("crossorigin", "anonymous")
+        ])
+}
+
+func boostrapJs() -> ChildOf<Tag.Head> {
+    return script([
+        Attribute("src","https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"),
+        Attribute("integrity", "sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"),
+        Attribute("crossorigin", "anonymous")
+        ])
 }

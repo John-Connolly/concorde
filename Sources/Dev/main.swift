@@ -14,12 +14,19 @@ func hello(conn: Conn) -> Future<Conn> {
 
     return (authorize(true)
         >=> write(status: .ok)
-        >=> write(body: html(), contentType: .html))(conn)
+        >=> write(body: loginPage(), contentType: .html))(conn)
 }
 
-let route = pure(unzurry(hello)) <*> (path("hello") *> end) |> get
+func dashBoard(conn: Conn) -> Future<Conn> {
+    return (write(status: .ok) >=> write(body: dashBoardView(), contentType: .html))(conn)
+}
 
-let flightPlan = router(register: [route])
+let routes = [
+    pure(unzurry(hello)) <*> (path("hello") *> end) |> get,
+    pure(unzurry(dashBoard)) <*> (path("login") *> end) |> get,
+]
+
+let flightPlan = router(register: routes)
 let wings = Configuration(port: 8080, resources: [])
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
