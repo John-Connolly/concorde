@@ -12,8 +12,8 @@ public typealias Middleware = (Conn) -> Future<Conn>
 
 public final class Conn {
 
-    let cache: ThreadCache
-    let eventLoop: EventLoop
+    private let cache: ThreadCache
+    private let eventLoop: EventLoop
     public let request: Request
     public internal(set) var response: Response
 
@@ -69,6 +69,14 @@ public func write(status: HTTPResponseStatus) -> Middleware {
 public func write(body: String) -> Middleware {
     return { conn in
         conn.response.data = body.data(using: .utf8) ?? Data()
+        return conn.future(conn)
+    }
+}
+
+public func write(body: String, contentType: MimeType) -> Middleware {
+    return { conn in
+        conn.response.data = body.data(using: .utf8) ?? Data()
+        conn.response.contentType = contentType
         return conn.future(conn)
     }
 }

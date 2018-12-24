@@ -1,7 +1,7 @@
 import Foundation
 import concorde
-
-
+//
+//
 func authorize(_ bool: Bool) -> Middleware {
     return { conn in
         return bool
@@ -11,12 +11,15 @@ func authorize(_ bool: Bool) -> Middleware {
 }
 
 func hello(conn: Conn) -> Future<Conn> {
-    return (authorize(!true) >=> write(status: .ok) >=> write(body: "Hello"))(conn)
+
+    return (authorize(true)
+        >=> write(status: .ok)
+        >=> write(body: html(), contentType: .html))(conn)
 }
 
 let route = pure(unzurry(hello)) <*> (path("hello") *> end) |> get
 
-let flightPlan = router(register: siteMap)
+let flightPlan = router(register: [route])
 let wings = Configuration(port: 8080, resources: [])
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
@@ -48,6 +51,5 @@ plane.apply(wings)
 //Socket errors: connect 151, read 98, write 0, timeout 0
 //Requests/sec:  44709.10
 //Transfer/sec:      6.18MB
-
 
 
