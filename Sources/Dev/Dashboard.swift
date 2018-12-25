@@ -11,18 +11,19 @@ import Html
 
 func dashBoardView() -> String {
     let node = html([
-        head(style: dashboardStyle),
+        head(style: "dashboard.css"),
         body([
             navBar(title: "Swift-Q"),
             div([Attribute("class", "container-fluid")], [
                 div([Attribute("class", "row")], [
                     sideBar(),
                     mainView(title: "Overview"),
-                    canvas(),
-                    graph(),
-                    graph2()
                     ])
-                ])
+                ]),
+
+            jquery(),
+            graph(),
+            graph2()
 
             ])
         ])
@@ -64,10 +65,9 @@ func sideBar() -> Node {
         ], [
             div([classAtr("sidebar-sticky")], [
                 ul([classAtr("nav flex-column")], [
-                    sideBarItem(name: "Orders"),
-                    sideBarItem(name: "Invoice"),
-                    sideBarItem(name: "More Data"),
-                    sideBarItem(name: "Stuff"),
+                    sideBarItem(name: "Overview"),
+                    sideBarItem(name: "Failed"),
+                    sideBarItem(name: "Logs"),
                     ])
                 ])
         ])
@@ -99,8 +99,9 @@ func mainView(title: String) -> Node {
                         button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Share")]),
                         button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Export")]),
                         ])
-                    ])
-            ])
+                    ]),
+            ]),
+            canvas(),
         ])
 }
 
@@ -150,6 +151,34 @@ display: false,
 """
 func graph2() -> Node {
     return script(js)
+}
+
+
+//<script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+//<script src="../../../../assets/js/vendor/popper.min.js"></script>
+//<script src="../../../../dist/js/bootstrap.min.js"></script>
+
+func jquery() -> Node {
+    return script([
+        Attribute("src", "https://code.jquery.com/jquery-3.3.1.slim.min.js"),
+        Attribute("integrity", "sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"),
+        Attribute("crossorigin", "anonymous")
+        ])
+}
+
+//let str: StaticString =
+//"""
+//window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"></\\script>')
+//"""
+//
+//func rand() -> Node {
+//    return script(str)
+//}
+
+func popperJs() -> Node {
+    return script([
+        Attribute("src", "../../../../assets/js/vendor/popper.min.js"),
+        ])
 }
 
 

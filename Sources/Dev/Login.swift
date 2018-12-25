@@ -1,87 +1,29 @@
-////
-////  HTMLPages.swift
-////  Dev
-////
-////  Created by John Connolly on 2018-11-11.
-////
 //
-//import Foundation
-//import concorde
+//  Login.swift
+//  concorde
+//
+//  Created by John Connolly on 2018-12-25.
+//
+
+import Foundation
 import Html
-//import Css
 
-let stylesheet: StaticString = """
-body {
-padding-top: 40px;
-padding-bottom: 40px;
-background-color: #FFFFFF;
-}
-
-.login {
-max-width: 330px;
-padding: 15px;
-margin: 0 auto;
-}
-
-
-.login .logo {
-margin-bottom: 20px;
-text-align: center;
-}
-
-.btn-primary {
-background-color: #FFD62F;
-border: none;
-color: white;
-}
-
-.btn-primary:hover {
-box-shadow: 0 6px 12px rgba(0,0,0,.2);
-background-color: #FFD62F;
-}
-
-.login .form-control {
-position: relative;
-height: auto;
--webkit-box-sizing: border-box;
-box-sizing: border-box;
-padding: 10px;
-font-size: 16px;
-}
-.login .form-control:focus {
-z-index: 2;
-}
-.login input[type="email"] {
-margin-bottom: -1px;
-border-bottom-right-radius: 0;
-border-bottom-left-radius: 0;
-}
-.login input[type="password"] {
-margin-bottom: 10px;
-border-top-left-radius: 0;
-border-top-right-radius: 0;
-}
-"""
-
-
-// Login
-
-func head(style styleString: StaticString) -> ChildOf<Tag.Html> {
+func head(style file: String) -> ChildOf<Tag.Html> {
     return head([
         title("Swift-Q"),
         boostrapCss(),
         boostrapJs(),
-        style(styleString)
+        link([Attribute("href", file), Attribute("rel", "stylesheet")])
         ])
 }
 
 func loginPage() -> String {
     let node = html([
-        head(style: stylesheet),
-          body([
-                div([Attribute("class", "container")], [
-                    form()
-                    ]),
+        head(style: "login.css"),
+        body([
+            div([Attribute("class", "container")], [
+                form()
+                ]),
             ])
 
         ])
@@ -89,20 +31,19 @@ func loginPage() -> String {
     return render(node)
 }
 
-
-
-//<div class="logo">
-//<img src="/logo.png" width="64px">
-
 func form() -> Node {
     let node = form([Attribute("action", "/login"),
                      Attribute("method", "post"),
                      Attribute("class", "login"),
                      Attribute("role", "form")], [
+                        div([Attribute("class", "logo")], [
+                               image(name: "logo.png"),
+                            ]),
                         label(for: "email"),
                         bInput(name: "email", placeholder: "Email address"),
                         label(for: "password"),
                         bInput(name: "password", placeholder: "Password"),
+                        br,
                         button(with: "Sign In")
         ])
     return node
@@ -110,7 +51,7 @@ func form() -> Node {
 
 func image(name: String) -> Node {
     return img(src: name, alt: "", [
-        //width="64px"
+        Attribute("width", "64px")
         ])
 }
 
@@ -125,8 +66,8 @@ func label(for name: String) -> Node {
 
 func button(with name: String) -> Node {
     return button([
-         Attribute("class", "btn btn-lg btn-primary btn-block"),
-         Attribute("type", "submit"),
+        Attribute("class", "btn btn-lg btn-primary btn-block"),
+        Attribute("type", "submit"),
         ], [
             .raw(name)
         ])
@@ -136,7 +77,7 @@ func bInput(name: String, placeholder: String) -> Node {
     return input([
         Attribute("name", name),
         Attribute("class", "form-control"),
-        Attribute("id", "name"),
+        Attribute("id", name),
         Attribute("placeholder", placeholder)
         ])
 }

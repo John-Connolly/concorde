@@ -73,6 +73,11 @@ public let end: Route<()> = Route { input in
     return ((), input)
 }
 
+public let suffix: Route<String> = Route { input in
+    guard let last = input.last, last.contains("."), last != "favicon.ico" else { return nil }
+    return (last, input)
+}
+
 public let double: Route<Double> = Route(uriFormat: ":Double") { input in
     guard let double = input.first.flatMap(Double.init) else { return nil }
     return (double, input.dropFirst())

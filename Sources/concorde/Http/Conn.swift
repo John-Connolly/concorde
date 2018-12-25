@@ -81,6 +81,14 @@ public func write(body: String, contentType: MimeType) -> Middleware {
     }
 }
 
+public func write(body: Data, contentType: MimeType) -> Middleware {
+    return { conn in
+        conn.response.data = body
+        conn.response.contentType = contentType
+        return conn.future(conn)
+    }
+}
+
 public func write<T: Codable>(body: T) -> Middleware {
     return { conn in
         switch encode(body) {
