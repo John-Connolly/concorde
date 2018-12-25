@@ -66,7 +66,7 @@ border-top-right-radius: 0;
 
 // Login
 
-func headStyle(style styleString: StaticString) -> ChildOf<Tag.Html> {
+func head(style styleString: StaticString) -> ChildOf<Tag.Html> {
     return head([
         title("Swift-Q"),
         boostrapCss(),
@@ -77,7 +77,7 @@ func headStyle(style styleString: StaticString) -> ChildOf<Tag.Html> {
 
 func loginPage() -> String {
     let node = html([
-        headStyle(style: stylesheet),
+        head(style: stylesheet),
           body([
                 div([Attribute("class", "container")], [
                     form()

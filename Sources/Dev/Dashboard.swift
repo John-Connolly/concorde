@@ -11,16 +11,20 @@ import Html
 
 func dashBoardView() -> String {
     let node = html([
-        headStyle(style: ""),
+        head(style: dashboardStyle),
         body([
             navBar(title: "Swift-Q"),
-            sideBar(),
-            mainView(),
-            canvas(),
-            graph(),
-            graph2()
-            ])
+            div([Attribute("class", "container-fluid")], [
+                div([Attribute("class", "row")], [
+                    sideBar(),
+                    mainView(title: "Overview"),
+                    canvas(),
+                    graph(),
+                    graph2()
+                    ])
+                ])
 
+            ])
         ])
 
     return render(node)
@@ -82,14 +86,14 @@ func sideBarItem(name: String) -> ChildOf<Tag.Ul> {
 
 
 
-func mainView() -> Node {
+func mainView(title: String) -> Node {
     return main([
         Attribute("role", "main"),
         classAtr("col-md-9 ml-sm-auto col-lg-10 px-4")
         ], [
          div(
             [classAtr("d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom")], [
-                h1([classAtr("h2")], [.raw("DashBoard")]),
+                h1([classAtr("h2")], [.raw(title)]),
                 div([classAtr("btn-toolbar mb-2 mb-md-0")], [
                     div([classAtr("btn-group mr-2")], [
                         button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Share")]),
@@ -147,3 +151,5 @@ display: false,
 func graph2() -> Node {
     return script(js)
 }
+
+
