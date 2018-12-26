@@ -17,8 +17,22 @@ func login(conn: Conn) -> Future<Conn> {
 }
 
 func dashBoard(conn: Conn) -> Future<Conn> {
-    return (write(status: .ok) >=> write(body: dashBoardView(), contentType: .html))(conn)
+    let query = curry(redisQuery)(.info(section: .all))
+    let data = redis(conn: conn) >>- query
+    let stats = data
+                    <^> { $0.string?.parseStats() ?? [:] }
+                    <^> RedisStats.init
+                    <^> dashBoardView
+
+    func writeBody(conn: Conn) -> Future<Conn> {
+        return stats >>- { write(body: $0, contentType: .html)(conn) }
+    }
+    return (write(status: .ok)
+        >=> writeBody)(conn)
 }
+
+let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
+let g = flip(f)(.html)
 
 // FIXME: Hack
 func fileServing(fileName: String, conn: Conn) -> Future<Conn> {
@@ -38,7 +52,7 @@ let routes = [
 ]
 
 let flightPlan = router(register: routes)
-let wings = Configuration(port: 8080, resources: [])
+let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
 

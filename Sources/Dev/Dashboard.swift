@@ -9,7 +9,7 @@ import Foundation
 import concorde
 import Html
 
-func dashBoardView() -> String {
+func dashBoardView(stats: RedisStats) -> String {
     let node = html([
         head(style: "dashboard.css"),
         body([
@@ -17,7 +17,7 @@ func dashBoardView() -> String {
             div([Attribute("class", "container-fluid")], [
                 div([Attribute("class", "row")], [
                     sideBar(),
-                    mainView(title: "Overview"),
+                    mainView(title: "Overview",node: statsView(redisStats: stats)),
                     ])
                 ]),
 
@@ -31,6 +31,13 @@ func dashBoardView() -> String {
     return render(node)
 }
 
+func statsView(redisStats: RedisStats) -> Node {
+    return div([], [
+        h4(content: "Blocked clients: " + redisStats.formattedBlocked),
+        h4(content: "Connected clients: " + redisStats.formattedClients),
+        h4(content: "Used memory:"  + redisStats.usedMemoryHuman)
+        ])
+}
 
 func navBar(title: String) -> Node {
     return nav([
@@ -85,15 +92,24 @@ func sideBarItem(name: String) -> ChildOf<Tag.Ul> {
 }
 
 
+func h4(content: String) -> Node {
+    return div([], [br, h4([], [.raw(content)])])
+}
 
-func mainView(title: String) -> Node {
+func mainView(title: String, node: Node) -> Node {
     return main([
         Attribute("role", "main"),
         classAtr("col-md-9 ml-sm-auto col-lg-10 px-4")
         ], [
+         br,
+         h3([classAtr("h2")], [.raw(title)]),
+         node,
+         h4(content: "Successful: 55"),
+         h4(content: "Queued: 55"),
+         h4(content: "Failed: 34"),
          div(
             [classAtr("d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom")], [
-                h1([classAtr("h2")], [.raw(title)]),
+                h1([classAtr("h2")], [.raw("History")]),
                 div([classAtr("btn-toolbar mb-2 mb-md-0")], [
                     div([classAtr("btn-group mr-2")], [
                         button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Share")]),
@@ -101,6 +117,7 @@ func mainView(title: String) -> Node {
                         ])
                     ]),
             ]),
+
             canvas(),
         ])
 }
@@ -153,11 +170,6 @@ func graph2() -> Node {
     return script(js)
 }
 
-
-//<script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-//<script src="../../../../assets/js/vendor/popper.min.js"></script>
-//<script src="../../../../dist/js/bootstrap.min.js"></script>
-
 func jquery() -> Node {
     return script([
         Attribute("src", "https://code.jquery.com/jquery-3.3.1.slim.min.js"),
@@ -165,20 +177,3 @@ func jquery() -> Node {
         Attribute("crossorigin", "anonymous")
         ])
 }
-
-//let str: StaticString =
-//"""
-//window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"></\\script>')
-//"""
-//
-//func rand() -> Node {
-//    return script(str)
-//}
-
-func popperJs() -> Node {
-    return script([
-        Attribute("src", "../../../../assets/js/vendor/popper.min.js"),
-        ])
-}
-
-
