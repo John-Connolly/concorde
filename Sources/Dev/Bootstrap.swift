@@ -65,3 +65,61 @@ let boostrapJs: ChildOf<Tag.Head> = script([
     Attribute("integrity", "sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"),
     Attribute("crossorigin", "anonymous")
     ])
+
+
+
+
+
+
+func graph(items: [(String, String)]) -> Node {
+//    let labels = items.map { $0.0 + "," }.reduce("", +)
+    let js: StaticString = """
+var ctx = document.getElementById("myChart");
+var myChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: ["hello"],
+datasets: [{
+data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+lineTension: 0,
+backgroundColor: 'transparent',
+borderColor: '#007bff',
+borderWidth: 4,
+pointBackgroundColor: '#007bff'
+}]
+},
+options: {
+scales: {
+yAxes: [{
+ticks: {
+beginAtZero: false
+}
+}]
+},
+legend: {
+display: false,
+}
+}
+});
+
+"""
+    return script(js)
+}
+
+//<div class="table-responsive">
+//<table class="table table-striped table-sm">
+//<thead>
+//<tr>
+
+
+func table() -> Node {
+    return div([classAtr("table-responsive")], [
+        table([classAtr("table")], [
+            thead([],[
+//                    tr([
+//                        th([], [.raw("#")])
+//                    ])
+                ])
+            ])
+        ])
+}

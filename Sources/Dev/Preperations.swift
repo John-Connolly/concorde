@@ -19,12 +19,3 @@ func redisConn(group: EventLoopGroup) -> Future<RedisClient> {
 func log(_ err: Error) {
     print(err)
 }
-
-//import PostgreSQL
-//
-//func psqlConn(group: EventLoopGroup) -> Future<PostgreSQLConnection> {
-//    let config = PostgreSQLDatabaseConfig(hostname: "localhost", username: "johnconnolly")
-//    return PostgreSQLDatabase(config: config).newConnection(on: group)
-//}
-//
-
