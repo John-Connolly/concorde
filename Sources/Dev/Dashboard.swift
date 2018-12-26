@@ -9,6 +9,10 @@ import Foundation
 import concorde
 import Html
 
+struct DashBoardData {
+    let stats: RedisStats
+}
+
 func dashBoardView(stats: RedisStats) -> String {
     let node = html([
         head(style: "dashboard.css"),
@@ -17,11 +21,11 @@ func dashBoardView(stats: RedisStats) -> String {
             div([Attribute("class", "container-fluid")], [
                 div([Attribute("class", "row")], [
                     sideBar(),
-                    mainView(title: "Overview",node: statsView(redisStats: stats)),
+                    mainView(title: "Overview", node: redisStatsView(stats)),
                     ])
                 ]),
 
-            jquery(),
+            jquery,
             graph(),
             graph2()
 
@@ -31,23 +35,36 @@ func dashBoardView(stats: RedisStats) -> String {
     return render(node)
 }
 
-func statsView(redisStats: RedisStats) -> Node {
-    return div([], [
-        h4(content: "Blocked clients: " + redisStats.formattedBlocked),
-        h4(content: "Connected clients: " + redisStats.formattedClients),
-        h4(content: "Used memory:"  + redisStats.usedMemoryHuman)
+
+
+
+func redisStatsView(_ stats: RedisStats) -> Node {
+    return row(with: [
+        div([classAtr("col-sm")], [
+            card(title: "Blocked clients", content: stats.formattedBlocked),
+            ]),
+        div([classAtr("col-sm")], [
+            card(title: "Connected clients", content: stats.formattedClients),
+            ]),
+        div([classAtr("col-sm")], [
+            card(title: "Used memory", content: stats.usedMemoryHuman),
+            ])
         ])
 }
 
-func navBar(title: String) -> Node {
-    return nav([
-        Attribute("class", "navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow")]
-        ,[
-            a([Attribute("class","navbar-brand col-sm-3 col-md-2 mr-0")],[.raw(title)]),
-            ul([Attribute("class","navbar-nav px-3")], [])
+func mainStatsRow() -> Node {
+    return row(with: [
+        div([classAtr("col-sm")], [
+            card(title: "Successful", content: "34"),
+            ]),
+        div([classAtr("col-sm")], [
+            card(title: "Queued", content: "34"),
+            ]),
+        div([classAtr("col-sm")], [
+            card(title: "Failed", content: "34"),
+            ])
         ])
 }
-
 
 func containerFluid() -> ([Node]) -> Node {
     return { nodes in
@@ -62,13 +79,9 @@ func row() -> ([Node]) -> Node {
 }
 
 
-func classAtr<A>(_ value: String) -> Attribute<A> {
-    return Attribute<A>("class", value)
-}
-
 func sideBar() -> Node {
     return nav([
-         classAtr("col-md-2 d-none d-md-block bg-light sidebar")
+        classAtr("col-md-2 d-none d-md-block bg-light sidebar")
         ], [
             div([classAtr("sidebar-sticky")], [
                 ul([classAtr("nav flex-column")], [
@@ -83,17 +96,12 @@ func sideBar() -> Node {
 
 func sideBarItem(name: String) -> ChildOf<Tag.Ul> {
     return li([classAtr("nav-item")], [
-            a([classAtr("nav-link active")], [
-                span([Attribute("data-feather","home")], []),
-                .raw(name)
-                ]
-              )
+        a([classAtr("nav-link active")], [
+            span([Attribute("data-feather","home")], []),
+            .raw(name)
+            ]
+        )
         ])
-}
-
-
-func h4(content: String) -> Node {
-    return div([], [br, h4([], [.raw(content)])])
 }
 
 func mainView(title: String, node: Node) -> Node {
@@ -101,25 +109,24 @@ func mainView(title: String, node: Node) -> Node {
         Attribute("role", "main"),
         classAtr("col-md-9 ml-sm-auto col-lg-10 px-4")
         ], [
-         br,
-         h3([classAtr("h2")], [.raw(title)]),
-         node,
-         h4(content: "Successful: 55"),
-         h4(content: "Queued: 55"),
-         h4(content: "Failed: 34"),
-         div(
-            [classAtr("d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom")], [
-                h1([classAtr("h2")], [.raw("History")]),
-                div([classAtr("btn-toolbar mb-2 mb-md-0")], [
-                    div([classAtr("btn-group mr-2")], [
-                        button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Share")]),
-                        button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Export")]),
-                        ])
+            br,
+            h3([classAtr("h2")], [.raw(title)]),
+            node,
+            br,
+            mainStatsRow(),
+            div(
+                [classAtr("d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom")], [
+                    h1([classAtr("h2")], [.raw("History")]),
+                    div([classAtr("btn-toolbar mb-2 mb-md-0")], [
+                        div([classAtr("btn-group mr-2")], [
+                            button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Share")]),
+                            button([classAtr("btn btn-sm btn-outline-secondary")], [.raw("Export")]),
+                            ])
+                        ]),
                     ]),
-            ]),
 
             canvas(),
-        ])
+            ])
 }
 
 func canvas() -> Node {
@@ -170,10 +177,4 @@ func graph2() -> Node {
     return script(js)
 }
 
-func jquery() -> Node {
-    return script([
-        Attribute("src", "https://code.jquery.com/jquery-3.3.1.slim.min.js"),
-        Attribute("integrity", "sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"),
-        Attribute("crossorigin", "anonymous")
-        ])
-}
+

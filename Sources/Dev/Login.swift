@@ -11,8 +11,8 @@ import Html
 func head(style file: String) -> ChildOf<Tag.Html> {
     return head([
         title("Swift-Q"),
-        boostrapCss(),
-        boostrapJs(),
+        boostrapCss,
+        boostrapJs,
         link([Attribute("href", file), Attribute("rel", "stylesheet")])
         ])
 }
@@ -82,19 +82,3 @@ func bInput(name: String, placeholder: String) -> Node {
         ])
 }
 
-func boostrapCss() -> ChildOf<Tag.Head> {
-    return link([
-        Attribute("rel", "stylesheet"),
-        Attribute("href", "https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"),
-        Attribute("integrity", "sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"),
-        Attribute("crossorigin", "anonymous")
-        ])
-}
-
-func boostrapJs() -> ChildOf<Tag.Head> {
-    return script([
-        Attribute("src","https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"),
-        Attribute("integrity", "sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"),
-        Attribute("crossorigin", "anonymous")
-        ])
-}
