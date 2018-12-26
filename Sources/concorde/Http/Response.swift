@@ -11,11 +11,13 @@ import NIOHTTP1
 public struct Response {
     public internal(set) var contentType: MimeType
     public var status: HTTPResponseStatus = .ok
+    public var headers: [String: String] = [:]
     public internal(set) var data: Data
 
     public static var error: Response {
         return .init(contentType: .plain,
                      status: .badRequest,
+                     headers: [:],
                      data: "Bad request".data(using: .utf8) ?? Data())
     }
 
@@ -27,12 +29,14 @@ public struct Response {
     public static var empty: Response {
         return .init(contentType: .plain,
                      status: .ok,
+                     headers: [:],
                      data: Data())
     }
 
     public static func error(_ error: Error) -> Response {
         return  .init(contentType: .plain,
                       status: .badRequest,
+                      headers: [:],
                       data: error.localizedDescription.data(using: .utf8) ?? Data())
     }
 

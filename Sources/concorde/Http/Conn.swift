@@ -100,7 +100,15 @@ public func write<T: Codable>(body: T) -> Middleware {
             return conn.failed(with: error)
         }
     }
-} 
+}
+
+public func redirect(to uri: String) -> Middleware {
+    return { conn in
+        conn.response.status = .seeOther
+        conn.response.headers["Location"] = uri
+        return conn.future(conn)
+    }
+}
 
 public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T> {
     return { data in

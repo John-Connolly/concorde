@@ -16,6 +16,12 @@ func login(conn: Conn) -> Future<Conn> {
         >=> write(body: loginPage(), contentType: .html))(conn)
 }
 
+func loginPost(conn: Conn) -> Future<Conn> {
+    return (authorize(true)
+        >=> write(status: .ok)
+        >=> redirect(to: "overview"))(conn)
+}
+
 func dashBoard(conn: Conn) -> Future<Conn> {
     let query = curry(redisQuery)(.info(section: .all))
     let data = redis(conn: conn) >>- query
@@ -30,6 +36,7 @@ func dashBoard(conn: Conn) -> Future<Conn> {
     return (write(status: .ok)
         >=> writeBody)(conn)
 }
+
 
 let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
@@ -47,7 +54,8 @@ func fileServing(fileName: String, conn: Conn) -> Future<Conn> {
 
 let routes = [
     pure(unzurry(login)) <*> end |> get,
-    pure(unzurry(dashBoard)) <*> (path("login") *> end) |> get,
+    pure(unzurry(loginPost)) <*> (path("login") *> end) |> post,
+    pure(unzurry(dashBoard)) <*> (path("overview") *> end) |> get,
     curry(fileServing) <^> (suffix) |> get,
 ]
 

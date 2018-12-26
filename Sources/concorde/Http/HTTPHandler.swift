@@ -98,6 +98,9 @@ final class HTTPHandler: ChannelInboundHandler {
         var head = HTTPResponseHead(version: .init(major: 1, minor: 1), status: response.status, headers: HTTPHeaders())
         head.headers.add(name: "Content-Type", value: response.contentType.rawValue)
         head.headers.add(name: "Content-Length", value: String(response.data.count))
+        response.headers.forEach {
+            head.headers.add(name: $0.key, value: $0.value)
+        }
         return head
     }
 
