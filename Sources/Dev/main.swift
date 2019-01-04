@@ -38,6 +38,18 @@ func dashBoard(conn: Conn) -> Future<Conn> {
 }
 
 
+func dashTest(conn: Conn) -> Future<Conn> {
+    return (authorize(true)
+        >=> write(status: .ok) //render(view: mainPage, with: ()
+        >=> write(body: failedView(), contentType: .html))(conn)
+}
+
+func failed(conn: Conn) -> Future<Conn> {
+    return (authorize(true)
+        >=> write(status: .ok) //render(view: mainPage, with: ()
+        >=> write(body: failedView(), contentType: .html))(conn)
+}
+
 let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
 
@@ -56,6 +68,8 @@ let routes = [
     pure(unzurry(login)) <*> end |> get,
     pure(unzurry(loginPost)) <*> (path("login") *> end) |> post,
     pure(unzurry(dashBoard)) <*> (path("overview") *> end) |> get,
+    pure(unzurry(dashTest)) <*> (path("test") *> end) |> get,
+    pure(unzurry(failed)) <*> (path("failed") *> end) |> get,
     curry(fileServing) <^> (suffix) |> get,
 ]
 

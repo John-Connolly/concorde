@@ -1,5 +1,7 @@
 body {
   font-size: .875rem;
+
+
 }
 
 .feather {
@@ -7,6 +9,17 @@ body {
   height: 16px;
   vertical-align: text-bottom;
 }
+
+/*.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  /*height: 60px;*/
+  /*line-height: 60px;  Vertically center the text there */
+  /*background-color: #f5f5f5;*/
+/*}*/
+
 
 /*
  * Sidebar
@@ -29,6 +42,7 @@ body {
   padding-top: .5rem;
   overflow-x: hidden;
   overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+  background: #FFFFFF;
 }
 
 @supports ((position: -webkit-sticky) or (position: sticky)) {
@@ -68,6 +82,7 @@ body {
 
 [role="main"] {
   padding-top: 48px; /* Space for fixed navbar */
+  min-height: 500px;
   background: #F9FAFB;
 }
 

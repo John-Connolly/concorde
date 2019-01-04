@@ -30,6 +30,10 @@ func card(title: String, content: String) -> Node {
         ])
 }
 
+func card(with content: Node) -> Node {
+    return div([classAtr("card")], [content])
+}
+
 func navBar(title: String) -> Node {
     return nav([
         Attribute("class", "navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow")]
@@ -106,20 +110,20 @@ display: false,
     return script(js)
 }
 
-//<div class="table-responsive">
-//<table class="table table-striped table-sm">
-//<thead>
-//<tr>
 
-
-func table() -> Node {
+func table(header: [String], rows: [[String]]) -> Node {
     return div([classAtr("table-responsive")], [
         table([classAtr("table")], [
             thead([],[
-//                    tr([
-//                        th([], [.raw("#")])
-//                    ])
-                ])
+                tr(header.map { th([Attribute("scope", "col")], [.text($0)]) }),
+                ]),
+            tbody([],
+                  zip(rows, rows.indices).map { resource in
+                    return tr([
+                        th([Attribute("scope", "row")], [.text(resource.1.description)]),
+                        ] + resource.0.map { td([.text($0)]) } )
+                }
+            )
             ])
         ])
 }
