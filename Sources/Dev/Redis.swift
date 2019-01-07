@@ -73,7 +73,8 @@ struct RedisStats {
     let usedMemoryHuman: String
     let uptime: Int // Seconds
     let usedMemory: Int
-    let totalMemory: Int
+    let totalMemory: String
+    let serverVersion: String
 
     private let formatter: NumberFormatter = {
         let numberFormatter = NumberFormatter()
@@ -87,7 +88,8 @@ struct RedisStats {
         self.usedMemoryHuman = stats["used_memory_human"] ?? ""
         self.uptime = Int(stats["uptime_in_seconds"]?.digits ?? "") ?? 0
         self.usedMemory = Int(stats["used_memory"]?.digits ?? "") ?? 0
-        self.totalMemory = Int(stats["total_system_memory"]?.digits ?? "") ?? 0
+        self.totalMemory = stats["total_system_memory_human"] ?? ""
+        self.serverVersion = stats["redis_version"] ?? ""
     }
 
     var formattedClients: String {
@@ -97,6 +99,23 @@ struct RedisStats {
     var formattedBlocked: String {
         return formatter.string(from: NSNumber(integerLiteral: blockedClients)) ?? ""
     }
+
+
+    var formattedUptime: String {
+        let days = (uptime / 86_400)
+        let hours = (uptime % 86_400) / 3600
+        let minutes = (uptime % 3600) / 60
+        let seconds = (uptime % 3600) % 60
+        return days > 1
+            ? String(days) + " days"
+            : hours > 1
+            ? String(hours) + " Hours"
+            : minutes > 1
+            ? String(minutes) + " Minutes"
+            : String(seconds) + " Seconds"
+    }
+
+
 }
 
 

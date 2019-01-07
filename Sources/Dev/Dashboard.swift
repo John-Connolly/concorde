@@ -13,7 +13,8 @@ struct DashBoardData {
     let stats: RedisStats
 }
 
-private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Overview" }
+private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Redis Overview" }
+    <> redisStatsUsageView.contramap { $0.stats }
     <> redisStatsView.contramap { $0.stats }
     <> statsRowView.contramap { _ in }
     <> chartView.contramap { _ in }
@@ -25,10 +26,9 @@ private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Ov
 
 func dashBoardView(stats: RedisStats) -> String {
     return render(dashBoard.view(DashBoardData.init(stats: stats)))
-
 }
 
-let redisStatsView = View<RedisStats, [Node]> { content in
+let redisStatsUsageView = View<RedisStats, [Node]> { content in
     return [
         row(with: [
             div([classAtr("col-sm")], [
@@ -44,6 +44,25 @@ let redisStatsView = View<RedisStats, [Node]> { content in
         br
     ]
 }
+
+
+let redisStatsView = View<RedisStats, [Node]> { content in
+    return [
+        row(with: [
+            div([classAtr("col-sm")], [
+                card(title: "Uptime", content: content.formattedUptime),
+                ]),
+            div([classAtr("col-sm")], [
+                card(title: "Total Memory", content: content.totalMemory),
+                ]),
+            div([classAtr("col-sm")], [
+                card(title: "Redis Version", content: content.serverVersion),
+                ])
+            ]),
+        br
+    ]
+}
+
 
 // Remove this redundent code
 let statsRowView = View<(), [Node]> { content in
@@ -77,31 +96,6 @@ private let canvasView = View<(), [Node]> {
             Attribute("height", "380"),
             ], [])
     ]
-}
-
-func sideBar() -> Node {
-    return nav([
-        classAtr("col-md-2 d-none d-md-block bg-light sidebar")
-        ], [
-            div([classAtr("sidebar-sticky")], [
-                ul([classAtr("nav flex-column")], [
-                    sideBarItem(name: "Overview", isActive: true, href: "overview"),
-                    sideBarItem(name: "Failed", isActive: false, href: "failed"),
-                    sideBarItem(name: "Logs", isActive: false, href: "logs"),
-                    ])
-                ])
-        ])
-
-}
-
-func sideBarItem(name: String, isActive: Bool, href: String) -> ChildOf<Tag.Ul> {
-    return li([classAtr("nav-item")], [
-        a(isActive ? [classAtr("nav-link active"), Attribute("href", href)] : [classAtr("nav-link"), Attribute("href", href)], [
-            span([Attribute("data-feather", "home")], []),
-            .text(name)
-            ]
-        )
-        ])
 }
 
 
