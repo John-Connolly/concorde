@@ -25,7 +25,7 @@ func baseView(with nodes: [Node], activeItem: SideBarItem) -> Node {
                 ]),
             jquery,
             graph(),
-            graph(items: [])
+            graph(items: [("Monday", 34), ("Tuesday", 343), ("Wednesday", 954)])
             ])
         ])
 
@@ -61,4 +61,14 @@ func sideBarItem(name: String, isActive: Bool, href: String) -> ChildOf<Tag.Ul> 
             ]
         )
         ])
+}
+
+let footerView = View<(), [Node]> { _ in
+    return [
+        footer([classAtr("pt-4 my-md-5 pt-md-5 border-top")], [
+            div([classAtr("container")], [
+                span([classAtr("text-muted")], [.text("SwiftQ")])
+                ])
+            ])
+    ]
 }

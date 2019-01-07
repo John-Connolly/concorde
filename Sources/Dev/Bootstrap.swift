@@ -75,16 +75,17 @@ let boostrapJs: ChildOf<Tag.Head> = script([
 
 
 
-func graph(items: [(String, String)]) -> Node {
-//    let labels = items.map { $0.0 + "," }.reduce("", +)
-    let js: StaticString = """
+func graph(items: [(String, Int)]) -> Node {
+    let labels = items.map { $0.0 }.map { "\"" + $0 + "\"" }.joined(separator: ",")
+    let values = items.map { "\($0.1)" }.joined(separator: ",")
+    let js: String = """
 var ctx = document.getElementById("myChart");
 var myChart = new Chart(ctx, {
 type: 'line',
 data: {
-labels: ["hello"],
+labels: [\(labels)],
 datasets: [{
-data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+data: [\(values)],
 lineTension: 0,
 backgroundColor: 'transparent',
 borderColor: '#007bff',
@@ -107,7 +108,7 @@ display: false,
 });
 
 """
-    return script(js)
+    return Node.element("script", [], [.raw(js)]) //script(js)
 }
 
 

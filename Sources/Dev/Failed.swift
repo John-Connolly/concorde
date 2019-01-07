@@ -24,15 +24,6 @@ private let tableComponent = View<MainViewContent, [Node]> { content in
     ]
 }
 
-let footerView = View<(), [Node]> { _ in
-    return [
-        footer([classAtr("pt-4 my-md-5 pt-md-5 border-top")], [
-            div([classAtr("container")], [
-                span([classAtr("text-muted")], [.text("SwiftQ")])
-            ])
-        ])
-    ]
-}
 
 
 struct MainViewContent {

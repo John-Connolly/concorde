@@ -23,32 +23,94 @@ func loginPost(conn: Conn) -> Future<Conn> {
 }
 
 func dashBoard(conn: Conn) -> Future<Conn> {
-    let query = curry(redisQuery)(.info(section: .all))
-    let data = redis(conn: conn) >>- query
-    let stats = data
-                    <^> { $0.string?.parseStats() ?? [:] }
-                    <^> RedisStats.init
-                    <^> dashBoardView
+
+    let view =
+        zip(redisStats(with: conn),
+            processedStats(with: conn),
+            workersStats(with: conn))
+        <^> DashBoardData.init
+        <^> dashBoardView
 
     func writeBody(conn: Conn) -> Future<Conn> {
-        return stats >>- { write(body: $0, contentType: .html)(conn) }
+        return view >>- { write(body: $0, contentType: .html)(conn) }
     }
+
     return (write(status: .ok)
         >=> writeBody)(conn)
 }
 
-
-func dashTest(conn: Conn) -> Future<Conn> {
-    return (authorize(true)
-        >=> write(status: .ok) //render(view: mainPage, with: ()
-        >=> write(body: failedView(), contentType: .html))(conn)
+func redisStats(with conn: Conn) -> Future<RedisStats> {
+    let query = curry(redisQuery)(.info(section: .all))
+    let data = redis(conn: conn) >>- query
+    return data
+        <^> { $0.string?.parseStats() ?? [:] }
+        <^> RedisStats.init
 }
+
+struct ProcessedStats {
+    let total: String
+    let queued: Int
+    let failed: Int
+}
+
+func processedStats(with conn: Conn) -> Future<ProcessedStats> {
+    let query = curry(redisQuery)(.get(key: "stats:proccessed"))
+    let data = redis(conn: conn) >>- query
+    return data
+        <^> { $0.string ?? "None" }
+        <^> { ProcessedStats.init(total: $0, queued: 12, failed: 0)}
+}
+
+
+struct ConsumerInfo: Codable {
+    var beat: Int
+    let info: Info
+    var busy: Int
+
+    struct Info: Codable {
+        let hostname: String
+        let startedAt: Int
+    }
+
+
+    var allFields: [String: String] {
+        return [
+            ConsumerInfo.CodingKeys.beat.stringValue: beat.description,
+            ConsumerInfo.CodingKeys.busy.stringValue: busy.description,
+            ConsumerInfo.CodingKeys.info.stringValue: "",
+        ]
+    }
+
+}
+
+
+import Redis
+
+func workersStats(with conn: Conn) -> Future<[ConsumerInfo]> {
+    let query = curry(redisQuery)(.smembers(key: "processes"))
+    let data = redis(conn: conn) >>- query
+    let consumersNames = data.map { $0.array?.compactMap { $0.string } ?? [] }
+    return consumersNames.then { consumers -> Future<RedisData> in
+        let query = curry(redisQuery)(.mget(keys: consumers))
+        return redis(conn: conn) >>- query
+        }.map { redisData in
+            let redisDatas = redisData.array ?? []
+            return try redisDatas
+                .compactMap { $0.data }
+                .map { data in
+                    try JSONDecoder().decode(ConsumerInfo.self, from: data)
+            }
+    }
+}
+
 
 func failed(conn: Conn) -> Future<Conn> {
     return (authorize(true)
         >=> write(status: .ok) //render(view: mainPage, with: ()
         >=> write(body: failedView(), contentType: .html))(conn)
 }
+
+
 
 let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
@@ -68,7 +130,6 @@ let routes = [
     pure(unzurry(login)) <*> end |> get,
     pure(unzurry(loginPost)) <*> (path("login") *> end) |> post,
     pure(unzurry(dashBoard)) <*> (path("overview") *> end) |> get,
-    pure(unzurry(dashTest)) <*> (path("test") *> end) |> get,
     pure(unzurry(failed)) <*> (path("failed") *> end) |> get,
     curry(fileServing) <^> (suffix) |> get,
 ]

@@ -17,8 +17,6 @@ func redisQuery(command: Command, client: RedisClient) -> Future<RedisData> {
     return client.command(command.rawValue, command.args)
 }
 
-//let getRedis = redis >=> curry(redisQuery)
-
 enum Command {
 
     enum Section: String {

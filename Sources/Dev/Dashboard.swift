@@ -11,21 +11,23 @@ import Html
 
 struct DashBoardData {
     let stats: RedisStats
+    let proccessed: ProcessedStats
+    let consumers: [ConsumerInfo]
 }
 
 private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Redis Overview" }
     <> redisStatsUsageView.contramap { $0.stats }
     <> redisStatsView.contramap { $0.stats }
-    <> statsRowView.contramap { _ in }
+    <> statsRowView.contramap { $0.proccessed }
     <> chartView.contramap { _ in }
     <> canvasView.contramap { _ in }
-    <> workerTableView.contramap { _ in }
+    <> workerTableView.contramap { $0.consumers }
     <> footerView.contramap { _ in })
     .map(flip(curry(baseView))(.overview) >>> pure)
 
 
-func dashBoardView(stats: RedisStats) -> String {
-    return render(dashBoard.view(DashBoardData.init(stats: stats)))
+func dashBoardView(data: DashBoardData) -> String {
+    return render(dashBoard.view(data))
 }
 
 let redisStatsUsageView = View<RedisStats, [Node]> { content in
@@ -65,11 +67,11 @@ let redisStatsView = View<RedisStats, [Node]> { content in
 
 
 // Remove this redundent code
-let statsRowView = View<(), [Node]> { content in
+let statsRowView = View<ProcessedStats, [Node]> { content in
     return [
         row(with: [
             div([classAtr("col-sm")], [
-                card(title: "Successful", content: "34"),
+                card(title: "Successful", content: content.total),
                 ]),
             div([classAtr("col-sm")], [
                 card(title: "Queued", content: "34"),
@@ -81,9 +83,10 @@ let statsRowView = View<(), [Node]> { content in
         ]
 }
 
-private let workerTableView = View<(), [Node]> {
+private let workerTableView = View<[ConsumerInfo], [Node]> { content in
+    let rows = content.map { [$0.info.hostname, "Good", $0.beat.description,] }
     return [
-        card(with: table(header: ["#", "Worker", "Other"], rows: [["Worker 1", "hello"]])),
+        card(with: table(header: ["#", "Consumer", "Health", "Last Heartbeat"], rows: rows)),
         ]
 }
 
