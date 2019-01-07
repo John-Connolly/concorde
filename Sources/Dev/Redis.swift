@@ -88,7 +88,7 @@ struct RedisStats {
         self.usedMemoryHuman = stats["used_memory_human"] ?? ""
         self.uptime = Int(stats["uptime_in_seconds"]?.digits ?? "") ?? 0
         self.usedMemory = Int(stats["used_memory"]?.digits ?? "") ?? 0
-        self.totalMemory = stats["total_system_memory_human"] ?? ""
+        self.totalMemory = stats["total_system_memory_human"] ?? "Not Available"
         self.serverVersion = stats["redis_version"] ?? ""
     }
 

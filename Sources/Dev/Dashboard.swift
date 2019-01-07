@@ -21,7 +21,7 @@ private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Re
     <> canvasView.contramap { _ in }
     <> workerTableView.contramap { _ in }
     <> footerView.contramap { _ in })
-    .map(baseView >>> pure)
+    .map(flip(curry(baseView))(.overview) >>> pure)
 
 
 func dashBoardView(stats: RedisStats) -> String {

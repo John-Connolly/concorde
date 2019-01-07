@@ -50,7 +50,7 @@ let content = MainViewContent(tableContent: .init(tableHeader: ["#", "Worker", "
 private let failed = (title.contramap { _ in "Failed" }
     <> tableComponent
     <> footerView.contramap { _ in })
-    .map(baseView >>> pure)
+    .map(flip(curry(baseView))(.failed) >>> pure)
 
 func failedView() -> String {
     return render(failed.view(content))
