@@ -10,7 +10,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git", from: "1.8.0"),
-        .package(url: "https://github.com/pointfreeco/swift-html.git", from: "0.1.3"),
+        .package(url: "https://github.com/pointfreeco/swift-html.git", .branch("master")),
         .package(url: "https://github.com/vapor/redis.git", from: "3.0.0"),
 //        .package(url: "https://github.com/vapor/postgresql.git", from: "1.0.0"),
 //        .package(url: "https://github.com/vapor/crypto.git", from: "3.0.0"),

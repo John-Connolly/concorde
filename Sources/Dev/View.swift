@@ -35,9 +35,13 @@ extension View: Monoid {
     }
 }
 
-func pure<A>(_ a: A) -> [A] { return [a] }
+func pure<A>(_ a: A) -> [A] {
+    return [a]
+}
 
-precedencegroup Semigroup { associativity: left }
+precedencegroup Semigroup {
+    associativity: left
+}
 infix operator <>: Semigroup
 
 protocol Semigroup {
@@ -57,34 +61,6 @@ extension Array: Monoid {
 
 import Html
 import concorde
-
-
-let side = View<(), [Node]> { node in
-    return [
-        div([Attribute("class", "container-fluid")], [
-            div([Attribute("class", "row")], [
-                sideBar(),
-                
-            ])
-        ])
-    ]
-}
-
-
-
-let mainPage = View<(), [Node]> {
-    return [html([
-        head(style: "dashboard.css"),
-        body([
-            navBar(title: "Swift-Q"),
-            div([Attribute("class", "container-fluid")], [
-                div([Attribute("class", "row")], [
-                    sideBar(),
-                ])
-            ])
-        ])
-    ])]
-}
 
 
 func render<D>(view: View<D, [Node]>, with data: D) -> String {
