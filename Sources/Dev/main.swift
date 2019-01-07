@@ -91,7 +91,7 @@ func workersStats(with conn: Conn) -> Future<[ConsumerInfo]> {
     let data = redis(conn: conn) >>- query
     let consumersNames = data.map { $0.array?.compactMap { $0.string } ?? [] }
     return consumersNames.then { consumers -> Future<RedisData> in
-        let query = curry(redisQuery)(.mget(keys: consumers))
+        let query = curry(redisQuery)(.mget(keys: consumers)) // FIX ME!!
         return redis(conn: conn) >>- query
         }.map { redisData in
             let redisDatas = redisData.array ?? []
@@ -100,6 +100,8 @@ func workersStats(with conn: Conn) -> Future<[ConsumerInfo]> {
                 .map { data in
                     try JSONDecoder().decode(ConsumerInfo.self, from: data)
             }
+        }.mapIfError { error in
+            return []
     }
 }
 
