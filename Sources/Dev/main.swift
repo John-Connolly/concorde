@@ -133,6 +133,7 @@ let routes = [
     pure(unzurry(loginPost)) <*> (path("login") *> end) |> post,
     pure(unzurry(dashBoard)) <*> (path("overview") *> end) |> get,
     pure(unzurry(failed)) <*> (path("failed") *> end) |> get,
+    pure(unzurry(addTask)) <*> (path("addTask") *> end) |> post,
     curry(fileServing) <^> (suffix) |> get,
 ]
 
