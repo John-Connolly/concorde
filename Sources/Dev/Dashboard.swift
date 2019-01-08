@@ -74,10 +74,10 @@ let statsRowView = View<ProcessedStats, [Node]> { content in
                 card(title: "Successful", content: content.total),
                 ]),
             div([classAtr("col-sm")], [
-                card(title: "Queued", content: "34"),
+                card(title: "Queued", content: content.queued),
                 ]),
             div([classAtr("col-sm")], [
-                card(title: "Failed", content: "34"),
+                card(title: "Failed", content: content.failed),
                 ])
             ]),
         ]

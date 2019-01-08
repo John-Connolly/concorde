@@ -49,16 +49,15 @@ func redisStats(with conn: Conn) -> Future<RedisStats> {
 
 struct ProcessedStats {
     let total: String
-    let queued: Int
-    let failed: Int
+    let queued: String
+    let failed: String
 }
 
 func processedStats(with conn: Conn) -> Future<ProcessedStats> {
-    let query = curry(redisQuery)(.get(key: "stats:proccessed"))
-    let data = redis(conn: conn) >>- query
-    return data
-        <^> { $0.string ?? "None" }
-        <^> { ProcessedStats.init(total: $0, queued: 12, failed: 0)}
+    let processed = (redis(conn: conn) >>- curry(redisQuery)(.get(key: "stats:proccessed"))) <^> { $0.string ?? "None" }
+    let failed = (redis(conn: conn) >>- curry(redisQuery)(.get(key: "stats:failed"))) <^> { $0.string ?? "None" }
+    let queued = (redis(conn: conn) >>- curry(redisQuery)(.llen(key: "queue:default"))) <^> { $0.int?.description ?? "0" }
+    return zip(processed, queued, failed).map(ProcessedStats.init)
 }
 
 
