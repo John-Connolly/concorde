@@ -84,9 +84,9 @@ let statsRowView = View<ProcessedStats, [Node]> { content in
 }
 
 private let workerTableView = View<[ConsumerInfo], [Node]> { content in
-    let rows = content.map { [$0.info.hostname, "Good", $0.beat.description,] }
+    let rows = content.map { [$0.info.hostname, $0.health, $0.lastBeatFormatted, $0.beat.description,] }
     return [
-        card(with: table(header: ["#", "Consumer", "Health", "Last Heartbeat"], rows: rows)),
+        card(with: table(header: ["#", "Consumer", "Health", "Last Heartbeat (UTC)", "Last Heartbeat unix"], rows: rows)),
         ]
 }
 

@@ -61,6 +61,14 @@ func processedStats(with conn: Conn) -> Future<ProcessedStats> {
 }
 
 
+extension Date {
+
+    var unixTime: Int {
+        return Int(self.timeIntervalSince1970)
+    }
+
+}
+
 struct ConsumerInfo: Codable {
     var beat: Int
     let info: Info
@@ -69,6 +77,19 @@ struct ConsumerInfo: Codable {
     struct Info: Codable {
         let hostname: String
         let startedAt: Int
+    }
+
+    var health: String {
+        let tenSecondsAgo = Date().addingTimeInterval(-10).unixTime
+        return tenSecondsAgo < beat ? "Alive" : "💀Dead💀"
+    }
+
+    var lastBeatFormatted: String {
+        let dateformatter = DateFormatter()
+        dateformatter.timeZone = TimeZone(abbreviation: "UTC")
+        dateformatter.dateStyle = .full
+        dateformatter.timeStyle = .medium
+        return dateformatter.string(from: Date(timeIntervalSince1970: Double(beat)))
     }
 
 

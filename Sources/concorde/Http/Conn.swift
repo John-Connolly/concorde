@@ -68,14 +68,14 @@ public func write(status: HTTPResponseStatus) -> Middleware {
 
 public func write(body: String) -> Middleware {
     return { conn in
-        conn.response.data = body.data(using: .utf8) ?? Data()
+        conn.response.data = Data(body.utf8)
         return conn.future(conn)
     }
 }
 
 public func write(body: String, contentType: MimeType) -> Middleware {
     return { conn in
-        conn.response.data = body.data(using: .utf8) ?? Data()
+        conn.response.data = Data(body.utf8)
         conn.response.contentType = contentType
         return conn.future(conn)
     }

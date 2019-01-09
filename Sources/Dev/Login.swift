@@ -10,6 +10,9 @@ import Html
 
 func head(style file: String) -> ChildOf<Tag.Html> {
     return head([
+        meta([Attribute("charset", "utf-8")]),
+        meta([Attribute("http-equiv", "X-UA-Compatible"), Attribute("content", "IE=edge")]),
+        meta([Attribute("name", "viewport"), Attribute("content", "width=device-width, initial-scale=1")]),
         title("Swift-Q"),
         boostrapCss,
         boostrapJs,
