@@ -108,7 +108,7 @@ display: false,
 });
 
 """
-    return Node.element("script", [], [.raw(js)]) //script(js)
+    return Node.element("script", [], [.raw(js)])
 }
 
 

@@ -50,7 +50,6 @@ func redisStats(with conn: Conn) -> Future<RedisStats> {
 
 
 func graphItems(with conn: Conn) -> Future<[(String, Int)]> {
-
     let weekOfDates = ((1...6).map { Date().addingTimeInterval(-86_400 * Double($0)) } + [Date()]).sorted(by: <)
     let datesFormatted = weekOfDates.map(dateString(from:))
     let keys = datesFormatted.map { "stats:proccessed:" + $0 }
@@ -169,8 +168,15 @@ func workersStats(with conn: Conn) -> Future<[ConsumerInfo]> {
 
 func failed(conn: Conn) -> Future<Conn> {
     return (authorize(true)
-        >=> write(status: .ok) //render(view: mainPage, with: ()
+        >=> write(status: .ok)
         >=> write(body: failedView(), contentType: .html))(conn)
+}
+
+
+func logs(conn: Conn) -> Future<Conn> {
+    return (authorize(true)
+        >=> write(status: .ok)
+        >=> write(body: logsView(), contentType: .html))(conn)
 }
 
 
@@ -194,6 +200,7 @@ let routes = [
     pure(unzurry(loginPost)) <*> (path("login") *> end) |> post,
     pure(unzurry(dashBoard)) <*> (path("overview") *> end) |> get,
     pure(unzurry(failed)) <*> (path("failed") *> end) |> get,
+    pure(unzurry(logs)) <*> (path("logs") *> end) |> get,
     pure(unzurry(addTask)) <*> (path("addTask") *> end) |> post,
     pure(unzurry(deploy)) <*> (path("deploy") *> end) |> post,
     curry(fileServing) <^> (suffix) |> get,
