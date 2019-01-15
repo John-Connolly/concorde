@@ -15,7 +15,7 @@ struct DashBoardData {
     let consumers: [ConsumerInfo]
 }
 
-private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Redis Overview Hello!" }
+private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Redis Overview" }
     <> redisStatsUsageView.contramap { $0.stats }
     <> redisStatsView.contramap { $0.stats }
     <> statsRowView.contramap { $0.proccessed }
