@@ -25,12 +25,12 @@ func baseView(with nodes: [Node], activeItem: SideBarItem) -> Node {
                 ]),
             jquery,
             graph(),
-            graph(items: [("Monday", 34), ("Tuesday", 343), ("Wednesday", 954)])
             ])
         ])
 
     return node
 }
+
 
 enum SideBarItem {
     case overview

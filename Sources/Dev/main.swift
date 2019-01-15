@@ -27,7 +27,8 @@ func dashBoard(conn: Conn) -> Future<Conn> {
     let view =
         zip(redisStats(with: conn),
             processedStats(with: conn),
-            workersStats(with: conn))
+            workersStats(with: conn),
+            graphItems(with: conn))
         <^> DashBoardData.init
         <^> dashBoardView
 
@@ -45,6 +46,27 @@ func redisStats(with conn: Conn) -> Future<RedisStats> {
     return data
         <^> { $0.string?.parseStats() ?? [:] }
         <^> RedisStats.init
+}
+
+
+func graphItems(with conn: Conn) -> Future<[(String, Int)]> {
+
+    let weekOfDates = ((1...6).map { Date().addingTimeInterval(-86_400 * Double($0)) } + [Date()]).sorted(by: <)
+    let datesFormatted = weekOfDates.map(dateString(from:))
+    let keys = datesFormatted.map { "stats:proccessed:" + $0 }
+    let command = Command.mget(keys: keys)
+    let query = curry(redisQuery)(command)
+    let data = redis(conn: conn) >>- query
+
+    let values = data.map { ($0.array?.map { Int($0.string ?? "0")! }) ?? [] }
+    return values.map { zip(datesFormatted, $0).map { $0 } }
+}
+
+func dateString(from date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.timeZone = TimeZone(abbreviation: "UTC")
+    formatter.dateStyle = .short
+    return formatter.string(from: date)
 }
 
 struct ProcessedStats {
