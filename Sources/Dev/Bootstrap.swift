@@ -88,9 +88,9 @@ datasets: [{
 data: [\(values)],
 lineTension: 0,
 backgroundColor: 'transparent',
-borderColor: '#007bff',
+borderColor: '#FFD62F',
 borderWidth: 4,
-pointBackgroundColor: '#007bff'
+pointBackgroundColor: '#FFD62F'
 }]
 },
 options: {
