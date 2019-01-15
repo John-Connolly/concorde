@@ -71,13 +71,13 @@ let statsRowView = View<ProcessedStats, [Node]> { content in
     return [
         row(with: [
             div([classAtr("col-sm")], [
-                card(title: "Successful", content: content.total),
+                card(title: "Successful", content: content.formattedTotal),
                 ]),
             div([classAtr("col-sm")], [
-                card(title: "Queued", content: content.queued),
+                card(title: "Queued", content: content.formattedQueued),
                 ]),
             div([classAtr("col-sm")], [
-                card(title: "Failed", content: content.failed),
+                card(title: "Failed", content: content.formattedFailed),
                 ])
             ]),
         ]

@@ -51,6 +51,25 @@ struct ProcessedStats {
     let total: String
     let queued: String
     let failed: String
+
+    private let formatter: NumberFormatter = {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        return numberFormatter
+    }()
+
+    var formattedTotal: String {
+        return Int(total).flatMap { formatter.string(from: NSNumber(integerLiteral: $0)) } ?? "None"
+    }
+
+    var formattedQueued: String {
+        return Int(queued).flatMap { formatter.string(from: NSNumber(integerLiteral: $0)) } ?? "None"
+    }
+
+    var formattedFailed: String {
+        return Int(failed).flatMap { formatter.string(from: NSNumber(integerLiteral: $0)) } ?? "None"
+    }
+
 }
 
 func processedStats(with conn: Conn) -> Future<ProcessedStats> {
