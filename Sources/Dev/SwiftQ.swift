@@ -57,18 +57,6 @@ struct Deploy: Task {
     let args: [String]
 
     func execute(loop: EventLoop) -> EventLoopFuture<()> {
-        let task = Process()
-        task.launchPath = "/bin/sh"//"/Users/johnconnolly/documents/opensource/concorde"//"/root/concorde"
-        task.arguments = args
-
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        task.launch()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-//        let output = String(data: data, encoding: String.Encoding.utf8)
-        //        print(output)
-        task.waitUntilExit()
         return loop.newSucceededFuture(result: ())
     }
 
