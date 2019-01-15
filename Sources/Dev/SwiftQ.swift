@@ -87,7 +87,7 @@ func deploy(conn: Conn) -> Future<Conn> {
     struct Response: Codable {
         let queued: Int
     }
-    let resp = addTask(task: Deploy(args: ["bash", "/root/concorde/deploy.sh"]), with: conn).map(Response.init)
+    let resp = addTask(task: Deploy(args: ["/root/concorde/deploy.sh"]), with: conn).map(Response.init)
 
     func writeBody(conn: Conn) -> Future<Conn> {
         return resp >>- { write(body: $0)(conn) }
