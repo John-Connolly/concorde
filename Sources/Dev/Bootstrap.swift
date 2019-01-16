@@ -85,8 +85,9 @@ type: 'line',
 data: {
 labels: [\(labels)],
 datasets: [{
+
 data: [\(values)],
-lineTension: 0,
+lineTension: 0.3,
 backgroundColor: 'transparent',
 borderColor: '#FFD62F',
 borderWidth: 4,
