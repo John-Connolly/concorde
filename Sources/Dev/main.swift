@@ -119,9 +119,13 @@ struct ConsumerInfo: Codable {
         let startedAt: Int
     }
 
-    var health: String {
+    var isAlive: Bool {
         let tenSecondsAgo = Date().addingTimeInterval(-10).unixTime
-        return tenSecondsAgo < beat ? "Alive" : "💀Dead💀"
+        return tenSecondsAgo < beat
+    }
+
+    var health: String {
+        return isAlive ? "Alive" : "💀Dead💀"
     }
 
     var lastBeatFormatted: String {
@@ -133,6 +137,11 @@ struct ConsumerInfo: Codable {
     }
 
 
+    var uptime: String {
+        let difference = Date().addingTimeInterval(-Double(info.startedAt)).unixTime
+        return isAlive ? timePassed(since: difference) : "N/A"
+    }
+
     var allFields: [String: String] {
         return [
             ConsumerInfo.CodingKeys.beat.stringValue: beat.description,
@@ -141,6 +150,20 @@ struct ConsumerInfo: Codable {
         ]
     }
 
+}
+
+func timePassed(since date: Int) -> String {
+    let days = (date / 86_400)
+    let hours = (date % 86_400) / 3600
+    let minutes = (date % 3600) / 60
+    let seconds = (date % 3600) % 60
+    return days > 1
+        ? String(days) + " days"
+        : hours > 1
+        ? String(hours) + " Hours"
+        : minutes > 1
+        ? String(minutes) + " Minutes"
+        : String(seconds) + " Seconds"
 }
 
 

@@ -100,17 +100,7 @@ struct RedisStats {
 
 
     var formattedUptime: String {
-        let days = (uptime / 86_400)
-        let hours = (uptime % 86_400) / 3600
-        let minutes = (uptime % 3600) / 60
-        let seconds = (uptime % 3600) % 60
-        return days > 1
-            ? String(days) + " days"
-            : hours > 1
-            ? String(hours) + " Hours"
-            : minutes > 1
-            ? String(minutes) + " Minutes"
-            : String(seconds) + " Seconds"
+        return timePassed(since: uptime)
     }
 
 

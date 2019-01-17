@@ -91,9 +91,9 @@ private let graphViewComponent = View<[(String, Int)], [Node]> { content in
 }
 
 private let workerTableView = View<[ConsumerInfo], [Node]> { content in
-    let rows = content.map { [$0.info.hostname, $0.health, $0.lastBeatFormatted, $0.beat.description,] }
+    let rows = content.map { [$0.info.hostname, $0.health, $0.lastBeatFormatted, $0.beat.description, $0.uptime] }
     return [
-        card(with: table(header: ["#", "Consumer", "Health", "Last Heartbeat (UTC)", "Last Heartbeat unix"], rows: rows)),
+        card(with: table(header: ["#", "Consumer", "Health", "Last Heartbeat (UTC)", "Last Heartbeat unix", "Uptime"], rows: rows)),
         ]
 }
 
