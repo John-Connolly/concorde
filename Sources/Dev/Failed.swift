@@ -36,7 +36,7 @@ struct MainViewContent {
 
 }
 
-let content = MainViewContent(tableContent: .init(tableHeader: ["#", "Worker", "Failed Count"], content: [["Worker 1", "hello"]]))
+private let content = MainViewContent(tableContent: .init(tableHeader: ["#", "Worker", "Failed Count"], content: [["Worker 1", "hello"]]))
 
 private let failed = (title.contramap { _ in "Failed" }
     <> tableComponent

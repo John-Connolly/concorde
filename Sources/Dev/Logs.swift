@@ -17,6 +17,8 @@ private let title = View<String, [Node]> { content in
         ]
 }
 
+private let content = MainViewContent(tableContent: .init(tableHeader: ["#", "Task Name", "Error date",  "Log message"], content: [["Deploy", "156546520","Error: Could not complete operation"]]))
+
 private let tableComponent = View<MainViewContent, [Node]> { content in
     return [
         card(with: table(header: content.tableContent.tableHeader,
