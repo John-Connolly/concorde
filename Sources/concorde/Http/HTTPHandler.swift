@@ -44,19 +44,19 @@ final class HTTPHandler: ChannelInboundHandler {
                              eventLoop: ctx.eventLoop,
                              request: request,
                              response: .empty)
-            state.receivedHead(header, request: request) // Fix body
+            state.receivedHead(header, conn: conn)
             router(conn, write(ctx))
         case .body(let body):
             switch state {
             case .idle, .sendingResponse: break
-            case .waitingForRequestBody(_,let request):
-                request.stream.yeild(.input(body))
+            case .waitingForRequestBody(_, let conn):
+                conn.stream.yeild(.input(body))
             }
         case .end:
             switch state {
             case .idle, .sendingResponse: break
-            case .waitingForRequestBody(_,let request): ()
-                request.stream.yeild(.complete)
+            case .waitingForRequestBody(_, let conn): ()
+                conn.stream.yeild(.complete)
             state.done()
             }
         }

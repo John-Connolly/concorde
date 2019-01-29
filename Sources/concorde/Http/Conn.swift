@@ -17,6 +17,8 @@ public final class Conn {
     public let request: Request
     public internal(set) var response: Response
 
+    let stream = BodyStream()
+
     init(cache: ThreadCache,
          eventLoop: EventLoop,
          request: Request,
@@ -54,6 +56,16 @@ public final class Conn {
     public func failed<T>(with error: ResponseError) -> Future<T> {
         return eventLoop.newFailedFuture(error: error)
     }
+
+    // Reads the entire body into memory then returns it.
+    public var body: Future<Data> {
+        let promise: Promise<Data> = self.promise()
+        stream.connect(to: BodySink { data in
+            promise.succeed(result: data)
+        })
+        return promise.futureResult
+    }
+
 
 }
 

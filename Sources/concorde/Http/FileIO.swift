@@ -9,7 +9,7 @@ import Foundation
 import NIO
 
 
-let threadPool : BlockingIOThreadPool = {
+let threadPool: BlockingIOThreadPool = {
     let tp = BlockingIOThreadPool(numberOfThreads: 4)
     tp.start()
     return tp

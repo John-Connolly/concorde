@@ -11,8 +11,8 @@ import NIOHTTP1
 
 public struct Request {
     public let head: HTTPRequestHead
-
-    public let stream = BodyStream()
+    
+    public var body: ((Data) -> ())?
 
     public init(head: HTTPRequestHead) {
         self.head = head
@@ -21,15 +21,5 @@ public struct Request {
     public var method: HTTPMethod {
         return head.method
     }
-
-
-/// Reads the entire body into memory then returns it.
-//    public var body: Future<Data> {
-//        let promise: Promise<Data> = self.promise()
-//        stream.connect(to: BodySink { data in
-//            promise.succeed(result: data)
-//        })
-//        return promise.futureResult
-//    }
 
 }
