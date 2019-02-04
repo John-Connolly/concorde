@@ -12,7 +12,7 @@ public struct Response {
     public internal(set) var contentType: MimeType
     public var status: HTTPResponseStatus = .ok
     public var headers: [String: String] = [:]
-    public internal(set) var data: Data
+    public internal(set) var data: Data // TODO Change to bytebuffer!!
 
     public static var error: Response {
         return .init(contentType: .plain,

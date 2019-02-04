@@ -15,7 +15,10 @@ private func create(router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
         let loop = group.next()
 
         loop.submit {
-            let cons = config.resources.map { $0(loop) }
+            var cons = config.resources.map { $0(loop) }
+            let threadPool = BlockingIOThreadPool(numberOfThreads: 1)
+            threadPool.start()
+            cons.append(threadPool as Any)
             variable.currentValue = ThreadCache(items: cons)
         }.whenFailure { error in
             fatalError("Could not boot eventloop: \(error)")
