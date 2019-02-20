@@ -218,18 +218,60 @@ func fileServing(fileName: String, conn: Conn) -> Future<Conn> {
     return (write(status: .ok) >=> write(body: data, contentType: .png))(conn)
 }
 
-let routes = [
-    pure(unzurry(login)) <*> end |> get,
-    pure(unzurry(loginPost)) <*> (path("login") *> end) |> post,
-    pure(unzurry(dashBoard)) <*> (path("overview") *> end) |> get,
-    pure(unzurry(failed)) <*> (path("failed") *> end) |> get,
-    pure(unzurry(logs)) <*> (path("logs") *> end) |> get,
-    pure(unzurry(addTask)) <*> (path("addTask") *> end) |> post,
-    pure(unzurry(deploy)) <*> (path("deploy") *> end) |> post,
-    curry(fileServing) <^> (suffix) |> get,
+func weatherData(conn: Conn) -> Future<Conn> {
+    let url = "http://api.openweathermap.org/data/2.5/weather?q=Wolfville,ca&APPID=1c612550bab05b2d74696169c71bdc84"
+
+    let urlRequest = URLRequest(url: URL(string: url)!)
+    let session = URLSession(configuration: .default)
+    let promise: EventLoopPromise<Data> = conn.promise()
+
+    session.dataTask(with: urlRequest, completionHandler: { data, resp , _ in
+
+        guard let data = data else {
+            promise.fail(error: "Could not get data")
+            return
+        }
+
+        if let resp = resp as? HTTPURLResponse, resp.statusCode != 200 {
+            promise.succeed(result: data)
+            return
+        }
+
+        promise.succeed(result: data)
+
+    }).resume()
+
+    return promise.futureResult.flatMap { data in
+        (write(status: .ok) >=> write(body: data, contentType: .json))(conn)
+    }
+
+}
+
+let postRoutes = [
+    pure(unzurry(addTask)) <*> (path("addTask") *> end),
+    pure(unzurry(loginPost)) <*> (path("login") *> end),
+    pure(unzurry(deploy)) <*> (path("deploy") *> end),
 ]
 
-let flightPlan = router(register: routes)
+let getRoutes = [
+    pure(unzurry(login)) <*> end,
+    pure(unzurry(dashBoard)) <*> (path("overview") *> end),
+    pure(unzurry(failed)) <*> (path("failed") *> end),
+    pure(unzurry(logs)) <*> (path("logs") *> end),
+    pure(unzurry(weatherData)) <*> (path("weather") *> end),
+    curry(fileServing) <^> (suffix),
+]
+
+
+let proutes = prettyPrint(getRoutes)
+
+//postRoutes.forEach { print($0) }
+
+let getGrouped = method(.GET, route: choice(getRoutes))
+let postGrouped = method(.POST, route: choice(postRoutes))
+//print(choice([getGrouped, postGrouped]))
+
+let flightPlan = router(register: [getGrouped, postGrouped])
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)

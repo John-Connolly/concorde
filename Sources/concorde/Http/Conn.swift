@@ -13,7 +13,7 @@ public typealias Middleware = (Conn) -> Future<Conn>
 public final class Conn {
 
     private let cache: ThreadCache
-    private let eventLoop: EventLoop
+    public let eventLoop: EventLoop
     public let request: Request
     public internal(set) var response: Response
 

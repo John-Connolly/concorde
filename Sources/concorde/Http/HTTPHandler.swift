@@ -55,7 +55,7 @@ final class HTTPHandler: ChannelInboundHandler {
         case .end:
             switch state {
             case .idle, .sendingResponse: break
-            case .waitingForRequestBody(_, let conn): ()
+            case .waitingForRequestBody(_, let conn):
                 conn.stream.yeild(.complete)
             state.done()
             }
@@ -91,7 +91,11 @@ final class HTTPHandler: ChannelInboundHandler {
 
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
         ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
-        ctx.writeAndFlush(wrapOutboundOut(.end(.none)), promise: .none)
+        let promise: EventLoopPromise<Void> = ctx.eventLoop.newPromise()
+        ctx.writeAndFlush(wrapOutboundOut(.end(.none)), promise: promise)
+        promise.futureResult.whenSuccess {
+            ctx.close(promise: .none)
+        }
     }
 
     private func head(_ response: Response) -> HTTPResponseHead {

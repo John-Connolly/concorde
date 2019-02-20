@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import NIOHTTP1
 
 public struct Route<A> {
     public typealias Stream = ArraySlice<String>
     public let parse: (Stream) -> (A, Stream)?
+    public let method: HTTPMethod
     /// String representation of what is being matched on.
     let uriFormat: String
 }
@@ -19,18 +21,28 @@ extension Route {
     init(parse: @escaping (Stream) -> (A, Stream)?) {
         self.parse = parse
         self.uriFormat = "/"
+        self.method = .GET // FIX
     }
 
     init(uriFormat: String, parse: @escaping (Stream) -> (A, Stream)?) {
         self.parse = parse
         self.uriFormat = uriFormat
+        self.method = .GET
     }
 
+    init(method: HTTPMethod, uriFormat: String, parse: @escaping (Stream) -> (A, Stream)?) {
+        self.parse = parse
+        self.method = method
+        self.uriFormat = uriFormat
+    }
 }
 
 extension Route {
 
-    public func run(_ string: String) -> (A, Stream)? {
+    public func run(_ string: String, method: HTTPMethod) -> (A, Stream)? {
+        guard method == self.method else {
+            return nil
+        }
         guard let url = URL(string: string) else { return nil }
         let queryString = url.query?.components(separatedBy: "&") ?? []
         let combined = url.pathComponents + queryString
@@ -51,13 +63,23 @@ extension Route {
             return ((result1, result2), remainder2)
         }
     }
+
+    public func or(_ route: Route<A>) -> Route<A> {
+        return Route<A> { input in
+            self.parse(input) ?? route.parse(input)
+        }
+    }
 }
 
-public func prettyPrint(_ route: Route<(Request) -> Future<Response>>) -> String {
-    return route.uriFormat
+public func choice<A>(_ routes: [Route<A>]) -> Route<A> {
+    return routes.dropFirst().reduce(routes[0], { $0.or($1) })
 }
 
-public func prettyPrint(_ routes: [Route<(Request) -> Future<Response>>]) -> [String] {
+public func prettyPrint(_ route: Route<(Conn) -> Future<Conn>>) -> String {
+    return route.uriFormat + "\n"
+}
+
+public func prettyPrint(_ routes: [Route<(Conn) -> Future<Conn>>]) -> [String] {
     return routes.map(prettyPrint)
 }
 
@@ -71,6 +93,10 @@ public func path(_ matching: String) -> Route<String> {
 public let end: Route<()> = Route { input in
     guard input.count == 0 else { return nil }
     return ((), input)
+}
+
+public func method<A>(_ method: HTTPMethod, route: Route<A>) -> Route<A> {
+    return Route(method: method, uriFormat: route.uriFormat, parse: route.parse)
 }
 
 public let suffix: Route<String> = Route { input in

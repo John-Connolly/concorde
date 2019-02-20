@@ -22,7 +22,8 @@ struct Email: Task {
 }
 
 func addToQueue(with conn: Conn) -> Future<Int> {
-    let producer = conn.cached(SwiftQ.Producer.self)
+//    let producer = conn.cached(SwiftQ.Producer.self)
+    let producer = SwiftQ.Producer.connect(on: conn.eventLoop)
 
     let tasks = (1...500).map { _ in
         Email(email: "Hello@hello.com")
@@ -31,6 +32,7 @@ func addToQueue(with conn: Conn) -> Future<Int> {
     return producer.then { producer in
         producer.enqueue(tasks: tasks)
     }
+
 }
 
 func addTask(conn: Conn) -> Future<Conn> {
