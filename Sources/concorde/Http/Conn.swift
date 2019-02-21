@@ -38,10 +38,6 @@ public final class Conn {
         return eventLoop.newPromise()
     }
 
-    public func wrap(f: () -> ResponseRepresentable) -> Future<Response> {
-        return future(f().resp)
-    }
-
     public func cached<T>(_ type: T.Type) -> Future<T> {
         return cache.items.first(where: { $0 as? Future<T> != nil } ) as! Future<T>
     }
@@ -81,14 +77,14 @@ public func write(status: HTTPResponseStatus) -> Middleware {
 
 public func write(body: String) -> Middleware {
     return { conn in
-        conn.response.data = Data(body.utf8)
+        conn.response.data = .data(Data(body.utf8))
         return conn.future(conn)
     }
 }
 
 public func write(body: String, contentType: MimeType) -> Middleware {
     return { conn in
-        conn.response.data = Data(body.utf8)
+        conn.response.data = .data(Data(body.utf8))
         conn.response.contentType = contentType
         return conn.future(conn)
     }
@@ -96,7 +92,7 @@ public func write(body: String, contentType: MimeType) -> Middleware {
 
 public func write(body: Data, contentType: MimeType) -> Middleware {
     return { conn in
-        conn.response.data = body
+        conn.response.data = .data(body)
         conn.response.contentType = contentType
         return conn.future(conn)
     }
@@ -106,7 +102,7 @@ public func write<T: Codable>(body: T) -> Middleware {
     return { conn in
         switch encode(body) {
         case .success(let value):
-            conn.response.data = value
+            conn.response.data = .data(value)
             conn.response.contentType = .json
             return conn.future(conn)
         case .failure(let error):

@@ -85,7 +85,11 @@ final class HTTPHandler: ChannelInboundHandler {
     private func write(_ response: Response, on ctx: ChannelHandlerContext) {
         ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: .none)
         var buffer = ctx.channel.allocator.buffer(capacity: response.data.count)
-        buffer.write(bytes: response.data)
+        switch response.data {
+        case .data(let data):
+            buffer.write(bytes: data)
+        case .byteBuffer(_): ()
+        }
         self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
     }
 

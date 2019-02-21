@@ -6,19 +6,35 @@
 //
 
 import Foundation
+import NIO
 import NIOHTTP1
+
+public enum ResponseStorage {
+    case data(Data)
+    case byteBuffer(ByteBuffer)
+
+    var count: Int {
+        switch self {
+        case .data(let data):
+            return data.count
+        case .byteBuffer(let buffer):
+            return buffer.capacity
+        }
+    }
+}
 
 public struct Response {
     public internal(set) var contentType: MimeType
     public var status: HTTPResponseStatus = .ok
     public var headers: [String: String] = [:]
-    public internal(set) var data: Data // TODO Change to bytebuffer!!
+    public internal(set) var data: ResponseStorage
+
 
     public static var error: Response {
         return .init(contentType: .plain,
                      status: .badRequest,
                      headers: [:],
-                     data: "Bad request".data(using: .utf8) ?? Data())
+                     data: .data( Data("Bad request".utf8)))
     }
 
     public static var notFound: Response {
@@ -30,14 +46,14 @@ public struct Response {
         return .init(contentType: .plain,
                      status: .ok,
                      headers: [:],
-                     data: Data())
+                     data: .data(Data()))
     }
 
     public static func error(_ error: Error) -> Response {
         return  .init(contentType: .plain,
                       status: .badRequest,
                       headers: [:],
-                      data: error.localizedDescription.data(using: .utf8) ?? Data())
+                      data: .data(Data(error.localizedDescription.utf8)))
     }
 
     public static var unauthorized: Response {
@@ -53,43 +69,24 @@ public extension Response {
             self = .error
             return
         }
-        self.data = data
+        self.data = .data(data)
         self.contentType = .json
     }
 
     public init(_ item: String) {
-        self.data = item.data(using: .utf8) ?? Data()
+        self.data = .data(Data(item.utf8))
         self.contentType = .plain
     }
 
     public init(item: String, type: MimeType) {
-        self.data = item.data(using: .utf8) ?? Data()
+        self.data = .data(Data(item.utf8))
         self.contentType = type
     }
 
     public init(item: String, status: HTTPResponseStatus) {
-        self.data = item.data(using: .utf8) ?? Data()
+        self.data = .data(Data(item.utf8))
         self.contentType = .plain
         self.status = status
     }
 
-}
-
-public protocol ResponseRepresentable {
-    var resp: Response { get }
-}
-
-extension ResponseRepresentable where Self: Codable {
-
-    public var resp: Response {
-        return Response(self)
-    }
-    
-}
-
-extension String: ResponseRepresentable {
-
-    public var resp: Response {
-        return Response(self)
-    }
 }

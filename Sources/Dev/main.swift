@@ -16,7 +16,7 @@ func login() -> Middleware {
         >=> write(body: loginPage(), contentType: .html))
 }
 
-func loginPost() -> Middleware{
+func loginPost() -> Middleware {
     return authorize(true)
         >=> write(status: .ok)
         >=> redirect(to: "overview")
@@ -272,7 +272,6 @@ let getRoutes = [
 
 
 //let proutes = prettyPrint(getRoutes)
-
 //postRoutes.forEach { print($0) }
 
 let getGrouped = method(.GET, route: choice(getRoutes))
@@ -282,7 +281,6 @@ let flightPlan = router(register: [getGrouped, postGrouped])
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
-
 
 // wrk -t6 -c400 -d30s http://localhost:8080/hello
 
