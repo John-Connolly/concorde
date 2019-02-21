@@ -27,11 +27,11 @@ private let tableComponent = View<MainViewContent, [Node]> { content in
 }
 
 
-private let logs = (title.contramap { _ in "Logs" }
+private let logsV = (title.contramap { _ in "Logs" }
     <> tableComponent
     <> footerView.contramap { _ in })
     .map(flip(curry(baseView))(.logs) >>> pure)
 
 func logsView() -> String {
-    return render(logs.view(content))
+    return render(logsV.view(content))
 }

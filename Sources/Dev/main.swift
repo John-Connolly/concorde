@@ -10,34 +10,35 @@ func authorize(_ bool: Bool) -> Middleware {
     }
 }
 
-func login(conn: Conn) -> Future<Conn> {
+func login() -> Middleware {
     return (authorize(true)
         >=> write(status: .ok)
-        >=> write(body: loginPage(), contentType: .html))(conn)
+        >=> write(body: loginPage(), contentType: .html))
 }
 
-func loginPost(conn: Conn) -> Future<Conn> {
-    return (authorize(true)
+func loginPost() -> Middleware{
+    return authorize(true)
         >=> write(status: .ok)
-        >=> redirect(to: "overview"))(conn)
+        >=> redirect(to: "overview")
 }
 
-func dashBoard(conn: Conn) -> Future<Conn> {
+func dashBoard() -> Middleware {
+    return { conn in
+        let view =
+            zip(redisStats(with: conn),
+                processedStats(with: conn),
+                workersStats(with: conn),
+                graphItems(with: conn))
+                <^> DashBoardData.init
+                <^> dashBoardView
 
-    let view =
-        zip(redisStats(with: conn),
-            processedStats(with: conn),
-            workersStats(with: conn),
-            graphItems(with: conn))
-        <^> DashBoardData.init
-        <^> dashBoardView
+        func writeBody(conn: Conn) -> Future<Conn> {
+            return view >>- { write(body: $0, contentType: .html)(conn) }
+        }
 
-    func writeBody(conn: Conn) -> Future<Conn> {
-        return view >>- { write(body: $0, contentType: .html)(conn) }
+        return (write(status: .ok)
+            >=> writeBody)(conn)
     }
-
-    return (write(status: .ok)
-        >=> writeBody)(conn)
 }
 
 func redisStats(with conn: Conn) -> Future<RedisStats> {
@@ -189,17 +190,22 @@ func workersStats(with conn: Conn) -> Future<[ConsumerInfo]> {
 }
 
 
-func failed(conn: Conn) -> Future<Conn> {
+func failed() -> Middleware {
     return (authorize(true)
         >=> write(status: .ok)
-        >=> write(body: failedView(), contentType: .html))(conn)
+        >=> write(body: failedView(), contentType: .html))
 }
 
 
-func logs(conn: Conn) -> Future<Conn> {
+func logs() -> Middleware {
     return (authorize(true)
         >=> write(status: .ok)
-        >=> write(body: logsView(), contentType: .html))(conn)
+        >=> write(body: logsView(), contentType: .html))
+}
+
+func notFound() -> Middleware {
+    return (write(status: .notFound)
+        >=> write(body: "not found", contentType: .plain))
 }
 
 
@@ -208,14 +214,16 @@ let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
 
 // FIXME: Hack
-func fileServing(fileName: String, conn: Conn) -> Future<Conn> {
+func fileServing(fileName: String) -> Middleware {
     let directory = #file
     let fileDirectory = directory.components(separatedBy: "/Sources").first! + "/public/"
     let url = URL(fileURLWithPath: fileDirectory + fileName)
     guard let data = try? Data(contentsOf: url) else {
-        return conn.failed(with: .abort)
+        return { conn in
+            conn.failed(with: .abort)
+        }
     }
-    return (write(status: .ok) >=> write(body: data, contentType: .png))(conn)
+    return (write(status: .ok) >=> write(body: data, contentType: .png))
 }
 
 func weatherData(conn: Conn) -> Future<Conn> {
@@ -248,34 +256,32 @@ func weatherData(conn: Conn) -> Future<Conn> {
 }
 
 let postRoutes = [
-    pure(unzurry(addTask)) <*> (path("addTask") *> end),
-    pure(unzurry(loginPost)) <*> (path("login") *> end),
-    pure(unzurry(deploy)) <*> (path("deploy") *> end),
+    pure(addTask) <*> (path("addTask") *> end),
+    pure(loginPost) <*> (path("login") *> end),
+    pure(deploy) <*> (path("deploy") *> end),
 ]
 
 let getRoutes = [
-    pure(unzurry(login)) <*> end,
-    pure(unzurry(dashBoard)) <*> (path("overview") *> end),
-    pure(unzurry(failed)) <*> (path("failed") *> end),
-    pure(unzurry(logs)) <*> (path("logs") *> end),
-    pure(unzurry(weatherData)) <*> (path("weather") *> end),
+    pure(login) <*> end,
+    pure(dashBoard) <*> (path("overview") *> end),
+    pure(failed) <*> (path("failed") *> end),
+    pure(logs) <*> (path("logs") *> end),
+//    pure(unzurry(weatherData)) <*> (path("weather") *> end),
     curry(fileServing) <^> (suffix),
 ]
 
 
-let proutes = prettyPrint(getRoutes)
+//let proutes = prettyPrint(getRoutes)
 
 //postRoutes.forEach { print($0) }
 
 let getGrouped = method(.GET, route: choice(getRoutes))
 let postGrouped = method(.POST, route: choice(postRoutes))
-//print(choice([getGrouped, postGrouped]))
 
 let flightPlan = router(register: [getGrouped, postGrouped])
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
-
 
 
 // wrk -t6 -c400 -d30s http://localhost:8080/hello

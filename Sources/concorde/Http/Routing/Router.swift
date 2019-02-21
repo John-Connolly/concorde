@@ -9,7 +9,7 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-public func router(register routes: [Route<(Conn) -> EventLoopFuture<Conn>>]) -> (Conn, (Future<Conn>)
+public func router(register routes: [Route<Middleware>]) -> (Conn, (Future<Conn>)
     -> ())
     -> () {
         return { conn, responder in
@@ -21,8 +21,8 @@ public func router(register routes: [Route<(Conn) -> EventLoopFuture<Conn>>]) ->
                 return
             }
 
+            conn.response = .notFound
             responder(conn.future(conn))
             return
         }
-
 }

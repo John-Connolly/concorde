@@ -29,6 +29,7 @@ public final class Conn {
         self.response = response
     }
 
+
     public func future<T>(_ t: T) -> Future<T> {
         return eventLoop.newSucceededFuture(result: t)
     }

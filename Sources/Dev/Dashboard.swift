@@ -16,7 +16,7 @@ struct DashBoardData {
     let graphItems: [(String, Int)]
 }
 
-private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Redis Overview" }
+private let dashBoardV: View<DashBoardData, [Node]> = (title.contramap { _ in "Redis Overview" }
     <> redisStatsUsageView.contramap { $0.stats }
     <> redisStatsView.contramap { $0.stats }
     <> statsRowView.contramap { $0.proccessed }
@@ -28,7 +28,7 @@ private let dashBoard: View<DashBoardData, [Node]> = (title.contramap { _ in "Re
     <> graphViewComponent.contramap { $0.graphItems }
 
 func dashBoardView(data: DashBoardData) -> String {
-    return render(dashBoard.view(data))
+    return render(dashBoardV.view(data))
 }
 
 let redisStatsUsageView = View<RedisStats, [Node]> { content in

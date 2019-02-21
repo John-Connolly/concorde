@@ -38,13 +38,13 @@ struct MainViewContent {
 
 private let content = MainViewContent(tableContent: .init(tableHeader: ["#", "Worker", "Failed Count"], content: [["Worker 1", "hello"]]))
 
-private let failed = (title.contramap { _ in "Failed" }
+private let failedV = (title.contramap { _ in "Failed" }
     <> tableComponent
     <> footerView.contramap { _ in })
     .map(flip(curry(baseView))(.failed) >>> pure)
 
 func failedView() -> String {
-    return render(failed.view(content))
+    return render(failedV.view(content))
 }
 
 /// Include job types!
