@@ -29,6 +29,9 @@ public final class Conn {
         self.response = response
     }
 
+    var threadPool: BlockingIOThreadPool {
+        return cache.items.first(where: { $0 as? BlockingIOThreadPool != nil }) as! BlockingIOThreadPool
+    }
 
     public func future<T>(_ t: T) -> Future<T> {
         return eventLoop.newSucceededFuture(result: t)

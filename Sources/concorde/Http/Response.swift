@@ -18,7 +18,7 @@ public enum ResponseStorage {
         case .data(let data):
             return data.count
         case .byteBuffer(let buffer):
-            return buffer.capacity
+            return buffer.readableBytes
         }
     }
 }

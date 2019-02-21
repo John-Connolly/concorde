@@ -88,7 +88,8 @@ final class HTTPHandler: ChannelInboundHandler {
         switch response.data {
         case .data(let data):
             buffer.write(bytes: data)
-        case .byteBuffer(_): ()
+        case .byteBuffer(var bytes):
+            buffer.write(buffer: &bytes)
         }
         self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
     }

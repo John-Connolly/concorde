@@ -213,18 +213,6 @@ func notFound() -> Middleware {
 let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
 
-// FIXME: Hack
-func fileServing(fileName: String) -> Middleware {
-    let directory = #file
-    let fileDirectory = directory.components(separatedBy: "/Sources").first! + "/public/"
-    let url = URL(fileURLWithPath: fileDirectory + fileName)
-    guard let data = try? Data(contentsOf: url) else {
-        return { conn in
-            conn.failed(with: .abort)
-        }
-    }
-    return (write(status: .ok) >=> write(body: data, contentType: .png))
-}
 
 func weatherData(conn: Conn) -> Future<Conn> {
     let url = "http://api.openweathermap.org/data/2.5/weather?q=Wolfville,ca&APPID=1c612550bab05b2d74696169c71bdc84"
