@@ -60,7 +60,7 @@ public final class Conn {
     // Reads the entire body into memory then returns it.
     public var body: Future<Data> {
         let promise: Promise<Data> = self.promise()
-        stream.connect(to: BodySink { data in
+        _ = stream.connect(to: BodySink { data in
             promise.succeed(result: data)
         })
         return promise.futureResult
@@ -118,6 +118,13 @@ public func redirect(to uri: String) -> Middleware {
     return { conn in
         conn.response.status = .seeOther
         conn.response.headers["Location"] = uri
+        return conn.future(conn)
+    }
+}
+
+public func stream<C: Consumer>(to stream: C) -> Middleware {
+    return { conn in
+        // conn.stream.connect(to: stream)
         return conn.future(conn)
     }
 }

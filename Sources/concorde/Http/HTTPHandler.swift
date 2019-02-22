@@ -90,6 +90,7 @@ final class HTTPHandler: ChannelInboundHandler {
             buffer.write(bytes: data)
         case .byteBuffer(var bytes):
             buffer.write(buffer: &bytes)
+        case .stream(_): ()
         }
         self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
     }

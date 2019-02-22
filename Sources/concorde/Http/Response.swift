@@ -12,6 +12,7 @@ import NIOHTTP1
 public enum ResponseStorage {
     case data(Data)
     case byteBuffer(ByteBuffer)
+    case stream(InputStream)
 
     var count: Int {
         switch self {
@@ -19,6 +20,8 @@ public enum ResponseStorage {
             return data.count
         case .byteBuffer(let buffer):
             return buffer.readableBytes
+        case .stream(_):
+            return 0
         }
     }
 }

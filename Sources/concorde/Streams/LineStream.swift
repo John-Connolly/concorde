@@ -20,10 +20,11 @@ public final class CSVStream: DuplexStream {
     public var done: (() -> ())?
 
     public init() { }
-    public func connect<S>(to inputStream: S) where S : Consumer, BodyStream.OutputValue == S.InputValue {
+    public func connect<S>(to inputStream: S) -> S where S : Consumer, BodyStream.OutputValue == S.InputValue {
         yeild = { value in
             inputStream.await(value)
         }
+        return inputStream
     }
 
     public func await(_ value: StreamInput<ByteBuffer>) {

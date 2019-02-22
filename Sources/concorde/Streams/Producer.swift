@@ -14,7 +14,7 @@ public protocol Producer: class {
 
     associatedtype OutputValue
 
-    func connect<S>(to inputStream: S) where S : Consumer, S.InputValue == OutputValue
+    func connect<S>(to inputStream: S) -> S where S : Consumer, S.InputValue == OutputValue
 
     var yeild: ((StreamInput<OutputValue>) -> ())? { get set }
 

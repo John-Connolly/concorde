@@ -25,7 +25,6 @@ func read(from path: String, on eventLoop: EventLoop, threadPool: BlockingIOThre
 }
 
 public func fileServing(fileName: String) -> Middleware {
-    
     return { conn in
         let directory = #file
         let fileDirectory = directory.components(separatedBy: "/Sources").first! + "/public/" + fileName
@@ -35,4 +34,3 @@ public func fileServing(fileName: String) -> Middleware {
         }
     }
 }
-
