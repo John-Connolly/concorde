@@ -24,6 +24,14 @@ public enum ResponseStorage {
             return 0
         }
     }
+
+    var isStreamed: Bool {
+        switch self {
+        case .data: return false
+        case .byteBuffer: return false
+        case .stream: return true
+        }
+    }
 }
 
 public struct Response {

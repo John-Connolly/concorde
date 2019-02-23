@@ -11,6 +11,7 @@ import NIOHTTP1
 public struct Route<A> {
     public typealias Stream = ArraySlice<String>
     public let parse: (Stream) -> (A, Stream)?
+    var inverse: ((A) -> String)? = nil
     public let method: HTTPMethod
     /// String representation of what is being matched on.
     let uriFormat: String

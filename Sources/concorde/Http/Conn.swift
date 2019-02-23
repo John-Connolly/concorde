@@ -122,12 +122,12 @@ public func redirect(to uri: String) -> Middleware {
     }
 }
 
-public func stream<C: Consumer>(to stream: C) -> Middleware {
-    return { conn in
-        // conn.stream.connect(to: stream)
-        return conn.future(conn)
-    }
-}
+//public func stream<C: Consumer>(to stream: C) -> (Conn) -> C {
+//    return { conn in
+//          return conn.stream.connect(to: stream)
+////        return conn.future(conn)
+//    }
+//}
 
 public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T> {
     return { data in
