@@ -258,7 +258,7 @@ let getRoutes = [
     pure(dashBoard) <*> (path("overview") *> end),
     pure(failed) <*> (path("failed") *> end),
     pure(logs) <*> (path("logs") *> end),
-    pure(hello) <*> (path("loaderio-95e2de71ba5cfa095645d825903bc632/") *> end),
+    pure(hello) <*> (path("loaderio-95e2de71ba5cfa095645d825903bc632") *> end),
 //    pure(unzurry(weatherData)) <*> (path("weather") *> end),
     curry(fileServing) <^> (suffix),
 ]
