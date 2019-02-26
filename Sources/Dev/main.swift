@@ -243,6 +243,10 @@ func weatherData(conn: Conn) -> Future<Conn> {
 
 }
 
+func hello() -> Middleware {
+    return write(status: .ok) >=> write(body: "Hello World")
+}
+
 let postRoutes = [
     pure(addTask) <*> (path("addTask") *> end),
     pure(loginPost) <*> (path("login") *> end),
@@ -254,6 +258,7 @@ let getRoutes = [
     pure(dashBoard) <*> (path("overview") *> end),
     pure(failed) <*> (path("failed") *> end),
     pure(logs) <*> (path("logs") *> end),
+    pure(hello) <*> (path("hello") *> end),
 //    pure(unzurry(weatherData)) <*> (path("weather") *> end),
     curry(fileServing) <^> (suffix),
 ]
