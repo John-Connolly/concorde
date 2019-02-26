@@ -88,11 +88,24 @@ final class HTTPHandler: ChannelInboundHandler {
         switch response.data {
         case .data(let data):
             buffer.write(bytes: data)
+            self.writeAndflush(buffer: buffer, ctx: ctx)
         case .byteBuffer(var bytes):
             buffer.write(buffer: &bytes)
-        case .stream(_): ()
+            self.writeAndflush(buffer: buffer, ctx: ctx)
+        case .stream(let stream):
+            stream.connect(to: Sink<Data>(drain: { input in
+                switch input {
+                case .input(let data):
+                    buffer.write(bytes: data)
+                    ctx.writeAndFlush(self.wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
+                    buffer.clear()
+                case .complete:
+                    ctx.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: nil)
+                case .error:()
+
+                }
+            }))
         }
-        self.writeAndflush(buffer: buffer, ctx: ctx) // save os calls here
     }
 
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
@@ -107,7 +120,9 @@ final class HTTPHandler: ChannelInboundHandler {
     private func head(_ response: Response) -> HTTPResponseHead {
         var head = HTTPResponseHead(version: .init(major: 1, minor: 1), status: response.status, headers: HTTPHeaders())
         head.headers.add(name: "Content-Type", value: response.contentType.rawValue)
-        if !response.data.isStreamed {
+        if response.data.isStreamed {
+            head.headers.add(name: "Transfer-Encoding", value: "chunked")
+        } else {
             head.headers.add(name: "Content-Length", value: String(response.data.count))
         }
         response.headers.forEach {

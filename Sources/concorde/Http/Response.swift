@@ -12,7 +12,7 @@ import NIOHTTP1
 public enum ResponseStorage {
     case data(Data)
     case byteBuffer(ByteBuffer)
-    case stream(InputStream)
+    case stream(ChunkedStream)
 
     var count: Int {
         switch self {

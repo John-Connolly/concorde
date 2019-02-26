@@ -15,6 +15,8 @@ func read(from path: String, on eventLoop: EventLoop, threadPool: BlockingIOThre
                              byteCount: 1024 * 1024,
                              allocator: ByteBufferAllocator(),
                              eventLoop: eventLoop)
+
+
     future.whenComplete {
         try? filehandle?.close()
     }
@@ -28,9 +30,12 @@ public func fileServing(fileName: String) -> Middleware {
     return { conn in
         let directory = #file
         let fileDirectory = directory.components(separatedBy: "/Sources").first! + "/public/" + fileName
-        return read(from: fileDirectory, on: conn.eventLoop, threadPool: conn.threadPool).map { bytes -> Conn in
-            conn.response.data = .byteBuffer(bytes)
-            return conn
+        return read(from: fileDirectory,
+                    on: conn.eventLoop,
+                    threadPool: conn.threadPool)
+            .map { bytes -> Conn in
+                conn.response.data = .byteBuffer(bytes)
+                return conn
         }
     }
 }

@@ -32,3 +32,19 @@ public final class BodySink: Consumer {
         }
     }
 }
+
+
+final class Sink<I>: Consumer {
+
+    typealias InputValue = I
+    let drain: ((StreamInput<I>) -> ())
+
+    public init(drain: @escaping ((StreamInput<I>) -> ())) {
+        self.drain = drain
+    }
+
+    func await(_ value: StreamInput<I>) {
+        drain(value)
+    }
+    
+}
