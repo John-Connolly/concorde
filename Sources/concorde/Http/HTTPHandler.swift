@@ -99,7 +99,7 @@ final class HTTPHandler: ChannelInboundHandler {
         ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
         let promise: EventLoopPromise<Void> = ctx.eventLoop.newPromise()
         ctx.writeAndFlush(wrapOutboundOut(.end(.none)), promise: promise)
-        promise.futureResult.whenSuccess {
+        promise.futureResult.whenComplete {
             ctx.close(promise: .none)
         }
     }
