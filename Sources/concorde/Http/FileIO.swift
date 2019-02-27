@@ -9,21 +9,26 @@ import Foundation
 import NIO
 
 func read(from path: String, on eventLoop: EventLoop, threadPool: BlockingIOThreadPool) -> Future<ByteBuffer> {
-    let filehandle = try? NIO.FileHandle(path: path)
-    let fileIO = NonBlockingFileIO(threadPool: threadPool)
-    let future = fileIO.read(fileHandle: filehandle!,
-                             byteCount: 1024 * 1024,
-                             allocator: ByteBufferAllocator(),
-                             eventLoop: eventLoop)
+    do {
+        let filehandle = try NIO.FileHandle(path: path)
+        let fileIO = NonBlockingFileIO(threadPool: threadPool)
+        let future = fileIO.read(fileHandle: filehandle,
+                                 byteCount: 1024 * 1024,
+                                 allocator: ByteBufferAllocator(),
+                                 eventLoop: eventLoop)
 
 
-    future.whenComplete {
-        try? filehandle?.close()
+        future.whenComplete {
+            try? filehandle.close()
+        }
+        future.whenFailure {
+            print($0)
+        }
+        return future
+    } catch {
+        return eventLoop.newFailedFuture(error: error)
     }
-    future.whenFailure {
-        print($0)
-    }
-    return future
+
 }
 
 public func fileServing(fileName: String) -> Middleware {

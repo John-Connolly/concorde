@@ -80,16 +80,21 @@ struct ProcessedStats {
         return numberFormatter
     }()
 
+
+    private func formattedInt() -> (Int) -> String? {
+        return NSNumber.init(integerLiteral:) >>> formatter.string(from:)
+    }
+
     var formattedTotal: String {
-        return Int(total).flatMap { formatter.string(from: NSNumber(integerLiteral: $0)) } ?? "None"
+        return Int(total).flatMap(formattedInt()) ?? "None"
     }
 
     var formattedQueued: String {
-        return Int(queued).flatMap { formatter.string(from: NSNumber(integerLiteral: $0)) } ?? "None"
+        return Int(queued).flatMap(formattedInt()) ?? "None"
     }
 
     var formattedFailed: String {
-        return Int(failed).flatMap { formatter.string(from: NSNumber(integerLiteral: $0)) } ?? "None"
+        return Int(failed).flatMap(formattedInt()) ?? "None"
     }
 
 }
@@ -263,10 +268,32 @@ let getRoutes = [
     curry(fileServing) <^> (suffix),
 ]
 
+struct IO<A> {
 
+    let run: () -> Future<A>
 
-//let proutes = prettyPrint(getRoutes)
-//postRoutes.forEach { print($0) }
+    static func effectTotal() {
+
+    }
+
+}
+
+struct UnsafeFuture<A> {
+
+    var result: Result<A>?
+    var awaiters: [(Result<A>) -> ()] = []
+
+    init(compute: (@escaping (Result<A>) -> ()) -> ()) {
+        compute(send)
+    }
+
+    private func send(_ result: Result<A>) {
+
+    }
+}
+
+let proutes = prettyPrint(getRoutes)
+postRoutes.forEach { print($0) }
 
 let getGrouped = method(.GET, route: choice(getRoutes))
 let postGrouped = method(.POST, route: choice(postRoutes))
