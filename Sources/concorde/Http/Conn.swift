@@ -30,7 +30,7 @@ public final class Conn {
     }
 
     var threadPool: BlockingIOThreadPool {
-        return cache.items.first(where: { $0 as? BlockingIOThreadPool != nil }) as! BlockingIOThreadPool
+        return cache.get()
     }
 
     public func future<T>(_ t: T) -> Future<T> {
@@ -42,7 +42,7 @@ public final class Conn {
     }
 
     public func cached<T>(_ type: T.Type) -> Future<T> {
-        return cache.items.first(where: { $0 as? Future<T> != nil } ) as! Future<T>
+        return cache.get() 
     }
 
     public func future<T>(_ f: @escaping () -> T) -> Future<T> {

@@ -292,8 +292,8 @@ struct UnsafeFuture<A> {
     }
 }
 
-let proutes = prettyPrint(getRoutes)
-postRoutes.forEach { print($0) }
+//let proutes = prettyPrint(getRoutes)
+//postRoutes.forEach { print($0) }
 
 let getGrouped = method(.GET, route: choice(getRoutes))
 let postGrouped = method(.POST, route: choice(postRoutes))

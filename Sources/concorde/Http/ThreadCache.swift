@@ -13,4 +13,11 @@ public final class ThreadCache {
     init(items: [Any]) {
         self.items = items
     }
+
+    func get<T>() -> T {
+        guard let item = items.first(where: { $0 as? T != nil }) as? T else {
+            fatalError("Requested resource that does not exist")
+        }
+        return item
+    }
 }
