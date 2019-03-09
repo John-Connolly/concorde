@@ -4,7 +4,7 @@ import NIOHTTP1
 
 public let concorde = create >>> start
 
-let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
+let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)//System.coreCount
 
 private func create(router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
                     config: Configuration) -> ServerBootstrap {

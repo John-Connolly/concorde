@@ -21,9 +21,6 @@ func read(from path: String, on eventLoop: EventLoop, threadPool: BlockingIOThre
         future.whenComplete {
             try? filehandle.close()
         }
-        future.whenFailure {
-            print($0)
-        }
         return future
     } catch {
         return eventLoop.newFailedFuture(error: error)

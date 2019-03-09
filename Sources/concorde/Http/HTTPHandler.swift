@@ -108,13 +108,17 @@ final class HTTPHandler: ChannelInboundHandler {
         }
     }
 
+//    func errorCaught(ctx: ChannelHandlerContext, error: Error) {
+//        ctx.close(promise: nil)
+//    }
+
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
         ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
         let promise: EventLoopPromise<Void> = ctx.eventLoop.newPromise()
         ctx.writeAndFlush(wrapOutboundOut(.end(.none)), promise: promise)
-        promise.futureResult.whenComplete {
-            ctx.close(promise: .none)
-        }
+//        promise.futureResult.whenComplete {
+//            ctx.close(promise: .none)
+//        }
     }
 
     private func head(_ response: Response) -> HTTPResponseHead {

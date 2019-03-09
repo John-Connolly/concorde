@@ -219,35 +219,6 @@ let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
 
 
-func weatherData(conn: Conn) -> Future<Conn> {
-    let url = "http://api.openweathermap.org/data/2.5/weather?q=Wolfville,ca&APPID=1c612550bab05b2d74696169c71bdc84"
-
-    let urlRequest = URLRequest(url: URL(string: url)!)
-    let session = URLSession(configuration: .default)
-    let promise: EventLoopPromise<Data> = conn.promise()
-
-    session.dataTask(with: urlRequest, completionHandler: { data, resp , _ in
-
-        guard let data = data else {
-            promise.fail(error: "Could not get data")
-            return
-        }
-
-        if let resp = resp as? HTTPURLResponse, resp.statusCode != 200 {
-            promise.succeed(result: data)
-            return
-        }
-
-        promise.succeed(result: data)
-
-    }).resume()
-
-    return promise.futureResult.flatMap { data in
-        (write(status: .ok) >=> write(body: data, contentType: .json))(conn)
-    }
-
-}
-
 func hello() -> Middleware {
     return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
 }
@@ -263,8 +234,7 @@ let getRoutes = [
     pure(dashBoard) <*> (path("overview") *> end),
     pure(failed) <*> (path("failed") *> end),
     pure(logs) <*> (path("logs") *> end),
-    pure(hello) <*> (path("loaderio-95e2de71ba5cfa095645d825903bc632") *> end),
-//    pure(unzurry(weatherData)) <*> (path("weather") *> end),
+    pure(hello) <*> (path("hello") *> end),
     curry(fileServing) <^> (suffix),
 ]
 
@@ -292,10 +262,11 @@ struct UnsafeFuture<A> {
     }
 }
 
+
 //let proutes = prettyPrint(getRoutes)
 //postRoutes.forEach { print($0) }
 
-let getGrouped = method(.GET, route: choice(getRoutes))
+let getGrouped = method(.GET, route: (pure(hello) <*> (path("hello") *> end)))
 let postGrouped = method(.POST, route: choice(postRoutes))
 
 let flightPlan = router(register: [getGrouped, postGrouped])
@@ -305,3 +276,12 @@ plane.apply(wings)
 
 // wrk -t6 -c400 -d30s http://localhost:8080/hello
 
+//Running 30s test @ http://localhost:8080/hello
+//6 threads and 400 connections
+//Thread Stats   Avg      Stdev     Max   +/- Stdev
+//Latency     4.49ms    3.21ms  83.06ms   89.20%
+//Req/Sec     8.33k     1.51k   12.12k    69.28%
+//1491679 requests in 30.01s, 150.79MB read
+//Socket errors: connect 151, read 119, write 0, timeout 0
+//Requests/sec:  49703.19
+//Transfer/sec:      5.02MB

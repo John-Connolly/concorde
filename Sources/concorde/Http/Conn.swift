@@ -65,8 +65,6 @@ public final class Conn {
         })
         return promise.futureResult
     }
-
-
 }
 
 import NIOHTTP1
