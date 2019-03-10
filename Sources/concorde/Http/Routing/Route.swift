@@ -29,14 +29,14 @@ public indirect enum Endpoint {
 }
 
 public struct Route<A> {
-    public typealias Stream = ArraySlice<String>
-    public let parse: (Stream) -> (A, Stream)?
-    public let inverse: () -> Endpoint?
-    public let method: HTTPMethod
 
-//    public func prettyPrint(_ x: A) -> String? {
-//        return inverse(x)
-//    }
+    public typealias Stream = ArraySlice<String>
+
+    public let parse: (Stream) -> (A, Stream)?
+
+    public let inverse: () -> Endpoint?
+
+    public let method: HTTPMethod
 }
 
 extension Route {
@@ -54,15 +54,6 @@ extension Route {
         self.method = .GET // FIX
         self.inverse = inverse
     }
-//
-//    init(_ parse: @escaping (Stream) -> (A, Stream)?) {
-//        self.parse = parse
-//        self.method = .GET // FIX
-//        self.inverse =  {
-//            return .parameter(String(describing: A.self))
-//        }
-//    }
-
 
     init(method: HTTPMethod, parse: @escaping (Stream) -> (A, Stream)?) {
         self.parse = parse

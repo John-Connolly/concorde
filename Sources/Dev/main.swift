@@ -274,6 +274,24 @@ let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
 
+func routeTest(path: String, id: UInt64) -> Middleware {
+    return (authorize(true)
+        >=> write(status: .ok)
+        >=> write(body: logsView(), contentType: .html))
+}
+
+let stuff = pure(curry(routeTest)) <*> (path("addTask") *> string) <*> UInt64
+
+print(stuff.inverse()?.pretty)
+
+//let string = stuff.prettyPrint { (conn) -> EventLoopFuture<Conn> in
+//    return conn.future(conn)
+//}
+
+//print(string)
+
+//let inverse = stuff.inverse//(routeTest)
+
 // wrk -t6 -c400 -d30s http://localhost:8080/hello
 
 //Running 30s test @ http://localhost:8080/hello
