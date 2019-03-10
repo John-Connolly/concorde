@@ -77,19 +77,6 @@ extension Route where A: ExpressibleByIntegerLiteral {
 
 }
 
-//extension Route where A == String {
-//
-//    init(uriFormat: String, parse: @escaping (Stream) -> (A, Stream)?) {
-//        self.parse = parse
-//        self.uriFormat = uriFormat
-//        self.method = .GET
-//        self.inverse = { in
-//            return a
-//        }
-//    }
-//
-//}
-
 extension Route {
 
     public func run(_ string: String, method: HTTPMethod) -> (A, Stream)? {

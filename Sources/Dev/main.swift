@@ -10,7 +10,7 @@ func authorize(_ bool: Bool) -> Middleware {
     }
 }
 
-func login() -> Middleware {
+func loginView() -> Middleware {
     return (authorize(true)
         >=> write(status: .ok)
         >=> write(body: loginPage(), contentType: .html))
@@ -195,14 +195,14 @@ func workersStats(with conn: Conn) -> Future<[ConsumerInfo]> {
 }
 
 
-func failed() -> Middleware {
+func failedView() -> Middleware {
     return (authorize(true)
         >=> write(status: .ok)
         >=> write(body: failedView(), contentType: .html))
 }
 
 
-func logs() -> Middleware {
+func logsView() -> Middleware {
     return (authorize(true)
         >=> write(status: .ok)
         >=> write(body: logsView(), contentType: .html))
@@ -223,20 +223,21 @@ func hello() -> Middleware {
     return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
 }
 
-let postRoutes = [
-    pure(addTask) <*> (path("addTask") *> end),
-    pure(loginPost) <*> (path("login") *> end),
-    pure(deploy) <*> (path("deploy") *> end),
-]
-
-let getRoutes = [
-    pure(login) <*> end,
-    pure(dashBoard) <*> (path("overview") *> end),
-    pure(failed) <*> (path("failed") *> end),
-    pure(logs) <*> (path("logs") *> end),
-    pure(hello) <*> (path("hello") *> end),
-    curry(fileServing) <^> (suffix),
-]
+//let postRoutes = [
+//    pure(addTask) <*> (path("addTask") *> end),
+//    pure(loginPost) <*> (path("login") *> end),
+//    pure(deploy) <*> (path("deploy") *> end),
+//
+//]
+//
+//let getRoutes = [
+//    pure(login) <*> end,
+//    pure(dashBoard) <*> (path("overview") *> end),
+//    pure(failed) <*> (path("failed") *> end),
+//    pure(logs) <*> (path("logs") *> end),
+//    pure(hello) <*> (path("hello") *> end),
+//    curry(fileServing) <^> (suffix),
+//]
 
 struct IO<A> {
 
@@ -266,31 +267,69 @@ struct UnsafeFuture<A> {
 //let proutes = prettyPrint(getRoutes)
 //postRoutes.forEach { print($0) }
 
-let getGrouped = method(.GET, route: (pure(hello) <*> (path("hello") *> end)))
-let postGrouped = method(.POST, route: choice(postRoutes))
+//let getGrouped = method(.GET, route: choice(getRoutes))
+//let postGrouped = method(.POST, route: choice(postRoutes))
+//
+//let flightPlan = router(register: [getGrouped, postGrouped])
+//let wings = Configuration(port: 8080, resources: preflightCheck)
+//let plane = concorde((flightPlan, config: wings))
+//plane.apply(wings)
 
-let flightPlan = router(register: [getGrouped, postGrouped])
+
+enum SiteRoutes: Sitemap {
+
+    case test(path: String, id: Int)
+    case login
+    case dashboard
+    case failed
+    case logs
+
+
+    func action() -> Middleware {
+        switch self {
+        case .test(let path, let id):
+            return (write(status: .ok) >=> write(body: "Hello World \(path) - \(id)"))
+        case .login:
+            return loginView()
+        case .dashboard:
+            return dashBoard()
+        case .failed:
+            return failedView()
+        case .logs:
+            return logsView()
+        }
+    }
+}
+
+let thing = pure(unzurry(SiteRoutes.failed)) <*> (path("failed") *> end)
+
+let sitemap: [Route<SiteRoutes>] = [
+    pure(curry(SiteRoutes.test)) <*> (path("addTask") *> string) <*> int,
+    pure(unzurry(SiteRoutes.login)) <*> end,
+    pure(unzurry(SiteRoutes.dashboard)) <*> (path("overview") *> end),
+    pure(unzurry(SiteRoutes.failed)) <*> (path("failed") *> end),
+    pure(unzurry(SiteRoutes.logs)) <*> (path("logs") *> end),
+//    pure(unzurry(hello)) <*> (path("hello") *> end),
+]
+
+let fileMiddleware = curry(fileServing) <^> (suffix)
+
+let flightPlan = router(register: sitemap, middleware: [fileMiddleware])
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
 
-func routeTest(path: String, id: UInt64) -> Middleware {
-    return (authorize(true)
-        >=> write(status: .ok)
-        >=> write(body: logsView(), contentType: .html))
-}
+//print(rout2e.run("/addTask/geef/54", method: .GET))
 
-let stuff = pure(curry(routeTest)) <*> (path("addTask") *> string) <*> UInt64
+//let stuff = pure(curry(routeTest)) <*> (path("addTask") *> string) <*> UInt64
 
-print(stuff.inverse()?.pretty)
+//print(stuff.inverse()?.pretty)
 
 //let string = stuff.prettyPrint { (conn) -> EventLoopFuture<Conn> in
 //    return conn.future(conn)
 //}
 
 //print(string)
-
-//let inverse = stuff.inverse//(routeTest)
 
 // wrk -t6 -c400 -d30s http://localhost:8080/hello
 
