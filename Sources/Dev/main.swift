@@ -223,21 +223,6 @@ func hello() -> Middleware {
     return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
 }
 
-//let postRoutes = [
-//    pure(addTask) <*> (path("addTask") *> end),
-//    pure(loginPost) <*> (path("login") *> end),
-//    pure(deploy) <*> (path("deploy") *> end),
-//
-//]
-//
-//let getRoutes = [
-//    pure(login) <*> end,
-//    pure(dashBoard) <*> (path("overview") *> end),
-//    pure(failed) <*> (path("failed") *> end),
-//    pure(logs) <*> (path("logs") *> end),
-//    pure(hello) <*> (path("hello") *> end),
-//    curry(fileServing) <^> (suffix),
-//]
 
 struct IO<A> {
 
@@ -276,13 +261,16 @@ struct UnsafeFuture<A> {
 //plane.apply(wings)
 
 
-enum SiteRoutes: Sitemap {
+indirect enum SiteRoutes: Sitemap {
 
     case test(path: String, id: Int)
     case login
     case dashboard
     case failed
     case logs
+    case hello
+
+    case posts(PostRoutes)
 
 
     func action() -> Middleware {
@@ -297,6 +285,27 @@ enum SiteRoutes: Sitemap {
             return failedView()
         case .logs:
             return logsView()
+        case .hello:
+            return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
+        case .posts(let routes):
+            return routes.action()
+        }
+    }
+
+    enum PostRoutes: Sitemap {
+        case addTaskP
+        case loginP
+        case deployP
+
+        func action() -> Middleware {
+            switch self {
+            case .addTaskP:
+                return addTask()
+            case .loginP:
+                return loginPost()
+            case .deployP:
+                return deploy()
+            }
         }
     }
 }
@@ -309,8 +318,16 @@ let sitemap: [Route<SiteRoutes>] = [
     pure(unzurry(SiteRoutes.dashboard)) <*> (path("overview") *> end),
     pure(unzurry(SiteRoutes.failed)) <*> (path("failed") *> end),
     pure(unzurry(SiteRoutes.logs)) <*> (path("logs") *> end),
-//    pure(unzurry(hello)) <*> (path("hello") *> end),
+    pure(unzurry(SiteRoutes.hello)) <*> (path("hello") *> end),
 ]
+
+let posts: [Route<SiteRoutes.PostRoutes>] = [
+    pure(unzurry(SiteRoutes.PostRoutes.addTaskP)) <*> (path("addTask") *> end),
+    pure(unzurry(SiteRoutes.PostRoutes.loginP)) <*> (path("login") *> end),
+    pure(unzurry(SiteRoutes.PostRoutes.deployP)) <*> (path("deploy") *> end),
+]
+
+let t = method(.POST, route: choice(posts))
 
 let fileMiddleware = curry(fileServing) <^> (suffix)
 

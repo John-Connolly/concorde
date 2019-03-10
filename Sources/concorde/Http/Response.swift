@@ -45,7 +45,7 @@ public struct Response {
         return .init(contentType: .plain,
                      status: .badRequest,
                      headers: [:],
-                     data: .data( Data("Bad request".utf8)))
+                     data: .data(Data("Bad request".utf8)))
     }
 
     public static var notFound: Response {
