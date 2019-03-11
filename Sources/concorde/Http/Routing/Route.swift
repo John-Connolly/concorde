@@ -10,12 +10,15 @@ import NIOHTTP1
 
 public indirect enum Endpoint {
     case empty
+    case nothing
     case constant(String)
     case parameter(String)
     case joined(Endpoint, Endpoint)
 
     public var pretty: String {
         switch self {
+        case .nothing:
+            return ""
         case .empty:
             return "/"
         case .parameter(let param):
@@ -141,10 +144,12 @@ public func path(_ matching: String) -> Route<String> {
     })
 }
 
-public let end: Route<()> = Route { input in
+public let end: Route<()> = Route({ input in
     guard input.count == 0 else { return nil }
     return ((), input)
-}
+}, inverse: {
+    return .nothing
+})
 
 public func method<A>(_ method: HTTPMethod, route: Route<A>) -> Route<A> {
     return Route(method: method, parse: route.parse)
