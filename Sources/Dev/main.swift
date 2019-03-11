@@ -210,7 +210,7 @@ func logsView() -> Middleware {
 
 func notFound() -> Middleware {
     return (write(status: .notFound)
-        >=> write(body: "not found", contentType: .plain))
+        >=> write(body: "<h1> NOT FOUND!!!! </h1>", contentType: .html))
 }
 
 
@@ -222,6 +222,7 @@ let g = flip(f)(.html)
 func hello() -> Middleware {
     return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
 }
+
 
 
 struct IO<A> {
@@ -321,6 +322,9 @@ let sitemap: [Route<SiteRoutes>] = [
     pure(unzurry(SiteRoutes.hello)) <*> (path("hello") *> end),
 ]
 
+//print(choice(sitemap).inverse()?.pretty)
+//sitemap.forEach { print($0.inverse()!.pretty) }
+
 let posts: [Route<SiteRoutes.PostRoutes>] = [
     pure(unzurry(SiteRoutes.PostRoutes.addTaskP)) <*> (path("addTask") *> end),
     pure(unzurry(SiteRoutes.PostRoutes.loginP)) <*> (path("login") *> end),
@@ -331,7 +335,7 @@ let t = method(.POST, route: choice(posts))
 
 let fileMiddleware = curry(fileServing) <^> (suffix)
 
-let flightPlan = router(register: sitemap, middleware: [fileMiddleware])
+let flightPlan = router(register: sitemap, middleware: [fileMiddleware], notFound: notFound())
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
