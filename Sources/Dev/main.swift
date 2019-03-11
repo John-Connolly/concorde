@@ -224,44 +224,6 @@ func hello() -> Middleware {
 }
 
 
-
-struct IO<A> {
-
-    let run: () -> Future<A>
-
-    static func effectTotal() {
-
-    }
-
-}
-
-struct UnsafeFuture<A> {
-
-    var result: Result<A>?
-    var awaiters: [(Result<A>) -> ()] = []
-
-    init(compute: (@escaping (Result<A>) -> ()) -> ()) {
-        compute(send)
-    }
-
-    private func send(_ result: Result<A>) {
-
-    }
-}
-
-
-//let proutes = prettyPrint(getRoutes)
-//postRoutes.forEach { print($0) }
-
-//let getGrouped = method(.GET, route: choice(getRoutes))
-//let postGrouped = method(.POST, route: choice(postRoutes))
-//
-//let flightPlan = router(register: [getGrouped, postGrouped])
-//let wings = Configuration(port: 8080, resources: preflightCheck)
-//let plane = concorde((flightPlan, config: wings))
-//plane.apply(wings)
-
-
 indirect enum SiteRoutes: Sitemap {
 
     case test(path: String, id: Int)
@@ -331,11 +293,16 @@ let posts: [Route<SiteRoutes.PostRoutes>] = [
     pure(unzurry(SiteRoutes.PostRoutes.deployP)) <*> (path("deploy") *> end),
 ]
 
-let t = method(.POST, route: choice(posts))
+let type = choice(posts).transform(SiteRoutes.posts) { posts  in
+    guard case let .posts(x) = posts else { return nil }
+    return x
+}
+
+let t = method(.POST, route: type)
 
 let fileMiddleware = curry(fileServing) <^> (suffix)
 
-let flightPlan = router(register: sitemap, middleware: [fileMiddleware], notFound: notFound())
+let flightPlan = router(register: sitemap + [t], middleware: [fileMiddleware], notFound: notFound())
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
