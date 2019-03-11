@@ -8,5 +8,9 @@
 import Foundation
 
 public func flip<A, B, C>(_ f: @escaping (A) -> (B) -> C) -> (B) -> (A) -> C {
-    return { b in { a in f(a)(b) } }
+    return { b in
+        { a in
+            f(a)(b)
+        }
+    }
 }

@@ -8,19 +8,22 @@
 import Foundation
 import NIO
 
-func read(from path: String, on eventLoop: EventLoop, threadPool: BlockingIOThreadPool) -> Future<ByteBuffer> {
+func read(
+    from path: String,
+    on eventLoop: EventLoop,
+    threadPool: BlockingIOThreadPool
+    ) -> Future<ByteBuffer> {
     do {
         let filehandle = try NIO.FileHandle(path: path)
         let fileIO = NonBlockingFileIO(threadPool: threadPool)
-        let future = fileIO.read(fileHandle: filehandle,
-                                 byteCount: 1024 * 1024,
-                                 allocator: ByteBufferAllocator(),
-                                 eventLoop: eventLoop)
+        let future = fileIO.read(
+            fileHandle: filehandle,
+            byteCount: 1024 * 1024,
+            allocator: ByteBufferAllocator(),
+            eventLoop: eventLoop
+        )
 
-
-        future.whenComplete {
-            try? filehandle.close()
-        }
+        future.whenComplete { try? filehandle.close() }
         return future
     } catch {
         return eventLoop.newFailedFuture(error: error)
@@ -31,11 +34,14 @@ func read(from path: String, on eventLoop: EventLoop, threadPool: BlockingIOThre
 public func fileServing(fileName: String) -> Middleware {
     return { conn in
         let directory = #file
-        let fileDirectory = directory.components(separatedBy: "/Sources").first! + "/public/" + fileName
-        return read(from: fileDirectory,
-                    on: conn.eventLoop,
-                    threadPool: conn.threadPool)
-            .map { bytes -> Conn in
+        let fileDirectory = directory.components(separatedBy: "/Sources").first!
+            + "/public/"
+            + fileName
+        return read(
+            from: fileDirectory,
+            on: conn.eventLoop,
+            threadPool: conn.threadPool
+            ).map { bytes -> Conn in
                 conn.response.data = .byteBuffer(bytes)
                 return conn
         }

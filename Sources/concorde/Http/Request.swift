@@ -10,16 +10,16 @@ import NIO
 import NIOHTTP1
 
 public struct Request {
-    public let head: HTTPRequestHead
-    
-    public var body: ((Data) -> ())?
+  public let head: HTTPRequestHead
 
-    public init(head: HTTPRequestHead) {
-        self.head = head
-    }
+  public var body: ((Data) -> ())?
 
-    public var method: HTTPMethod {
-        return head.method
-    }
+  public init(head: HTTPRequestHead) {
+    self.head = head
+  }
+
+  public var method: HTTPMethod {
+    return head.method
+  }
 
 }

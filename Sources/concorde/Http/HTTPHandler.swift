@@ -17,8 +17,10 @@ final class HTTPHandler: ChannelInboundHandler {
     var state = ServerState.idle
     let threadVariable: ThreadSpecificVariable<ThreadCache>
 
-    init(with router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
-         and threadVariable: ThreadSpecificVariable<ThreadCache>) {
+    init(
+        with router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
+        and threadVariable: ThreadSpecificVariable<ThreadCache>
+        ) {
         self.router = router
         self.threadVariable = threadVariable
     }
@@ -30,54 +32,64 @@ final class HTTPHandler: ChannelInboundHandler {
             let cache = threadVariable.currentValue!
             if header.method == .GET {
                 let request = Request(head: header)
-                let conn = Conn(cache: cache,
-                                eventLoop: ctx.eventLoop,
-                                request: request,
-                                response: .empty)
+                let conn = Conn(
+                    cache: cache,
+                    eventLoop: ctx.eventLoop,
+                    request: request,
+                    response: .empty
+                )
                 router(conn, write(ctx))
                 state.recievedGetRequest()
                 return
             }
 
             let request = Request(head: header)
-            let conn = Conn(cache: cache,
-                             eventLoop: ctx.eventLoop,
-                             request: request,
-                             response: .empty)
+            let conn = Conn(
+                cache: cache,
+                eventLoop: ctx.eventLoop,
+                request: request,
+                response: .empty
+            )
             state.receivedHead(header, conn: conn)
             router(conn, write(ctx))
         case .body(let body):
             switch state {
-            case .idle, .sendingResponse: break
+            case .idle, .sendingResponse:
+                break
             case .waitingForRequestBody(_, let conn):
                 conn.stream.yeild(.input(body))
             }
         case .end:
             switch state {
-            case .idle, .sendingResponse: break
+            case .idle, .sendingResponse:
+                break
             case .waitingForRequestBody(_, let conn):
                 conn.stream.yeild(.complete)
-            state.done()
+                state.done()
             }
         }
     }
 
     func write(_ ctx: ChannelHandlerContext) -> (Future<Conn>) -> () {
         return { response in
-            response.map { resp in
-                self.write(resp.response, on: ctx)
-            }.whenFailure { error in
-                if let error = error as? ResponseError {
-                    switch error {
-                    case .internalServerError: () // TODO: Handle these!
-                    case .abort: ()
-                    case .custom(let response):
-                        self.write(response, on: ctx)
-                    }
-                } else {
-                    let resp = Response.error(error)
-                    self.write(resp, on: ctx)
+            response
+                .map { resp in
+                    self.write(resp.response, on: ctx)
                 }
+                .whenFailure { error in
+                    if let error = error as? ResponseError {
+                        switch error {
+                        case .internalServerError:
+                            () // TODO: Handle these!
+                        case .abort:
+                            ()
+                        case .custom(let response):
+                            self.write(response, on: ctx)
+                        }
+                    } else {
+                        let resp = Response.error(error)
+                        self.write(resp, on: ctx)
+                    }
             }
         }
     }
@@ -93,46 +105,56 @@ final class HTTPHandler: ChannelInboundHandler {
             buffer.write(buffer: &bytes)
             self.writeAndflush(buffer: buffer, ctx: ctx)
         case .stream(let stream):
-            stream.connect(to: Sink<Data>(drain: { input in
-                switch input {
-                case .input(let data):
-                    buffer.write(bytes: data)
-                    ctx.writeAndFlush(self.wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
-                    buffer.clear()
-                case .complete:
-                    ctx.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: nil)
-                case .error:()
+            stream.connect(
+                to: Sink<Data>(drain: { input in
+                    switch input {
+                    case .input(let data):
+                        buffer.write(bytes: data)
+                        ctx.writeAndFlush(
+                            self.wrapOutboundOut(.body(.byteBuffer(buffer))),
+                            promise: .none
+                        )
+                        buffer.clear()
+                    case .complete:
+                        ctx.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: nil)
+                    case .error:
+                        ()
 
-                }
-            }))
+                    }
+                })
+            )
         }
     }
 
-//    func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-//        ctx.close(promise: nil)
-//    }
+    //    func errorCaught(ctx: ChannelHandlerContext, error: Error) {
+    //        ctx.close(promise: nil)
+    //    }
 
     private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
         ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
         let promise: EventLoopPromise<Void> = ctx.eventLoop.newPromise()
         ctx.writeAndFlush(wrapOutboundOut(.end(.none)), promise: promise)
-//        promise.futureResult.whenComplete {
-//            ctx.close(promise: .none)
-//        }
+        //        promise.futureResult.whenComplete {
+        //            ctx.close(promise: .none)
+        //        }
     }
 
     private func head(_ response: Response) -> HTTPResponseHead {
-        var head = HTTPResponseHead(version: .init(major: 1, minor: 1), status: response.status, headers: HTTPHeaders())
+        var head = HTTPResponseHead(
+            version: .init(major: 1, minor: 1),
+            status: response.status,
+            headers: HTTPHeaders()
+        )
         head.headers.add(name: "Content-Type", value: response.contentType.rawValue)
         if response.data.isStreamed {
             head.headers.add(name: "Transfer-Encoding", value: "chunked")
         } else {
-            head.headers.add(name: "Content-Length", value: String(response.data.count))
+            head.headers.add(
+                name: "Content-Length",
+                value: String(response.data.count)
+            )
         }
-        response.headers.forEach {
-            head.headers.add(name: $0.key, value: $0.value)
-        }
+        response.headers.forEach { head.headers.add(name: $0.key, value: $0.value) }
         return head
     }
-
 }
