@@ -293,10 +293,7 @@ let posts: [Route<SiteRoutes.PostRoutes>] = [
     pure(unzurry(SiteRoutes.PostRoutes.deployP)) <*> (path("deploy") *> end),
 ]
 
-let type = choice(posts).transform(SiteRoutes.posts) { posts  in
-    guard case let .posts(x) = posts else { return nil }
-    return x
-}
+let type = choice(posts).map(SiteRoutes.posts)
 
 let t = method(.POST, route: type)
 
@@ -306,18 +303,6 @@ let flightPlan = router(register: sitemap + [t], middleware: [fileMiddleware], n
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
-
-//print(rout2e.run("/addTask/geef/54", method: .GET))
-
-//let stuff = pure(curry(routeTest)) <*> (path("addTask") *> string) <*> UInt64
-
-//print(stuff.inverse()?.pretty)
-
-//let string = stuff.prettyPrint { (conn) -> EventLoopFuture<Conn> in
-//    return conn.future(conn)
-//}
-
-//print(string)
 
 // wrk -t6 -c400 -d30s http://localhost:8080/hello
 

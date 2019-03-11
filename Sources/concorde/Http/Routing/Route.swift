@@ -92,17 +92,6 @@ extension Route {
         return parse(combined.dropFirst())
     }
 
-
-    public func transform<B>(_ to: @escaping (A) -> B, _ from: @escaping (B) -> A?) -> Route<B> {
-        return Route<B>({ input in
-            guard let (result, remainder) = self.parse(input) else { return nil }
-            return (to(result), remainder)
-        }, inverse: { 
-            return .empty
-        })
-    }
-
-
     public func map<T>(_ transform: @escaping (A) -> T) -> Route<T> {
         return Route<T>.init({ input in
             guard let (result, remainder) = self.parse(input) else { return nil }
