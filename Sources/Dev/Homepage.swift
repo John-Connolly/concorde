@@ -46,6 +46,30 @@ func mainContent() -> Node {
                 div([classAtr("col-md-auto")], [
                     button([classAtr("btn btn-outline-dark")], [.text("Github")])
                     ]),
+                ]),
+            br,
+            br,
+            br,
+
+            div([classAtr("row justify-content-md-center")], [
+                div([classAtr("col-md-auto")], [
+                    h2([.text("Why?")]),
+                    ]),
+                ]),
+
+            div([classAtr("row justify-content-md-center")], [
+                div([classAtr("col-md-3")], [
+                    h4([.text("Type Safety")]),
+                    p([.text("Allows errors that would normally be caught at run time be caught at compile time.  Concordes router uses applicative parsing techniques that eliminate a whole class of bugs")])
+                    ]),
+                div([classAtr("col-md-3")], [
+                    h4([.text("Concurrent")]),
+                    p([.text("Event driven non-blocking IO this means your app can handle a lot of concurrency using a small number of kernel threads.")])
+                    ]),
+                div([classAtr("col-md-3")], [
+                    h4([.text("Stateless")]),
+                    p([.text("Stuff goes here!!")])
+                    ]),
                 ])
             ])
         ])

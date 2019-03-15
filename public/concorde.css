@@ -4,10 +4,7 @@ body {
 
 }
 
-h1 {
+h1,h2,h4,p {
    text-align: center;
 }
 
-h2 {
-   text-align: center;
-}
