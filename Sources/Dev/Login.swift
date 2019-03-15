@@ -8,7 +8,7 @@
 import Foundation
 import Html
 
-func head(style file: String) -> ChildOf<Tag.Html> {
+func head(style file: String, title2: String = "Swift-Q") -> ChildOf<Tag.Html> {
   return head([
     meta([Attribute("charset", "utf-8")]),
     meta([
@@ -19,7 +19,7 @@ func head(style file: String) -> ChildOf<Tag.Html> {
       Attribute("name", "viewport"),
       Attribute("content", "width=device-width, initial-scale=1")
     ]),
-    title("Swift-Q"),
+    title(title2),
     boostrapCss,
     boostrapJs,
     link([Attribute("href", file), Attribute("rel", "stylesheet")])

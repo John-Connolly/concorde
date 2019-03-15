@@ -234,6 +234,7 @@ indirect enum SiteRoutes: Sitemap {
     case hello
 
     case posts(PostRoutes)
+    case homePage(Homepage)
 
 
     func action() -> Middleware {
@@ -252,6 +253,8 @@ indirect enum SiteRoutes: Sitemap {
             return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
         case .posts(let routes):
             return routes.action()
+        case .homePage(let routes):
+            return routes.action()
         }
     }
 
@@ -268,6 +271,16 @@ indirect enum SiteRoutes: Sitemap {
                 return loginPost()
             case .deployP:
                 return deploy()
+            }
+        }
+    }
+
+    enum Homepage: Sitemap {
+        case home
+
+        func action() -> Middleware {
+            switch self {
+            case .home: return mainView()
             }
         }
     }
@@ -293,13 +306,18 @@ let posts: [Route<SiteRoutes.PostRoutes>] = [
     pure(unzurry(SiteRoutes.PostRoutes.deployP)) <*> (path("deploy") *> end),
 ]
 
+let home: [Route<SiteRoutes.Homepage>] = [
+    pure(unzurry(SiteRoutes.Homepage.home)) <*> (path("home") *> end),
+]
+let homeTransformed = choice(home).map(SiteRoutes.homePage)
+
 let type = choice(posts).map(SiteRoutes.posts)
 
 let t = method(.POST, route: type)
 
 let fileMiddleware = curry(fileServing) <^> (suffix)
 
-let flightPlan = router(register: sitemap + [t], middleware: [fileMiddleware], notFound: notFound())
+let flightPlan = router(register: sitemap + [t] + [homeTransformed], middleware: [fileMiddleware], notFound: notFound())
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
@@ -315,3 +333,13 @@ plane.apply(wings)
 //Socket errors: connect 151, read 119, write 0, timeout 0
 //Requests/sec:  49703.19
 //Transfer/sec:      5.02MB
+
+
+//let sitemap: [Route<SiteRoutes>] = [
+//    pure(unzurry(SiteRoutes.home)) <*> (path("home") *> end)
+//]
+//
+//let flightPlan = router(register: sitemap, middleware: [fileMiddleware], notFound: notFoundPage())
+//let wings = Configuration(port: 8080, resources: preflightCheck)
+//let plane = concorde(flightPlan, config: wings)
+//plane.apply(wings)
