@@ -43,6 +43,10 @@ func mainContent() -> Node {
                             ]),
                         a([Attribute("href", "/routing")], [
                             .text("Routing")
+                            ]),
+
+                        a([Attribute("href", "/eg")], [
+                            .text("Examples")
                             ])
                         ])
                     ]),
@@ -61,7 +65,10 @@ func mainContent() -> Node {
             div([classAtr("row justify-content-md-center")], [
                 br,
                 div([classAtr("col-md-auto")], [
-                    button([classAtr("btn btn-dark")], [.text("Getting Started")]),
+                    a([classAtr("btn btn-dark"),
+                       Attribute("href","#getting-started"),
+                       Attribute("role","button"),
+                       ], [.text("Getting Started")]),
                     ]),
                 div([classAtr("col-md-auto")], [
                     a([classAtr("btn btn-outline-dark"),
@@ -99,7 +106,7 @@ func mainContent() -> Node {
 
 
             div([classAtr("row justify-content-md-center")], [
-                div([classAtr("col-md-auto")], [
+                div([classAtr("col-md-auto"), Attribute("id","getting-started")], [
                     h2([.text("Getting Started")]),
                     br
                     ]),
