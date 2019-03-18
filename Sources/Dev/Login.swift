@@ -22,6 +22,9 @@ func head(style file: String, title2: String = "Swift-Q") -> ChildOf<Tag.Html> {
     title(title2),
     boostrapCss,
     boostrapJs,
+    codeCss,
+    codeJS,
+    codeScript,
     link([Attribute("href", file), Attribute("rel", "stylesheet")])
   ])
 }

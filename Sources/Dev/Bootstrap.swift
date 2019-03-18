@@ -71,8 +71,16 @@ let boostrapJs: ChildOf<Tag.Head> = script([
     ])
 
 
+let codeCss: ChildOf<Tag.Head> = link([
+    Attribute("rel", "stylesheet"),
+    Attribute("href", "github.css"),
+])
 
+let codeJS: ChildOf<Tag.Head> = script([
+     Attribute("src","/highlight.pack.js"),
+])
 
+let codeScript: ChildOf<Tag.Head> = script("hljs.initHighlightingOnLoad();")
 
 
 func graph(items: [(String, Int)]) -> Node {

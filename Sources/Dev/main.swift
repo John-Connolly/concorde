@@ -223,6 +223,16 @@ func hello() -> Middleware {
     return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
 }
 
+enum Routes: Sitemap {
+    case route
+
+    func action() -> Middleware {
+        switch self {
+        case .route:
+            return write(status: .ok) >=> write(body: "HELLO WORLD")
+        }
+    }
+}
 
 indirect enum SiteRoutes: Sitemap {
 
@@ -277,10 +287,12 @@ indirect enum SiteRoutes: Sitemap {
 
     enum Homepage: Sitemap {
         case home
+        case json
 
         func action() -> Middleware {
             switch self {
             case .home: return mainView()
+            case .json: return jsonExample()
             }
         }
     }
@@ -308,6 +320,7 @@ let posts: [Route<SiteRoutes.PostRoutes>] = [
 
 let home: [Route<SiteRoutes.Homepage>] = [
     pure(unzurry(SiteRoutes.Homepage.home)) <*> (path("home") *> end),
+    pure(unzurry(SiteRoutes.Homepage.json)) <*> (path("json") *> end),
 ]
 let homeTransformed = choice(home).map(SiteRoutes.homePage)
 
