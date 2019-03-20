@@ -28,6 +28,10 @@ func jsonExample() -> Middleware {
     return write(status: .ok) >=> write(body: car)
 }
 
+func routingExample(resource: String, id: UInt) -> Middleware {
+    return write(status: .ok) >=> write(body: "Requested \(resource) with id: \(id)")
+}
+
 private enum Code {
     static let package: String = """
                          .package(url: "https://github.com/John-Connolly/concorde.git", from: "1.0.0")
@@ -86,11 +90,10 @@ private let headerButtons = View<(), [Node]> { content in
                 a([Attribute("href", "/json")], [
                     .text("JSON")
                     ]),
-                a([Attribute("href", "/routing")], [
+                a([Attribute("href", "/routing/resource/2")], [
                     .text("Routing")
                     ]),
-
-                a([Attribute("href", "/eg")], [
+                a([Attribute("href", "https://github.com/John-Connolly/concorde")], [
                     .text("Examples")
                     ]),
                 a([Attribute("href", "/advanced"), Attribute("id", "advanced-a")], [
