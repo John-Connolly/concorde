@@ -12,6 +12,12 @@ h1,h2,h4,p {
    text-align: left;
 }
 
+#logo-img {
+    margin: 10px;
+    max-width: 30;
+    height: auto;
+}
+
 a {
 	margin: 10px;
 	color: #272822;

@@ -19,6 +19,18 @@ func baseView(nodes: [Node]) -> Node {
         ])
 }
 
+let logo = View<(), [Node]> { title in
+    return [
+        div([classAtr("row justify-content-md-left")], [
+            div([classAtr("col-md-1")], [
+                a([Attribute("href","/home")], [
+                    img(src: "concorde.png", alt: "", [classAtr("img-fluid"), Attribute("id", "logo-img")])
+                    ]),
+                ]),
+            ]),
+        ]
+}
+
 let sectionTitle = View<(String, String?), [Node]> { title in
     return [
         br,

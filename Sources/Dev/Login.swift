@@ -25,7 +25,8 @@ func head(style file: String, title2: String = "Swift-Q") -> ChildOf<Tag.Html> {
     codeCss,
     codeJS,
     codeScript,
-    link([Attribute("href", file), Attribute("rel", "stylesheet")])
+    link([Attribute("href", file), Attribute("rel", "stylesheet")]),
+    link([Attribute("rel", "icon"), Attribute("href", "concorde.png")])
   ])
 }
 
