@@ -8,10 +8,19 @@ h1,h2,h4,p {
    text-align: center;
 }
 
+#paragraph-p {
+   text-align: left;
+}
+
 a {
-	margin-right: 10px;
+	margin: 10px;
 	color: #272822;
 	font-size: 20px;
+
+}
+
+#advanced-a {
+    margin-right: 20px;
 }
 
 code {

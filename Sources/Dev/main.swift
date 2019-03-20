@@ -288,11 +288,13 @@ indirect enum SiteRoutes: Sitemap {
     enum Homepage: Sitemap {
         case home
         case json
+        case advanced
 
         func action() -> Middleware {
             switch self {
             case .home: return mainView()
             case .json: return jsonExample()
+            case .advanced: return advancedPage()
             }
         }
     }
@@ -321,6 +323,7 @@ let posts: [Route<SiteRoutes.PostRoutes>] = [
 let home: [Route<SiteRoutes.Homepage>] = [
     pure(unzurry(SiteRoutes.Homepage.home)) <*> (path("home") *> end),
     pure(unzurry(SiteRoutes.Homepage.json)) <*> (path("json") *> end),
+    pure(unzurry(SiteRoutes.Homepage.advanced)) <*> (path("advanced") *> end),
 ]
 let homeTransformed = choice(home).map(SiteRoutes.homePage)
 

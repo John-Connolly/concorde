@@ -11,8 +11,7 @@ import Html
 
 
 func mainView() -> Middleware {
-    return (authorize(true)
-        >=> write(status: .ok)
+    return (write(status: .ok)
         >=> write(body: renderContent(), contentType: .html))
 }
 
@@ -29,12 +28,12 @@ func jsonExample() -> Middleware {
     return write(status: .ok) >=> write(body: car)
 }
 
-enum Code {
-    static let package = """
+private enum Code {
+    static let package: String = """
                          .package(url: "https://github.com/John-Connolly/concorde.git", from: "1.0.0")
                          """
 
-    static let app =  """
+    static let app: String =  """
                         /// Model your app as a sum type
                         enum Routes: Sitemap {
                             case home
@@ -48,7 +47,7 @@ enum Code {
                         }
                         """
 
-    static let run =  """
+    static let run: String =  """
                         let sitemap: [Route<SiteRoutes>] = [
                             pure(unzurry(Routes.home)) <*> (path("home") *> end)
                         ]
@@ -77,16 +76,7 @@ private let homePage: View<(), [Node]> = (headerButtons
         <> footerSection.contramap { _ in }
     )
 
-private func baseView(nodes: [Node]) -> Node {
-    return html([
-        head(style: "concorde.css", title2: "Concorde"),
-        body([
-            div([classAtr("container-fluid")],
-                    nodes
-                )
-            ])
-      ])
-}
+
 
 private let headerButtons = View<(), [Node]> { content in
     return [
@@ -102,6 +92,9 @@ private let headerButtons = View<(), [Node]> { content in
 
                 a([Attribute("href", "/eg")], [
                     .text("Examples")
+                    ]),
+                a([Attribute("href", "/advanced"), Attribute("id", "advanced-a")], [
+                    .text("Advanced")
                     ])
                 ])
             ])
@@ -150,19 +143,6 @@ private let mainButtons = View<(), [Node]> { _ in
 }
 
 
-private let sectionTitle = View<(String, String?), [Node]> { title in
-    return [
-        br,
-        br,
-        br,
-        div([classAtr("row justify-content-md-center"), Attribute("id", title.1 ?? "")], [
-            div([classAtr("col-md-auto")], [
-                h2([.text(title.0)]),
-                br
-                ]),
-            ])
-    ]
-}
 
 private let pointsSection = View<(), [Node]> { _ in
     return [
@@ -179,40 +159,6 @@ private let pointsSection = View<(), [Node]> { _ in
                 h4([.text("Composable")]),
                 p([.text("Concorde is built from the ground up using functions. This means integrating  with third party libraries is easy!")])
                 ]),
-            ])
-    ]
-}
-
-private let descriptionSection = View<String, [Node]> { content in
-    return [
-        div([classAtr("row justify-content-md-center")], [
-            div([classAtr("col-md-auto")], [
-                br,
-                h6([.text(content)]),
-                ]),
-            ]),
-    ]
-}
-
-private let codeSection = View<String, [Node]> { content in
-    return [
-        div([classAtr("row justify-content-md-center")], [
-            div([classAtr("col-md-auto")], [
-                pre([code([classAtr("Swift")],[.text(
-                        content
-                    )])
-                    ])
-                ])
-            ])
-    ]
-}
-
-private let footerSection = View<(), [Node]> { _ in
-    return [
-        footer([classAtr("pt-4 my-md-5 pt-md-5 border-top")], [
-            div([classAtr("container")], [
-                span([classAtr("text-muted")], [.text("Concorde")])
-                ])
             ])
     ]
 }
