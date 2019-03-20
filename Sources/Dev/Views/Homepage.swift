@@ -44,7 +44,7 @@ private enum Code {
 
                             func action() -> Middleware {
                                 switch self {
-                                case .root:
+                                case .home:
                                     return write(status: .ok) >=> write(body: "HELLO WORLD")
                                 }
                             }

@@ -323,6 +323,8 @@ let posts: [Route<SiteRoutes.PostRoutes>] = [
     pure(unzurry(SiteRoutes.PostRoutes.deployP)) <*> (path("deploy") *> end),
 ]
 
+//let type2 = unzurry(SiteRoutes.Homepage.home) <^> (path("home") *> end)
+
 let home: [Route<SiteRoutes.Homepage>] = [
     pure(unzurry(SiteRoutes.Homepage.home)) <*> (path("home") *> end),
     pure(unzurry(SiteRoutes.Homepage.json)) <*> (path("json") *> end),

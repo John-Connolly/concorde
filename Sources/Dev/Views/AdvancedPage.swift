@@ -32,6 +32,26 @@ private enum Code {
                                     Concordes router is based on applicative parsing.  This adds a level of type safety to routing that would not be possible with alternative methods.  Below are some examples of combinators that allow you to build up routes.
                                     """
 
+    static let routingCode = """
+
+                            pure<A>(_ a: A) -> Route<A>
+
+                            /// Discard left value.
+                            func *> <A, B>(lhs: Route<A>, rhs: Route<B>) -> Route<B>
+
+                            /// Applicative
+                            func <*> <A, B>(lhs: Route<(A) -> B>, rhs: Route<A>) -> Route<B>
+
+                            /// Functor
+                            func <^> <A, B>(lhs: @escaping (A) -> B, rhs: Route<A>) -> Route<B>
+
+                            /// Choice
+                            func choice<A>(_ routes: [Route<A>]) -> Route<A>
+
+                            /// Path only matches if string is present
+                            func path(_ matching: String) -> Route<String>
+                            """
+
     static let dbDescription = """
                             Concordes multi reator architecture means that sharing objects between threads is
                             is prohibited. This means that objects are cached per thread in a pthread specific variable. This dramaticatly increases performance an simplifies programming.  You can define an array functions to run on application start up, later you can access this cached objects from the current Conn.
@@ -53,11 +73,12 @@ private enum Code {
 let section1: View<(), [Node]> = logo.contramap { _ in }
     <> (sectionTitle.contramap { _ in ("Advanced", nil) })
     <> descriptionSection.contramap { _ in "Architecture" }
-    <> paragraphSection.contramap { _ in Code.mainDescription }
+    <> paragraphSection.contramap(const(Code.mainDescription))
 
 private let page: View<(), [Node]> = section1
     <> descriptionSection.contramap { _ in "Routing" }
     <> paragraphSection.contramap { _ in Code.routingDescription }
+    <> codeSection.contramap { _ in Code.routingCode }
     <> descriptionSection.contramap { _ in "Composable Streams" }
     <> paragraphSection.contramap { _ in Code.streamDescription }
     <> descriptionSection.contramap { _ in "Databases" }
