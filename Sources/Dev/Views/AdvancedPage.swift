@@ -53,8 +53,8 @@ private enum Code {
                             """
 
     static let dbDescription = """
-                            Concordes multi reator architecture means that sharing objects between threads is
-                            is prohibited. This means that objects are cached per thread in a pthread specific variable. This dramaticatly increases performance an simplifies programming.  You can define an array functions to run on application start up, later you can access this cached objects from the current Conn.
+                             Concorde’s multi reactor architecture means that sharing objects between threads is
+                            is prohibited. This means that objects are cached per thread in a pthread specific variable. This dramatically increases performance and simplifies programming.  You can define an array functions to run on application start up, later you can access this cached objects from the current Conn.
                             """
     static let databases: String = """
                          let preflightCheck: [(EventLoopGroup) -> Any] = [
