@@ -69,22 +69,39 @@ private enum Code {
 
 }
 
-/// Type was too complex to resolve
-let section1: View<(), [Node]> = logo.contramap { _ in }
+/// Broken up for the type checker
+private let architecture: View<(), [Node]> = logo.contramap(const(()))
     <> (sectionTitle.contramap { _ in ("Advanced", nil) })
-    <> descriptionSection.contramap { _ in "Architecture" }
+    <> descriptionSection.contramap(const("Architecture"))
     <> paragraphSection.contramap(const(Code.mainDescription))
 
-private let page: View<(), [Node]> = section1
-    <> descriptionSection.contramap { _ in "Routing" }
-    <> paragraphSection.contramap { _ in Code.routingDescription }
-    <> codeSection.contramap { _ in Code.routingCode }
-    <> descriptionSection.contramap { _ in "Composable Streams" }
-    <> paragraphSection.contramap { _ in Code.streamDescription }
-    <> descriptionSection.contramap { _ in "Databases" }
-    <> paragraphSection.contramap { _ in Code.dbDescription }
-    <> codeSection.contramap { _ in Code.databases }
-    <> descriptionSection.contramap { _ in "Web Sockets" }
-    <> paragraphSection.contramap { _ in "TODO" }
-    <> footerSection.contramap { _ in }
+private let helpfulLibs: View<(), [Node]> = descriptionSection.contramap { _ in "Helpful libraries" }
+    <> (listSection.contramap { _ in
+        return [
+            ("https://github.com/pointfreeco/swift-web", "swift-web"),
+            ("https://github.com/pointfreeco/swift-html", "swift-html"),
+            ("https://github.com/John-Connolly/terse", "terse")
+            ]
+    })
+
+private let routing: View<(), [Node]> = descriptionSection.contramap(const("Routing"))
+    <> paragraphSection.contramap(const(Code.routingDescription))
+    <> codeSection.contramap(const(Code.routingCode))
+
+private let databases: View<(), [Node]> = descriptionSection.contramap(const("Databases"))
+    <> paragraphSection.contramap(const(Code.dbDescription))
+    <> codeSection.contramap(const(Code.databases))
+
+private let page: View<(), [Node]> = architecture
+    <> routing
+    <> descriptionSection.contramap(const("Composable Streams"))
+    <> paragraphSection.contramap(const(Code.streamDescription))
+    <> databases
+    <> descriptionSection.contramap(const("Web Sockets"))
+    <> paragraphSection.contramap(const("TODO"))
+    <> helpfulLibs
+    <> footerSection.contramap(const(()))
+
+
+
 

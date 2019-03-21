@@ -83,6 +83,22 @@ let codeSection = View<String, [Node]> { content in
 }
 
 
+private let listItem = View<(String, String), [ChildOf<Tag.Ul>]> { content in
+    return [
+        li([a([Attribute("href", content.0), Attribute("id","list-a")],[.text(content.1)])])
+    ]
+}
+
+let listSection = View<[(String, String)], [Node]> { content in
+    return [
+        div([classAtr("row justify-content-md-center")], [
+            div([classAtr("col-md-auto justify-content-md-center")], [
+                ul([Attribute("id","list-ul")], content.flatMap(listItem.view))
+                ])
+            ])
+    ]
+}
+
 let footerSection = View<(), [Node]> { _ in
     return [
         footer([classAtr("pt-4 my-md-5 pt-md-5 border-top")], [
