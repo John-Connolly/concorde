@@ -14,6 +14,7 @@ public indirect enum Endpoint {
     case constant(String)
     case parameter(String)
     case joined(Endpoint, Endpoint)
+    case all([Endpoint])
 
     public var pretty: String {
         switch self {
@@ -27,6 +28,8 @@ public indirect enum Endpoint {
             return str
         case .joined(let a, let b):
             return a.pretty + b.pretty
+        case .all(let endpoints):
+            return endpoints.map { $0.pretty }.joined(separator: "\n")
         }
     }
 }
@@ -113,8 +116,10 @@ extension Route {
     }
 
     public func or(_ route: Route<A>) -> Route<A> {
-        return Route<A> { input in
+        return Route<A> ({ input in
             self.parse(input) ?? route.parse(input)
+        }) {
+            return .all([self.inverse()!, route.inverse()!])
         }
     }
 }

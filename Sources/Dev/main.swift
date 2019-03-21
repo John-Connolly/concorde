@@ -331,7 +331,9 @@ let home: [Route<SiteRoutes.Homepage>] = [
     pure(unzurry(SiteRoutes.Homepage.advanced)) <*> (path("advanced") *> end),
     curry(SiteRoutes.Homepage.routing) <^> (path("routing") *> string) <*> UInt,
 ]
+
 let homeTransformed = choice(home).map(SiteRoutes.homePage)
+print(homeTransformed.inverse()!.pretty)
 
 let type = choice(posts).map(SiteRoutes.posts)
 
