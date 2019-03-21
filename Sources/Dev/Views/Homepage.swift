@@ -36,7 +36,7 @@ private enum Code {
     static let package: String = """
                          .package(url: "https://github.com/John-Connolly/concorde.git", from: "1.0.0")
                          """
-
+    
     static let app: String =  """
                         /// Model your app as a sum type
                         enum Routes: Sitemap {
@@ -50,7 +50,7 @@ private enum Code {
                             }
                         }
                         """
-
+    
     static let run: String =  """
                         let sitemap: [Route<SiteRoutes>] = [
                             pure(unzurry(Routes.home)) <*> (path("home") *> end)
@@ -65,20 +65,20 @@ private enum Code {
 }
 
 private let homePage: View<(), [Node]> = (headerButtons
-        <> imageView.contramap { _ in "carbon.png" }
-        <> mainTitle
-        <> mainButtons
-        <> sectionTitle.contramap { _ in ("Why?", nil)}
-        <> pointsSection
-        <> sectionTitle.contramap { _ in ("Getting Started", "getting-started")}
-        <> descriptionSection.contramap { _ in "Installation" }
-        <> codeSection.contramap { _ in Code.package }
-        <> descriptionSection.contramap { _ in "HELLO WORLD" }
-        <> codeSection.contramap { _ in Code.app }
-        <> descriptionSection.contramap { _ in "Set up and run Concorde on localhost:8080" }
-        <> codeSection.contramap { _ in Code.run }
-        <> footerSection.contramap { _ in }
-    )
+    <> imageView.contramap { _ in "carbon.png" }
+    <> mainTitle
+    <> mainButtons
+    <> sectionTitle.contramap { _ in ("Why?", nil)}
+    <> pointsSection
+    <> sectionTitle.contramap { _ in ("Getting Started", "getting-started")}
+    <> descriptionSection.contramap { _ in "Installation" }
+    <> codeSection.contramap { _ in Code.package }
+    <> descriptionSection.contramap { _ in "HELLO WORLD" }
+    <> codeSection.contramap { _ in Code.app }
+    <> descriptionSection.contramap { _ in "Set up and run Concorde on localhost:8080" }
+    <> codeSection.contramap { _ in Code.run }
+    <> footerSection.contramap { _ in }
+)
 
 
 
@@ -101,7 +101,7 @@ private let headerButtons = View<(), [Node]> { content in
                     ])
                 ])
             ])
-        ]
+    ]
 }
 
 private let imageView = View<String, [Node]> { name in
@@ -111,7 +111,7 @@ private let imageView = View<String, [Node]> { name in
                 img(src: name, alt: "", [classAtr("img-fluid")])
                 ])
             ]),
-    ]
+        ]
 }
 
 private let mainTitle = View<(), [Node]> { content in
@@ -137,7 +137,7 @@ private let mainButtons = View<(), [Node]> { _ in
                 ]),
             div([classAtr("col-md-auto")], [
                 a([classAtr("btn btn-outline-dark"),
-                    Attribute("id","buttons-main"),
+                   Attribute("id","buttons-main"),
                    Attribute("href","https://github.com/John-Connolly/concorde"),
                    Attribute("role","button"),
                    ], [.text("Github")]),

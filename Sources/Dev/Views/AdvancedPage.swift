@@ -24,14 +24,14 @@ private func renderContent() -> String {
 
 
 private enum Code {
-
+    
     static let mainDescription = """
                                 Concorde is a functional micro framework for building web applications. Concorde will do most things out of the box but is made to have the main components of it easily switched out if necessary.  Concorde is built on top of Swift-NIO this provides the foundation for Concordes concurrency model.
                                 """
     static let routingDescription = """
                                     Concordes router is based on applicative parsing.  This adds a level of type safety to routing that would not be possible with alternative methods.  Below are some examples of combinators that allow you to build up routes.
                                     """
-
+    
     static let routingCode = """
 
                             pure<A>(_ a: A) -> Route<A>
@@ -51,7 +51,7 @@ private enum Code {
                             /// Path only matches if string is present
                             func path(_ matching: String) -> Route<String>
                             """
-
+    
     static let dbDescription = """
                              Concorde’s multi reactor architecture means that sharing objects between threads is
                             is prohibited. This means that objects are cached per thread in a pthread specific variable. This dramatically increases performance and simplifies programming.  You can define an array functions to run on application start up, later you can access this cached objects from the current Conn.
@@ -62,11 +62,11 @@ private enum Code {
                             swiftQConn
                          ]
                          """
-
+    
     static let streamDescription = """
                             Concorde streams all incoming data. This means that Concorde uses minimal memory even when dealing with large post bodies. Because of Concorde’s asynchronous architecture streams have to handle back-pressure. In short this means that streams con not read more than they can write.
                             """
-
+    
 }
 
 /// Broken up for the type checker
@@ -81,7 +81,7 @@ private let helpfulLibs: View<(), [Node]> = descriptionSection.contramap { _ in 
             ("https://github.com/pointfreeco/swift-web", "swift-web"),
             ("https://github.com/pointfreeco/swift-html", "swift-html"),
             ("https://github.com/John-Connolly/terse", "terse")
-            ]
+        ]
     })
 
 private let routing: View<(), [Node]> = descriptionSection.contramap(const("Routing"))
