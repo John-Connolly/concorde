@@ -64,7 +64,7 @@ private enum Code {
                          """
 
     static let streamDescription = """
-                            Concorde streams all incomming data. This means that concorde using minimal memory even when dealling with large post bodies.  Because of Concordes asynchronous architecture streams have to handle back-pressure.  In short this means that streams connot read more than they can write.
+                            Concorde streams all incoming data. This means that Concorde uses minimal memory even when dealing with large post bodies. Because of Concorde’s asynchronous architecture streams have to handle back-pressure. In short this means that streams con not read more than they can write.
                             """
 
 }
