@@ -341,7 +341,7 @@ let t = method(.POST, route: type)
 
 let fileMiddleware = curry(fileServing) <^> (suffix)
 
-let flightPlan = router(register: sitemap + [t] + [homeTransformed], middleware: [fileMiddleware], notFound: notFound())
+let flightPlan = router(register: sitemap + [t] + [homeTransformed], middleware: [fileMiddleware], notFound: mainView())
 let wings = Configuration(port: 8080, resources: preflightCheck)
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
