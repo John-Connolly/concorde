@@ -19,10 +19,16 @@ h1,h2,h4,p {
 }
 
 a {
-	margin: 10px;
-	color: #272822;
-	font-size: 20px;
+    margin: 10px;
+    color: #272822;
+    font-size: 20px;
 
+}
+
+#buttons-main {
+    margin: auto;
+    margin-top: 10px;
+    display: table;
 }
 
 #advanced-a {

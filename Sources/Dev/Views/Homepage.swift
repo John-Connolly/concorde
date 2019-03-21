@@ -128,15 +128,16 @@ private let mainTitle = View<(), [Node]> { content in
 private let mainButtons = View<(), [Node]> { _ in
     return [
         div([classAtr("row justify-content-md-center")], [
-            br,
             div([classAtr("col-md-auto")], [
                 a([classAtr("btn btn-dark"),
+                   Attribute("id","buttons-main"),
                    Attribute("href","#getting-started"),
                    Attribute("role","button"),
                    ], [.text("Getting Started")]),
                 ]),
             div([classAtr("col-md-auto")], [
                 a([classAtr("btn btn-outline-dark"),
+                    Attribute("id","buttons-main"),
                    Attribute("href","https://github.com/John-Connolly/concorde"),
                    Attribute("role","button"),
                    ], [.text("Github")]),
