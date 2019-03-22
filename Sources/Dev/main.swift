@@ -177,8 +177,9 @@ import Redis
 
 func logReq(item: String) -> Middleware  {
     return { conn in
-        let query = curry(redisQuery)(.lpush(key: "logs", value: "INFO: \(item)"))
+        let query = curry(redisQuery)(.lpush(key: "logs", value: "INFO: \(item), \(conn.request.head.description)"))
         let data = redis(conn: conn) >>- query
+
         return data.map { _ in
             return conn
         }
