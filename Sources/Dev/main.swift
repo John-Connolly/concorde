@@ -369,7 +369,7 @@ let home: [Route<SiteRoutes.Homepage>] = [
 
 let homeTransformed = choice(home).map(SiteRoutes.homePage)
 
-print(choice(sitemap).invert(a: SiteRoutes.test(path: "resource", id: 56)))
+//print(choice(sitemap).invert(a: SiteRoutes.test(path: "resource", id: 56)))
 
 //print(homeTransformed.inverse().pretty)
 
