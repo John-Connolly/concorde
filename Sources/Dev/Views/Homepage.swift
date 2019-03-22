@@ -12,6 +12,7 @@ import Html
 
 func mainView() -> Middleware {
     return (write(status: .ok)
+        >=> logReq(item: "main-page")
         >=> write(body: renderContent(), contentType: .html))
 }
 
@@ -25,11 +26,11 @@ func jsonExample() -> Middleware {
         let doors: Int
     }
     let car = Car(make: "Ford", doors: 4)
-    return write(status: .ok) >=> write(body: car)
+    return write(status: .ok) >=> logReq(item: "json") >=> write(body: car)
 }
 
 func routingExample(resource: String, id: UInt) -> Middleware {
-    return write(status: .ok) >=> write(body: "Requested \(resource) with id: \(id)")
+    return write(status: .ok) >=> logReq(item: "routing") >=> write(body: "Requested \(resource) with id: \(id)")
 }
 
 private enum Code {

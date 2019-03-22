@@ -175,6 +175,16 @@ func timePassed(since date: Int) -> String {
 
 import Redis
 
+func logReq(item: String) -> Middleware  {
+    return { conn in
+        let query = curry(redisQuery)(.lpush(key: "logs", value: "INFO: \(item)"))
+        let data = redis(conn: conn) >>- query
+        return data.map { _ in
+            return conn
+        }
+    }
+}
+
 func workersStats(with conn: Conn) -> Future<[ConsumerInfo]> {
     let query = curry(redisQuery)(.smembers(key: "processes"))
     let data = redis(conn: conn) >>- query
@@ -213,6 +223,28 @@ func notFound() -> Middleware {
         >=> write(body: "<h1> NOT FOUND!!!! </h1>", contentType: .html))
 }
 
+func retrieveLogs() -> Middleware {
+    return { conn in
+        let query = curry(redisQuery)(.lrange(key: "logs", range: 0...9999))
+        let data = redis(conn: conn) >>- query
+
+        struct Log: Codable {
+            let item: [String]
+        }
+
+        let logs = data.map { item -> Log in
+            return Log(item: item.array?.map({ $0.string ?? "Failed" }) ?? [])
+        }
+
+        func writeBody(conn: Conn) -> Future<Conn> {
+            return logs >>- { write(body: $0)(conn) }
+        }
+        return (write(status: .ok)
+            >=> writeBody)(conn)
+
+    }
+}
+
 
 
 let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
@@ -242,6 +274,7 @@ indirect enum SiteRoutes: Sitemap {
     case failed
     case logs
     case hello
+    case allLogs
 
     case posts(PostRoutes)
     case homePage(Homepage)
@@ -255,6 +288,7 @@ indirect enum SiteRoutes: Sitemap {
             return loginView()
         case .dashboard:
             return dashBoard()
+        case .allLogs: return retrieveLogs()
         case .failed:
             return failedView()
         case .logs:
@@ -309,6 +343,7 @@ let sitemap: [Route<SiteRoutes>] = [
     pure(curry(SiteRoutes.test)) <*> (path("addTask") *> string) <*> int,
     pure(unzurry(SiteRoutes.login)) <*> end,
     pure(unzurry(SiteRoutes.dashboard)) <*> (path("overview") *> end),
+    pure(unzurry(SiteRoutes.allLogs)) <*> (path("allLogs") *> end),
     pure(unzurry(SiteRoutes.failed)) <*> (path("failed") *> end),
     pure(unzurry(SiteRoutes.logs)) <*> (path("logs") *> end),
     pure(unzurry(SiteRoutes.hello)) <*> (path("hello") *> end),
@@ -333,7 +368,10 @@ let home: [Route<SiteRoutes.Homepage>] = [
 ]
 
 let homeTransformed = choice(home).map(SiteRoutes.homePage)
-print(homeTransformed.inverse()!.pretty)
+
+print(choice(sitemap).invert(a: SiteRoutes.test(path: "resource", id: 56)))
+
+//print(homeTransformed.inverse().pretty)
 
 let type = choice(posts).map(SiteRoutes.posts)
 

@@ -32,6 +32,7 @@ enum Command {
     case smembers(key: String)
     case lrange(key: String, range: CountableClosedRange<Int>)
     case info(section: Section)
+    case lpush(key: String, value: String)
 
     var rawValue: String {
         switch self {
@@ -41,6 +42,7 @@ enum Command {
         case .mget: return "MGET"
         case .lrange: return "LRANGE"
         case .info: return "INFO"
+        case .lpush: return "LPUSH"
         }
     }
 
@@ -59,6 +61,8 @@ enum Command {
             let lower = String(range.lowerBound)
             let upper = String(range.upperBound)
             return [RedisData(bulk: key), RedisData(bulk: lower), RedisData(bulk: upper)]
+        case .lpush(let key, let value):
+            return [RedisData(bulk: key), RedisData(bulk: value)]
         }
     }
 }

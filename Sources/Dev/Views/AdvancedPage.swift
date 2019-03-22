@@ -14,6 +14,7 @@ import Html
 
 func advancedPage() -> Middleware {
     return (write(status: .ok)
+        >=> logReq(item: "advanced-page")
         >=> write(body: renderContent(), contentType: .html))
 }
 
