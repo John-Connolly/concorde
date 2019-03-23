@@ -177,7 +177,7 @@ import Redis
 
 func logReq(item: String) -> Middleware  {
     return { conn in
-        let query = curry(redisQuery)(.lpush(key: "logs", value: "INFO: \(item), \(conn.request.head.description)"))
+        let query = curry(redisQuery)(.incr(key: "stats"))
         let data = redis(conn: conn) >>- query
 
         return data.map { _ in
@@ -247,6 +247,30 @@ func retrieveLogs() -> Middleware {
 }
 
 
+func retrieveStats() -> Middleware {
+    return { conn in
+        let query = curry(redisQuery)(.get(key: "stats"))
+        let data = redis(conn: conn) >>- query
+
+        struct Stats: Codable {
+            let totalVisits: String
+        }
+
+        let stats = data.map({ Stats(totalVisits: $0.string ?? "Nothing")})
+
+
+
+        func writeBody(conn: Conn) -> Future<Conn> {
+            return stats >>- { write(body: $0)(conn) }
+        }
+        return (write(status: .ok)
+            >=> writeBody)(conn)
+
+    }
+}
+
+
+
 
 let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
@@ -275,7 +299,7 @@ indirect enum SiteRoutes: Sitemap {
     case failed
     case logs
     case hello
-    case allLogs
+    case stats
 
     case posts(PostRoutes)
     case homePage(Homepage)
@@ -289,7 +313,7 @@ indirect enum SiteRoutes: Sitemap {
             return loginView()
         case .dashboard:
             return dashBoard()
-        case .allLogs: return retrieveLogs()
+        case .stats: return retrieveStats()
         case .failed:
             return failedView()
         case .logs:
@@ -342,9 +366,9 @@ let thing = pure(unzurry(SiteRoutes.failed)) <*> (path("failed") *> end)
 
 let sitemap: [Route<SiteRoutes>] = [
     pure(curry(SiteRoutes.test)) <*> (path("addTask") *> string) <*> int,
-    pure(unzurry(SiteRoutes.login)) <*> end,
+    pure(unzurry(SiteRoutes.login)) <*> (path("app") *> end),
     pure(unzurry(SiteRoutes.dashboard)) <*> (path("overview") *> end),
-    pure(unzurry(SiteRoutes.allLogs)) <*> (path("allLogs") *> end),
+    pure(unzurry(SiteRoutes.stats)) <*> (path("stats") *> end),
     pure(unzurry(SiteRoutes.failed)) <*> (path("failed") *> end),
     pure(unzurry(SiteRoutes.logs)) <*> (path("logs") *> end),
     pure(unzurry(SiteRoutes.hello)) <*> (path("hello") *> end),
@@ -362,7 +386,7 @@ let posts: [Route<SiteRoutes.PostRoutes>] = [
 //let type2 = unzurry(SiteRoutes.Homepage.home) <^> (path("home") *> end)
 
 let home: [Route<SiteRoutes.Homepage>] = [
-    pure(unzurry(SiteRoutes.Homepage.home)) <*> (path("home") *> end),
+    pure(unzurry(SiteRoutes.Homepage.home)) <*> end,
     pure(unzurry(SiteRoutes.Homepage.json)) <*> (path("json") *> end),
     pure(unzurry(SiteRoutes.Homepage.advanced)) <*> (path("advanced") *> end),
     curry(SiteRoutes.Homepage.routing) <^> (path("routing") *> string) <*> UInt,
