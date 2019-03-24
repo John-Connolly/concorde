@@ -23,7 +23,7 @@ let logo = View<(), [Node]> { title in
     return [
         div([classAtr("row justify-content-md-left")], [
             div([classAtr("col-md-1")], [
-                a([Attribute("href","/home")], [
+                a([Attribute("href","/")], [
                     img(src: "concorde.png", alt: "", [classAtr("img-fluid"), Attribute("id", "logo-img")])
                     ]),
                 ]),
