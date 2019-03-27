@@ -109,7 +109,7 @@ final class HTTPHandler: ChannelInboundHandler {
             stream.connect(
                 to: Sink<Data>(drain: { input in
                     switch input {
-                    case .input(let data):
+                    case .input(let _):
 //                        buffer.write(bytes: data)
                         context.writeAndFlush(
                             self.wrapOutboundOut(.body(.byteBuffer(buffer))),

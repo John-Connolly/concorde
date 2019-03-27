@@ -75,7 +75,7 @@ public struct Response {
 
 public extension Response {
 
-    public init<T: Encodable>(_ item: T) {
+    init<T: Encodable>(_ item: T) {
         guard let data = try? JSONEncoder().encode(item) else {
             self = .error
             return
@@ -84,17 +84,17 @@ public extension Response {
         self.contentType = .json
     }
 
-    public init(_ item: String) {
+    init(_ item: String) {
         self.data = .data(Data(item.utf8))
         self.contentType = .plain
     }
 
-    public init(item: String, type: MimeType) {
+    init(item: String, type: MimeType) {
         self.data = .data(Data(item.utf8))
         self.contentType = type
     }
 
-    public init(item: String, status: HTTPResponseStatus) {
+    init(item: String, status: HTTPResponseStatus) {
         self.data = .data(Data(item.utf8))
         self.contentType = .plain
         self.status = status

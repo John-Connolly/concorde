@@ -12,6 +12,10 @@ extension Node {
     public static func div(attributes: [Attribute<Tag.Div>] = [], array: [Node]) -> Node {
         return .element("div", attributes: attributes, .fragment(array))
     }
+
+    public static func ul(attributes: [Attribute<Tag.Ul>] = [], _ content: [ChildOf<Tag.Ul>]) -> Node {
+        return .element("ul", attributes: attributes, ChildOf.fragment(content).rawValue)
+    }
 }
 
 func baseView(nodes: [Node]) -> Node {
@@ -96,10 +100,10 @@ private let listItem = View<(String, String), [ChildOf<Tag.Ul>]> { content in
 let listSection = View<[(String, String)], [Node]> { content in
     return [
         .div(attributes: [.class("row justify-content-md-center")],
-            .div(attributes: [.class("col-md-auto justify-content-md-center")]
-//                .ul(attributes: [.id("list-ul")], content.flatMap(listItem.view))
+            .div(attributes: [.class("col-md-auto justify-content-md-center")],
+                .ul(attributes: [.id("list-ul")], content.flatMap(listItem.view))
                 )
-            )
+        )
     ]
 }
 
