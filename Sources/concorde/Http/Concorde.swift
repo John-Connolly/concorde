@@ -11,14 +11,14 @@ private func create(
     ) -> ServerBootstrap {
     
     let variable = ThreadSpecificVariable<ThreadCache>()
-    
+
     for _ in 0..<System.coreCount {
         let loop = group.next()
         
         loop
             .submit {
                 var cons = config.resources.map { $0(loop) }
-                let threadPool = BlockingIOThreadPool(numberOfThreads: 1)
+                let threadPool = NIOThreadPool(numberOfThreads: 1)
                 threadPool.start()
                 cons.append(threadPool as Any)
                 variable.currentValue = ThreadCache(items: cons)
@@ -40,11 +40,11 @@ private func create(
             // Ensure we don't read faster then we can write by adding the BackPressureHandler into the pipeline.
             channel.pipeline
                 .configureHTTPServerPipeline(withPipeliningAssistance: false)
-                .then { _ in
+                .flatMap { _ in
                     channel.pipeline
-                        .add(handler: BackPressureHandler())
-                        .then { _ in
-                            channel.pipeline.add(handler: HTTPHandler(
+                        .addHandler(BackPressureHandler())
+                        .flatMap { _ in
+                            channel.pipeline.addHandler(HTTPHandler(
                                 with: router,
                                 and: variable
                             ))

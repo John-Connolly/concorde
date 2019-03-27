@@ -11,6 +11,6 @@ infix operator >=>: MonadicPrecedenceLeft
 
 public func >=> <A, B, C>(f: @escaping (A) -> Future<B>, g: @escaping (B) -> Future<C>) -> (A) -> Future<C> {
     return { a in
-        return f(a).then { g($0) }
+        return f(a).flatMap { g($0) }
     }
 }

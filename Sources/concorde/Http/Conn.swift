@@ -31,16 +31,16 @@ public final class Conn {
         self.response = response
     }
     
-    var threadPool: BlockingIOThreadPool {
+    var threadPool: NIOThreadPool {
         return cache.get()
     }
     
     public func future<T>(_ t: T) -> Future<T> {
-        return eventLoop.newSucceededFuture(result: t)
+        return eventLoop.makeSucceededFuture(t)
     }
     
     public func promise<T>() -> Promise<T> {
-        return eventLoop.newPromise()
+        return eventLoop.makePromise()
     }
     
     public func cached<T>(_ type: T.Type) -> Future<T> {
@@ -48,22 +48,22 @@ public final class Conn {
     }
     
     public func future<T>(_ f: @escaping () -> T) -> Future<T> {
-        return eventLoop.newSucceededFuture(result: f())
+        return eventLoop.makeSucceededFuture(f())
     }
     
     public func failed<T>(with error: Error) -> Future<T> {
-        return eventLoop.newFailedFuture(error: error)
+        return eventLoop.makeFailedFuture(error)
     }
     
     public func failed<T>(with error: ResponseError) -> Future<T> {
-        return eventLoop.newFailedFuture(error: error)
+        return eventLoop.makeFailedFuture(error)
     }
     
     // Reads the entire body into memory then returns it.
     public var body: Future<Data> {
         let promise: Promise<Data> = self.promise()
         _ = stream.connect(to: BodySink { data in
-            promise.succeed(result: data)
+            promise.succeed(data)
         })
         return promise.futureResult
     }
@@ -129,13 +129,13 @@ public func redirect(to uri: String) -> Middleware {
 //    }
 //}
 
-public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T> {
+public func decode<T: Decodable>(_ type: T.Type) -> (Data) -> Result<T, Error> {
     return { data in
         return Result { try JSONDecoder().decode(type, from: data) }
     }
 }
 
-public func encode<T: Encodable>(_ item: T) -> Result<Data> {
+public func encode<T: Encodable>(_ item: T) -> Result<Data, Error> {
     return Result {
         return try JSONEncoder().encode(item)
     }

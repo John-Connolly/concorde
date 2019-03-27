@@ -17,16 +17,16 @@ struct IO<A> {
 
 }
 
-struct UnsafeFuture<A> {
-
-    var result: Result<A>?
-    var awaiters: [(Result<A>) -> ()] = []
-
-    init(compute: (@escaping (Result<A>) -> ()) -> ()) {
-        compute(send)
-    }
-
-    private func send(_ result: Result<A>) {
-
-    }
-}
+//struct UnsafeFuture<A> {
+//
+//    var result: Result<A>?
+//    var awaiters: [(Result<A>) -> ()] = []
+//
+//    init(compute: (@escaping (Result<A>) -> ()) -> ()) {
+//        compute(send)
+//    }
+//
+//    private func send(_ result: Result<A>) {
+//
+//    }
+//}

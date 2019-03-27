@@ -11,10 +11,10 @@ import NIO
 func read(
     from path: String,
     on eventLoop: EventLoop,
-    threadPool: BlockingIOThreadPool
+    threadPool: NIOThreadPool
     ) -> Future<ByteBuffer> {
     do {
-        let filehandle = try NIO.FileHandle(path: path)
+        let filehandle = try NIOFileHandle(path: path)
         let fileIO = NonBlockingFileIO(threadPool: threadPool)
         let future = fileIO.read(
             fileHandle: filehandle,
@@ -23,10 +23,10 @@ func read(
             eventLoop: eventLoop
         )
 
-        future.whenComplete { try? filehandle.close() }
+        future.whenComplete { _ in try? filehandle.close() }
         return future
     } catch {
-        return eventLoop.newFailedFuture(error: error)
+        return eventLoop.makeFailedFuture(error)
     }
 
 }

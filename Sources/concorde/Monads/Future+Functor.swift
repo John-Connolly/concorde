@@ -18,14 +18,14 @@ public func <^> <A, B>(a: Future<A>, f: @escaping (A) -> B) -> Future<B> {
 
 extension Future {
 
-    func mapTT<A, B>(f: @escaping (A) -> B) -> Future<Optional<B>> where T == Optional<A> {
-        return self.map { maybe -> Optional<B> in
-            switch maybe {
-            case .some(let a): return f(a)
-            case .none: return .none
-            }
-        }
-    }
+//    func mapTT<A, B>(f: @escaping (A) -> B) -> Future<Optional<B>> where T == Optional<A> {
+//        return self.map { maybe -> Optional<B> in
+//            switch maybe {
+//            case .some(let a): return f(a)
+//            case .none: return .none
+//            }
+//        }
+//    }
 }
 
 

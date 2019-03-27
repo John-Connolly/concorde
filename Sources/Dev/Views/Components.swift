@@ -8,49 +8,53 @@
 import Foundation
 import Html
 
+extension Node {
+    public static func div(attributes: [Attribute<Tag.Div>] = [], array: [Node]) -> Node {
+        return .element("div", attributes: attributes, .fragment(array))
+    }
+}
+
 func baseView(nodes: [Node]) -> Node {
-    return html([
-        head(style: "concorde.css", title2: "Concorde"),
-        body([
-            div([classAtr("container-fluid")],
-                nodes
-            )
+    return .html([
+        head(style: "concorde.css"),//, title2: "Concorde"
+        .body([
+            .div(attributes: [.class("container-fluid")], array: nodes)
             ])
         ])
 }
 
 let logo = View<(), [Node]> { title in
     return [
-        div([classAtr("row justify-content-md-left")], [
-            div([classAtr("col-md-1")], [
-                a([Attribute("href","/")], [
-                    img(src: "concorde.png", alt: "", [classAtr("img-fluid"), Attribute("id", "logo-img")])
-                    ]),
-                ]),
-            ]),
+        .div(attributes: [.class("row justify-content-md-left")],
+            .div(attributes: [.class("col-md-1")],
+                  .a(attributes: [.href("/")],
+                     Node.img(src: "concorde.png", alt: "", attributes: [.id("logo-img")])
+                    )
+                )
+            )
         ]
 }
 
 let sectionTitle = View<(String, String?), [Node]> { title in
     return [
-        br,
-        br,
-        br,
-        div([classAtr("row justify-content-md-center"), Attribute("id", title.1 ?? "")], [
-            div([classAtr("col-md-auto")], [
-                h2([.text(title.0)]),
-                br
-                ]),
-            ])
+        .br,
+        .br,
+        .br,
+        .div(attributes: [.class("row justify-content-md-center"), .id(title.1 ?? "")],
+            .div(attributes: [.class("col-md-auto")],
+                .h2(.text(title.0)),
+                .br
+                )
+            )
     ]
 }
 
 let descriptionSection = View<String, [Node]> { content in
     return [
-        div([classAtr("row justify-content-md-center")], [
-            div([classAtr("col-md-auto")], [
-                br,
-                h6([.text(content)]),
+        .div(attributes: [.class("row justify-content-md-center")], [
+            .div(attributes: [.class("col-md-auto")], [
+                .br,
+                .h6([.text(content)]),
                 ]),
             ]),
         ]
@@ -58,10 +62,10 @@ let descriptionSection = View<String, [Node]> { content in
 
 let paragraphSection = View<String, [Node]> { content in
     return [
-        div([classAtr("row justify-content-md-center")], [
-            div([classAtr("col-md-5")], [
-                br,
-                p([Attribute("id","paragraph-p")],[.text(content)]),
+        .div(attributes: [.class("row justify-content-md-center")], [
+            .div(attributes: [.class("col-md-5")], [
+                .br,
+                .p(attributes: [.id("paragraph-p")],[.text(content)]),
                 ]),
             ]),
         ]
@@ -71,9 +75,9 @@ let paragraphSection = View<String, [Node]> { content in
 
 let codeSection = View<String, [Node]> { content in
     return [
-        div([classAtr("row justify-content-md-center")], [
-            div([classAtr("col-md-auto")], [
-                pre([code([classAtr("Swift")],[.text(
+        .div(attributes:[.class("row justify-content-md-center")], [
+            .div(attributes: [.class("col-md-auto")], [
+                .pre([.code(attributes: [.class("Swift")],[.text(
                     content
                     )])
                     ])
@@ -85,25 +89,25 @@ let codeSection = View<String, [Node]> { content in
 
 private let listItem = View<(String, String), [ChildOf<Tag.Ul>]> { content in
     return [
-        li([a([Attribute("href", content.0), Attribute("id","list-a")],[.text(content.1)])])
+        .li(.a(attributes: [.href(content.0), .id("list-a")], .text(content.1)))
     ]
 }
 
 let listSection = View<[(String, String)], [Node]> { content in
     return [
-        div([classAtr("row justify-content-md-center")], [
-            div([classAtr("col-md-auto justify-content-md-center")], [
-                ul([Attribute("id","list-ul")], content.flatMap(listItem.view))
-                ])
-            ])
+        .div(attributes: [.class("row justify-content-md-center")],
+            .div(attributes: [.class("col-md-auto justify-content-md-center")]
+//                .ul(attributes: [.id("list-ul")], content.flatMap(listItem.view))
+                )
+            )
     ]
 }
 
 let footerSection = View<(), [Node]> { _ in
     return [
-        footer([classAtr("pt-4 my-md-5 pt-md-5 border-top")], [
-            div([classAtr("container")], [
-                span([classAtr("text-muted")], [.text("Concorde")])
+        .footer(attributes: [.class("pt-4 my-md-5 pt-md-5 border-top")], [
+            .div(attributes: [.class("container")], [
+                .span(attributes: [.class("text-muted")], [.text("Concorde")])
                 ])
             ])
     ]

@@ -25,7 +25,7 @@ final class HTTPHandler: ChannelInboundHandler {
         self.threadVariable = threadVariable
     }
 
-    func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
+    func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         let serverRequestPart = unwrapInboundIn(data)
         switch serverRequestPart {
         case .head(let header):
@@ -34,11 +34,11 @@ final class HTTPHandler: ChannelInboundHandler {
                 let request = Request(head: header)
                 let conn = Conn(
                     cache: cache,
-                    eventLoop: ctx.eventLoop,
+                    eventLoop: context.eventLoop,
                     request: request,
                     response: .empty
                 )
-                router(conn, write(ctx))
+                router(conn, write(context))
                 state.recievedGetRequest()
                 return
             }
@@ -46,12 +46,12 @@ final class HTTPHandler: ChannelInboundHandler {
             let request = Request(head: header)
             let conn = Conn(
                 cache: cache,
-                eventLoop: ctx.eventLoop,
+                eventLoop: context.eventLoop,
                 request: request,
                 response: .empty
             )
             state.receivedHead(header, conn: conn)
-            router(conn, write(ctx))
+            router(conn, write(context))
         case .body(let body):
             switch state {
             case .idle, .sendingResponse:
@@ -70,11 +70,11 @@ final class HTTPHandler: ChannelInboundHandler {
         }
     }
 
-    func write(_ ctx: ChannelHandlerContext) -> (Future<Conn>) -> () {
+    func write(_ context: ChannelHandlerContext) -> (Future<Conn>) -> () {
         return { response in
             response
                 .map { resp in
-                    self.write(resp.response, on: ctx)
+                    self.write(resp.response, on: context)
                 }
                 .whenFailure { error in
                     if let error = error as? ResponseError {
@@ -84,59 +84,56 @@ final class HTTPHandler: ChannelInboundHandler {
                         case .abort:
                             ()
                         case .custom(let response):
-                            self.write(response, on: ctx)
+                            self.write(response, on: context)
                         }
                     } else {
                         let resp = Response.error(error)
-                        self.write(resp, on: ctx)
+                        self.write(resp, on: context)
                     }
             }
         }
     }
 
-    private func write(_ response: Response, on ctx: ChannelHandlerContext) {
-        ctx.write(self.wrapOutboundOut(.head(self.head(response))), promise: .none)
-        var buffer = ctx.channel.allocator.buffer(capacity: response.data.count)
+    private func write(_ response: Response, on context: ChannelHandlerContext) {
+        context.write(self.wrapOutboundOut(.head(self.head(response))), promise: .none)
+        var buffer = context.channel.allocator.buffer(capacity: response.data.count)
+
         switch response.data {
         case .data(let data):
-            buffer.write(bytes: data)
-            self.writeAndflush(buffer: buffer, ctx: ctx)
+             buffer.writeBytes(data)
+            self.writeAndflush(buffer: buffer, context: context)
         case .byteBuffer(var bytes):
-            buffer.write(buffer: &bytes)
-            self.writeAndflush(buffer: buffer, ctx: ctx)
+            buffer.writeBuffer(&bytes)
+            self.writeAndflush(buffer: buffer, context: context)
         case .stream(let stream):
             stream.connect(
                 to: Sink<Data>(drain: { input in
                     switch input {
                     case .input(let data):
-                        buffer.write(bytes: data)
-                        ctx.writeAndFlush(
+//                        buffer.write(bytes: data)
+                        context.writeAndFlush(
                             self.wrapOutboundOut(.body(.byteBuffer(buffer))),
                             promise: .none
                         )
                         buffer.clear()
                     case .complete:
-                        ctx.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: nil)
+                        context.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: nil)
                     case .error:
                         ()
-
                     }
                 })
             )
         }
     }
 
-    //    func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-    //        ctx.close(promise: nil)
-    //    }
+    func errorCaught(context: ChannelHandlerContext, error: Error) {
+        context.close(promise: nil)
+    }
 
-    private func writeAndflush(buffer: ByteBuffer, ctx: ChannelHandlerContext) {
-        ctx.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
-        let promise: EventLoopPromise<Void> = ctx.eventLoop.newPromise()
-        ctx.writeAndFlush(wrapOutboundOut(.end(.none)), promise: promise)
-        //        promise.futureResult.whenComplete {
-        //            ctx.close(promise: .none)
-        //        }
+    private func writeAndflush(buffer: ByteBuffer, context: ChannelHandlerContext) {
+        context.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
+        let promise: EventLoopPromise<Void> = context.eventLoop.makePromise()
+        context.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: promise)
     }
 
     private func head(_ response: Response) -> HTTPResponseHead {
@@ -149,10 +146,7 @@ final class HTTPHandler: ChannelInboundHandler {
         if response.data.isStreamed {
             head.headers.add(name: "Transfer-Encoding", value: "chunked")
         } else {
-            head.headers.add(
-                name: "Content-Length",
-                value: String(response.data.count)
-            )
+            head.headers.add(name: "Content-Length", value: String(response.data.count))
         }
         response.headers.forEach { head.headers.add(name: $0.key, value: $0.value) }
         return head
