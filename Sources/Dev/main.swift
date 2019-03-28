@@ -4,33 +4,20 @@ import concorde
 let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
 let g = flip(f)(.html)
 
-func hello() -> Middleware {
-    return write(status: .ok) >=> write(body: "loaderio-95e2de71ba5cfa095645d825903bc632")
-}
-
-enum Routes: Sitemap {
-    case route
-
-    func action() -> Middleware {
-        switch self {
-        case .route:
-            return write(status: .ok) >=> write(body: "HELLO WORLD")
-        }
-    }
-}
-
 enum SiteRoutes: Sitemap {
 
     case home
     case json
     case advanced
     case routing(String, UInt)
+    case benchmark
 
     func action() -> Middleware {
         switch self {
         case .home: return mainView()
         case .json: return jsonExample()
         case .advanced: return advancedPage()
+        case .benchmark: return write(body: "Hello")
         case .routing(let str, let id):
             return routingExample(resource: str, id: id)
         }
@@ -53,7 +40,7 @@ let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
 
 
-//let route = unzurry(SiteRoutes.Homepage.benchmark) <^> end
+//let route = unzurry(SiteRoutes.benchmark) <^> end
 //
 //let flightPlan = router(register: [route])
 //let wings = Configuration(port: 8080, resources: [])

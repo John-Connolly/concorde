@@ -18,7 +18,7 @@ let package = Package(
     ],
     targets: [//"concorde","Html", "Redis", "PostgreSQL", "Crypto", "Redis", "SwiftQ"
         .target(name: "Dev", dependencies: ["concorde","Html",]),
-        .target(name: "concorde", dependencies: ["NIO", "NIOHTTP1"]),
+        .target(name: "concorde", dependencies: ["NIO", "NIOHTTP1", "NIOWebSocket"]),
         .testTarget(name: "concordeTests", dependencies: ["concorde"]),
     ]
 )

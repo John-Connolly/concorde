@@ -15,15 +15,13 @@ private func create(
     for _ in 0..<System.coreCount {
         let loop = group.next()
         
-        loop
-            .submit {
-                var cons = config.resources.map { $0(loop) }
-                let threadPool = NIOThreadPool(numberOfThreads: 1)
-                threadPool.start()
-                cons.append(threadPool as Any)
-                variable.currentValue = ThreadCache(items: cons)
-            }
-            .whenFailure { error in
+        loop.submit {
+            var cons = config.resources.map { $0(loop) }
+            let threadPool = NIOThreadPool(numberOfThreads: 1)
+            threadPool.start()
+            cons.append(threadPool as Any)
+            variable.currentValue = ThreadCache(items: cons)
+        }.whenFailure { error in
                 fatalError("Could not boot eventloop: \(error)")
         }
     }
@@ -38,7 +36,8 @@ private func create(
         
         .childChannelInitializer { channel in
             // Ensure we don't read faster then we can write by adding the BackPressureHandler into the pipeline.
-            channel.pipeline
+            channel
+                .pipeline
                 .configureHTTPServerPipeline(withPipeliningAssistance: true)
                 .flatMap { _ in
                     channel.pipeline
