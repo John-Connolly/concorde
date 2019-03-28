@@ -39,7 +39,7 @@ private func create(
         .childChannelInitializer { channel in
             // Ensure we don't read faster then we can write by adding the BackPressureHandler into the pipeline.
             channel.pipeline
-                .configureHTTPServerPipeline(withPipeliningAssistance: false)
+                .configureHTTPServerPipeline(withPipeliningAssistance: true)
                 .flatMap { _ in
                     channel.pipeline
                         .addHandler(BackPressureHandler())

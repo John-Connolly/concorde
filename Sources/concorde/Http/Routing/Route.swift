@@ -124,11 +124,6 @@ extension Route {
     }
 }
 
-
-public func choice<A>(_ routes: [Route<A>]) -> Route<A> {
-    return routes.dropFirst().reduce(routes[0], { $0.or($1) })
-}
-
 public func path(_ matching: String) -> Route<String> {
     return Route({ input -> (String, ArraySlice<String>)? in
         guard let path = input.first, path == matching else { return nil }
@@ -229,4 +224,31 @@ public func query(_ param: String) -> Route<String> {
               key == param else { return nil }
         return (String(value), input.dropFirst())
     }
+}
+
+public func choice<A>(_ routes: [Route<A>]) -> Route<A> {
+    return routes.dropFirst().reduce(routes[0], { $0.or($1) })
+}
+
+precedencegroup Semigroup {
+    associativity: left
+}
+
+infix operator <>: Semigroup
+
+public protocol Semigroup {
+    static func <>(lhs: Self, rhs: Self) -> Self
+}
+
+public protocol Monoid: Semigroup {
+    static var e: Self { get }
+}
+
+extension Route: Monoid {
+    public static var e: Route { return  Route(parse: const(nil)) }
+
+    public static func <>(lhs: Route, rhs: Route) -> Route {
+        return lhs.or(rhs)
+    }
+
 }

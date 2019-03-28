@@ -64,12 +64,14 @@ private enum Code {
                         """
 }
 
-private let homePage: View<(), [Node]> = (headerButtons
+private let intro: View<(), [Node]> = (headerButtons
     <> imageView.contramap { _ in "carbon.png" }
     <> mainTitle
     <> mainButtons
     <> sectionTitle.contramap { _ in ("Why?", nil)}
-    <> pointsSection
+    <> pointsSection)
+
+private let homePage: View<(), [Node]> = intro
     <> sectionTitle.contramap { _ in ("Getting Started", "getting-started")}
     <> descriptionSection.contramap { _ in "Installation" }
     <> codeSection.contramap { _ in Code.package }
@@ -78,8 +80,6 @@ private let homePage: View<(), [Node]> = (headerButtons
     <> descriptionSection.contramap { _ in "Set up and run Concorde on localhost:8080" }
     <> codeSection.contramap { _ in Code.run }
     <> footerSection.contramap { _ in }
-)
-
 
 
 private let headerButtons = View<(), [Node]> { content in

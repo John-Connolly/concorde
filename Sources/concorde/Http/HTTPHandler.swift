@@ -17,8 +17,7 @@ final class HTTPHandler: ChannelInboundHandler {
     var state = ServerState.idle
     let threadVariable: ThreadSpecificVariable<ThreadCache>
 
-    init(
-        with router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
+    init(with router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
         and threadVariable: ThreadSpecificVariable<ThreadCache>
         ) {
         self.router = router
@@ -106,10 +105,10 @@ final class HTTPHandler: ChannelInboundHandler {
             buffer.writeBuffer(&bytes)
             self.writeAndflush(buffer: buffer, context: context)
         case .stream(let stream):
-            stream.connect(
+            _ = stream.connect(
                 to: Sink<Data>(drain: { input in
                     switch input {
-                    case .input(let _):
+                    case .input(_):
 //                        buffer.write(bytes: data)
                         context.writeAndFlush(
                             self.wrapOutboundOut(.body(.byteBuffer(buffer))),
@@ -132,8 +131,7 @@ final class HTTPHandler: ChannelInboundHandler {
 
     private func writeAndflush(buffer: ByteBuffer, context: ChannelHandlerContext) {
         context.write(wrapOutboundOut(.body(.byteBuffer(buffer))), promise: .none)
-        let promise: EventLoopPromise<Void> = context.eventLoop.makePromise()
-        context.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: promise)
+        context.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: .none)
     }
 
     private func head(_ response: Response) -> HTTPResponseHead {

@@ -19,59 +19,46 @@ enum Routes: Sitemap {
     }
 }
 
-indirect enum SiteRoutes: Sitemap {
+enum SiteRoutes: Sitemap {
 
-
-    case homePage(Homepage)
-
+    case home
+    case json
+    case advanced
+    case routing(String, UInt)
 
     func action() -> Middleware {
         switch self {
-        case .homePage(let routes):
-            return routes.action()
+        case .home: return mainView()
+        case .json: return jsonExample()
+        case .advanced: return advancedPage()
+        case .routing(let str, let id):
+            return routingExample(resource: str, id: id)
         }
     }
 
-
-    enum Homepage: Sitemap {
-        case home
-        case json
-        case advanced
-        case routing(String, UInt)
-
-        func action() -> Middleware {
-            switch self {
-            case .home: return mainView()
-            case .json: return jsonExample()
-            case .advanced: return advancedPage()
-            case .routing(let str, let id):
-                return routingExample(resource: str, id: id)
-            }
-        }
-    }
 }
 
-
-
-//let type2 = unzurry(SiteRoutes.Homepage.home) <^> (path("home") *> end)
-
-let home: [Route<SiteRoutes.Homepage>] = [
-    pure(unzurry(SiteRoutes.Homepage.home)) <*> end,
-    pure(unzurry(SiteRoutes.Homepage.json)) <*> (path("json") *> end),
-    pure(unzurry(SiteRoutes.Homepage.advanced)) <*> (path("advanced") *> end),
-    curry(SiteRoutes.Homepage.routing) <^> (path("routing") *> string) <*> UInt,
-]
-
-let homeTransformed = choice(home).map(SiteRoutes.homePage)
-
-
+let routes = [
+    pure(unzurry(SiteRoutes.home)) <*> end,
+    pure(unzurry(SiteRoutes.json)) <*> (path("json") *> end),
+    pure(unzurry(SiteRoutes.advanced)) <*> (path("advanced") *> end),
+    curry(SiteRoutes.routing) <^> (path("routing") *> string) <*> UInt,
+].reduce(.e, <>)
 
 let fileMiddleware = curry(fileServing) <^> (suffix)
 
-let flightPlan = router(register: [homeTransformed], middleware: [fileMiddleware], notFound: mainView())
+let flightPlan = router(register: [routes], middleware: [fileMiddleware], notFound: mainView())
 let wings = Configuration(port: 8080, resources: [])
 let plane = concorde((flightPlan, config: wings))
 plane.apply(wings)
+
+
+//let route = unzurry(SiteRoutes.Homepage.benchmark) <^> end
+//
+//let flightPlan = router(register: [route])
+//let wings = Configuration(port: 8080, resources: [])
+//let plane = concorde((flightPlan, config: wings))
+//plane.apply(wings)
 
 // wrk -t6 -c400 -d30s http://localhost:8080/hello
 
