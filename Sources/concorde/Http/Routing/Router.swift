@@ -13,7 +13,10 @@ public protocol Sitemap {
     func action() -> Middleware
 }
 
-public func router<T: Sitemap>(register routes: [Route<T>], middleware: [Route<Middleware>] = [], notFound: Middleware? = nil) -> (Conn, (Future<Conn>)
+public func router<T: Sitemap>(register routes: [Route<T>],
+                               middleware: [Route<Middleware>] = [],
+                               notFound: Middleware? = nil)
+    -> (Conn, (Future<Conn>)
     -> ())
     -> () {
         return { conn, responder in

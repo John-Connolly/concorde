@@ -11,12 +11,8 @@ import Html
 
 
 func mainView() -> Middleware {
-    return (write(status: .ok)
-        >=> write(body: renderContent(), contentType: .html))
-}
-
-private func renderContent() -> String {
-    return render(homePage.map(baseView >>> pure).view(()))
+    let content = render(homePage.map(baseView >>> pure).view(()))
+    return write(status: .ok) >=> write(body: content, contentType: .html)
 }
 
 func jsonExample() -> Middleware {
@@ -65,10 +61,10 @@ private enum Code {
 }
 
 private let intro: View<(), [Node]> = (headerButtons
-    <> imageView.contramap { _ in "carbon.png" }
+    <> imageView.contramap(const("carbon.png"))
     <> mainTitle
     <> mainButtons
-    <> sectionTitle.contramap { _ in ("Why?", nil)}
+    <> sectionTitle.contramap(const(("Why?", nil)))
     <> pointsSection)
 
 private let homePage: View<(), [Node]> = intro
