@@ -7,15 +7,15 @@
 
 import Foundation
 
-public enum StreamInput<Value> {
-    case input(Value)
-    case complete
-    case error(Error)
-}
-
-public protocol Consumer: class {
-
-    associatedtype InputValue
-
-    func await(_ value: StreamInput<InputValue>)
-}
+//public enum StreamInput<Value> {
+//    case input(Value)
+//    case complete
+//    case error(Error)
+//}
+//
+//public protocol Consumer: class {
+//
+//    associatedtype InputValue
+//
+//    func await(_ value: StreamInput<InputValue>)
+//}

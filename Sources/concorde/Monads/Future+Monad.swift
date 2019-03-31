@@ -16,19 +16,6 @@ public func >>- <A, B>(a: Future<A>, f: @escaping (A) -> Future<B>) -> Future<B>
     }
 }
 
-extension Future {
-
-//    func flatMapTT<A, B>(f: @escaping (A) -> Future<B>) -> Future<Optional<B>> where T == Optional<A> {
-//        return self.flatMap { maybe -> Future<Optional<B>> in
-//            switch maybe {
-//            case .some(let a): return f(a).map(Optional.some)
-//            case .none: return self.eventLoop.newSucceededFuture(result: .none)
-//            }
-//        }
-//    }
-    
-}
-
 func flatMapTT<A,B>(f: @escaping (A) -> Future<B>) -> (Future<Optional<A>>) -> Future<Optional<B>> {
     return { future in
         future.flatMap { maybeA in

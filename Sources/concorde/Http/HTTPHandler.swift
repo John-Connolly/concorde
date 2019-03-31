@@ -55,15 +55,15 @@ final class HTTPHandler: ChannelInboundHandler {
             switch state {
             case .idle, .sendingResponse:
                 break
-            case .waitingForRequestBody(_, let conn):
-                conn.stream.yeild(.input(body))
+            case .waitingForRequestBody(_, let conn): ()
+//                conn.stream.yeild(.input(body))
             }
         case .end:
             switch state {
             case .idle, .sendingResponse:
                 break
             case .waitingForRequestBody(_, let conn):
-                conn.stream.yeild(.complete)
+//                conn.stream.yeild(.complete)
                 state.done()
             }
         }
@@ -104,24 +104,24 @@ final class HTTPHandler: ChannelInboundHandler {
         case .byteBuffer(var bytes):
             buffer.writeBuffer(&bytes)
             self.writeAndflush(buffer: buffer, context: context)
-        case .stream(let stream):
-            _ = stream.connect(
-                to: Sink<Data>(drain: { input in
-                    switch input {
-                    case .input(_):
-//                        buffer.write(bytes: data)
-                        context.writeAndFlush(
-                            self.wrapOutboundOut(.body(.byteBuffer(buffer))),
-                            promise: .none
-                        )
-                        buffer.clear()
-                    case .complete:
-                        context.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: nil)
-                    case .error:
-                        ()
-                    }
-                })
-            )
+        case .stream(let stream): ()
+//            _ = stream.connect(
+//                to: Sink<Data>(drain: { input in
+//                    switch input {
+//                    case .input(_):
+////                        buffer.write(bytes: data)
+//                        context.writeAndFlush(
+//                            self.wrapOutboundOut(.body(.byteBuffer(buffer))),
+//                            promise: .none
+//                        )
+//                        buffer.clear()
+//                    case .complete:
+//                        context.writeAndFlush(self.wrapOutboundOut(.end(.none)), promise: nil)
+//                    case .error:
+//                        ()
+//                    }
+//                })
+//            )
         }
     }
 
