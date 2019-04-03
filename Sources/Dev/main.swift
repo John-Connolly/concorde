@@ -1,29 +1,29 @@
 import Foundation
 import concorde
 
-let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
-let g = flip(f)(.html)
+//let f: (String) -> (MimeType) -> Middleware = curry(write(body:contentType:))
+//let g = flip(f)(.html)
 
-enum SiteRoutes: Sitemap {
-
-    case home
-    case json
-    case advanced
-    case routing(String, UInt)
-    case benchmark
-
-    func action() -> Middleware {
-        switch self {
-        case .home: return mainView()
-        case .json: return jsonExample()
-        case .advanced: return advancedPage()
-        case .benchmark: return write(body: "Hello")
-        case .routing(let str, let id):
-            return routingExample(resource: str, id: id)
-        }
-    }
-
-}
+//enum SiteRoutes: Sitemap {
+//
+//    case home
+//    case json
+//    case advanced
+//    case routing(String, UInt)
+//    case benchmark
+//
+//    func action() -> Middleware {
+//        switch self {
+//        case .home: return mainView()
+//        case .json: return jsonExample()
+//        case .advanced: return advancedPage()
+//        case .benchmark: return write(body: "Hello")
+//        case .routing(let str, let id):
+//            return routingExample(resource: str, id: id)
+//        }
+//    }
+//
+//}
 
 //let routes = [
 //    pure(unzurry(SiteRoutes.home)) <*> end,
