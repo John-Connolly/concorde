@@ -7,7 +7,7 @@ public let concorde = create >>> start
 
 private func create(
     router: @escaping (Conn, (EventLoopFuture<Conn>) -> ()) -> (),
-    config: Configuration
+    other: String
     ) -> String {
 
     return ""
