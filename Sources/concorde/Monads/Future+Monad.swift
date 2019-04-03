@@ -8,25 +8,6 @@
 import Foundation
 import NIO
 
-infix operator >>-: MonadicPrecedenceLeft
-
-public func >>- <A, B>(a: Future<A>, f: @escaping (A) -> Future<B>) -> Future<B> {
-    return a.flatMap { value in
-        return f(value)
-    }
-}
-
-func flatMapTT<A,B>(f: @escaping (A) -> Future<B>) -> (Future<Optional<A>>) -> Future<Optional<B>> {
-    return { future in
-        future.flatMap { maybeA in
-            return maybeA.map { a in
-                f(a).map(Optional.some)
-            } ?? future.map { _ in
-                return (Optional<B>.none)
-            }
-        }
-    }
-}
 
 //public func flatten<T>(_ future: Future<Result<T>>) -> Future<T> {
 //    return future.flatMap { result -> Future<T> in

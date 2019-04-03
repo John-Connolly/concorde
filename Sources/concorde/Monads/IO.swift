@@ -7,15 +7,6 @@
 
 import Foundation
 
-struct IO<A> {
-
-    let run: () -> Future<A>
-
-    static func effectTotal() {
-
-    }
-
-}
 
 //struct UnsafeFuture<A> {
 //

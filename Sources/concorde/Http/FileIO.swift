@@ -12,7 +12,7 @@ func read(
     from path: String,
     on eventLoop: EventLoop,
     threadPool: NIOThreadPool
-    ) -> Future<ByteBuffer> {
+    ) -> EventLoopFuture<ByteBuffer> {
     do {
         let filehandle = try NIOFileHandle(path: path)
         let fileIO = NonBlockingFileIO(threadPool: threadPool)

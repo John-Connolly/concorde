@@ -6,7 +6,7 @@ public let concorde = create >>> start
 
 let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount) //System.coreCount
 private func create(
-    router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
+    router: @escaping (Conn, (EventLoopFuture<Conn>) -> ()) -> (),
     config: Configuration
     ) -> ServerBootstrap {
     

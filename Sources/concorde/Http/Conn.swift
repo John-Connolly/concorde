@@ -8,7 +8,7 @@
 import Foundation
 import NIO
 
-public typealias Middleware = (Conn) -> Future<Conn>
+public typealias Middleware = (Conn) -> EventLoopFuture<Conn>
 
 public final class Conn {
     
@@ -35,33 +35,33 @@ public final class Conn {
         return cache.get()
     }
     
-    public func future<T>(_ t: T) -> Future<T> {
+    public func future<T>(_ t: T) -> EventLoopFuture<T> {
         return eventLoop.makeSucceededFuture(t)
     }
     
-    public func promise<T>() -> Promise<T> {
+    public func promise<T>() -> EventLoopPromise<T> {
         return eventLoop.makePromise()
     }
     
-    public func cached<T>(_ type: T.Type) -> Future<T> {
+    public func cached<T>(_ type: T.Type) -> EventLoopFuture<T> {
         return cache.get()
     }
     
-    public func future<T>(_ f: @escaping () -> T) -> Future<T> {
+    public func future<T>(_ f: @escaping () -> T) -> EventLoopFuture<T> {
         return eventLoop.makeSucceededFuture(f())
     }
     
-    public func failed<T>(with error: Error) -> Future<T> {
+    public func failed<T>(with error: Error) -> EventLoopFuture<T> {
         return eventLoop.makeFailedFuture(error)
     }
     
-    public func failed<T>(with error: ResponseError) -> Future<T> {
+    public func failed<T>(with error: ResponseError) -> EventLoopFuture<T> {
         return eventLoop.makeFailedFuture(error)
     }
     
     // Reads the entire body into memory then returns it.
-    public var body: Future<Data> {
-        let promise: Promise<Data> = self.promise()
+    public var body: EventLoopFuture<Data> {
+        let promise: EventLoopPromise<Data> = self.promise()
 //        _ = stream.connect(to: BodySink { data in
 //            promise.succeed(data)
 //        })

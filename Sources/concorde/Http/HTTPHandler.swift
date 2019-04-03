@@ -12,12 +12,12 @@ import NIOHTTP1
 final class HTTPHandler: ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
-    let router: (Conn, (Future<Conn>) -> ()) -> ()
+    let router: (Conn, (EventLoopFuture<Conn>) -> ()) -> ()
 
     var state = ServerState.idle
     let threadVariable: ThreadSpecificVariable<ThreadCache>
 
-    init(with router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
+    init(with router: @escaping (Conn, (EventLoopFuture<Conn>) -> ()) -> (),
         and threadVariable: ThreadSpecificVariable<ThreadCache>
         ) {
         self.router = router
@@ -69,7 +69,7 @@ final class HTTPHandler: ChannelInboundHandler {
         }
     }
 
-    func write(_ context: ChannelHandlerContext) -> (Future<Conn>) -> () {
+    func write(_ context: ChannelHandlerContext) -> (EventLoopFuture<Conn>) -> () {
         return { response in
             response
                 .map { resp in
