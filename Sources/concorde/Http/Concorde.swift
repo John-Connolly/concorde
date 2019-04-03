@@ -2,7 +2,7 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-//public let concorde = create >>> start
+public let concorde = create >>> start
 
 let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount) //System.coreCount
 private func create(
