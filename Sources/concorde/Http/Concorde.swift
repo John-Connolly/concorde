@@ -4,9 +4,9 @@ import NIOHTTP1
 
 public let concorde = create >>> start
 
-
+//Conn, (EventLoopFuture<Conn>) -> ()
 private func create(
-    router: @escaping (Conn, (EventLoopFuture<Conn>) -> ()) -> (),
+    router: @escaping () -> (),
     other: String
     ) -> String {
 
