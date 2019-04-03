@@ -124,131 +124,131 @@ extension Route {
     }
 }
 
-public func path(_ matching: String) -> Route<String> {
-    return Route({ input -> (String, ArraySlice<String>)? in
-        guard let path = input.first, path == matching else { return nil }
-        return (path, input.dropFirst())
-    }, inverse: {
-        return .constant(matching)
-    })
-}
+//public func path(_ matching: String) -> Route<String> {
+//    return Route({ input -> (String, ArraySlice<String>)? in
+//        guard let path = input.first, path == matching else { return nil }
+//        return (path, input.dropFirst())
+//    }, inverse: {
+//        return .constant(matching)
+//    })
+//}
+//
+//public let end: Route<()> = Route({ input in
+//    guard input.count == 0 else { return nil }
+//    return ((), input)
+//}, inverse: {
+//    return .nothing
+//})
+//
+//public func method<A>(_ method: HTTPMethod, route: Route<A>) -> Route<A> {
+//    return Route(method: method, parse: route.parse)
+//}
+//
+//public let suffix: Route<String> = Route { input in
+//    guard let last = input.last, last.contains("."), last != "favicon.ico" else { return nil }
+//    return (last, input)
+//}
+//
+//public let double: Route<Double> = Route { input in
+//    guard let double = input.first.flatMap(Double.init) else { return nil }
+//    return (double, input.dropFirst())
+//}
+//
+//public let string: Route<String> = Route({ input in
+//    guard let string = input.first else { return nil }
+//    return (string, input.dropFirst())
+//}, inverse: {
+//    return .parameter("String")
+//})
+//
+//public let uuid: Route<UUID> = Route { input in
+//    guard let string = input.first, let uuid = UUID.init(uuidString: string) else { return nil }
+//    return (uuid, input.dropFirst())
+//}
+//
+//public let int: Route<Int> = Route { input in
+//    guard let int = input.first.flatMap(Int.init) else { return nil }
+//    return (int, input.dropFirst())
+//}
+//
+//public let int8: Route<Int8> = Route { input in
+//    guard let int = input.first.flatMap(Int8.init) else { return nil }
+//    return (int, input.dropFirst())
+//}
+//
+//public let int16: Route<Int16> = Route { input in
+//    guard let int = input.first.flatMap(Int16.init) else { return nil }
+//    return (int, input.dropFirst())
+//}
+//
+//public let int32: Route<Int32> = Route { input in
+//    guard let int = input.first.flatMap(Int32.init) else { return nil }
+//    return (int, input.dropFirst())
+//}
+//
+//public let int64: Route<Int64> = Route { input in
+//    guard let int = input.first.flatMap(Int64.init) else { return nil }
+//    return (int, input.dropFirst())
+//}
+//
+//public let UInt: Route<UInt> = Route { input in
+//    guard let uint = input.first.flatMap(Swift.UInt.init) else { return nil }
+//    return (uint, input.dropFirst())
+//}
+//
+//public let UInt8: Route<UInt8> = Route { input in
+//    guard let uint = input.first.flatMap(Swift.UInt8.init) else { return nil }
+//    return (uint, input.dropFirst())
+//}
+//
+//public let UInt16: Route<UInt16> = Route { input in
+//    guard let uint = input.first.flatMap(Swift.UInt16.init) else { return nil }
+//    return (uint, input.dropFirst())
+//}
+//
+//public let UInt32: Route<UInt32> = Route { input in
+//    guard let uint = input.first.flatMap(Swift.UInt32.init) else { return nil }
+//    return (uint, input.dropFirst())
+//}
+//
+//public let UInt64: Route<UInt64> = Route { input in
+//    guard let uint = input.first.flatMap(Swift.UInt64.init) else { return nil }
+//    return (uint, input.dropFirst())
+//}
+//
+//public func query(_ param: String) -> Route<String> {
+//    return Route { input in
+//        let components = input.first?.split(separator: "=")
+//        guard let key = components?.first,
+//              let value = components?.last,
+//              key == param else { return nil }
+//        return (String(value), input.dropFirst())
+//    }
+//}
+//
+//public func choice<A>(_ routes: [Route<A>]) -> Route<A> {
+//    return routes.dropFirst().reduce(routes[0], { $0.or($1) })
+//}
 
-public let end: Route<()> = Route({ input in
-    guard input.count == 0 else { return nil }
-    return ((), input)
-}, inverse: {
-    return .nothing
-})
-
-public func method<A>(_ method: HTTPMethod, route: Route<A>) -> Route<A> {
-    return Route(method: method, parse: route.parse)
-}
-
-public let suffix: Route<String> = Route { input in
-    guard let last = input.last, last.contains("."), last != "favicon.ico" else { return nil }
-    return (last, input)
-}
-
-public let double: Route<Double> = Route { input in
-    guard let double = input.first.flatMap(Double.init) else { return nil }
-    return (double, input.dropFirst())
-}
-
-public let string: Route<String> = Route({ input in
-    guard let string = input.first else { return nil }
-    return (string, input.dropFirst())
-}, inverse: {
-    return .parameter("String")
-})
-
-public let uuid: Route<UUID> = Route { input in
-    guard let string = input.first, let uuid = UUID.init(uuidString: string) else { return nil }
-    return (uuid, input.dropFirst())
-}
-
-public let int: Route<Int> = Route { input in
-    guard let int = input.first.flatMap(Int.init) else { return nil }
-    return (int, input.dropFirst())
-}
-
-public let int8: Route<Int8> = Route { input in
-    guard let int = input.first.flatMap(Int8.init) else { return nil }
-    return (int, input.dropFirst())
-}
-
-public let int16: Route<Int16> = Route { input in
-    guard let int = input.first.flatMap(Int16.init) else { return nil }
-    return (int, input.dropFirst())
-}
-
-public let int32: Route<Int32> = Route { input in
-    guard let int = input.first.flatMap(Int32.init) else { return nil }
-    return (int, input.dropFirst())
-}
-
-public let int64: Route<Int64> = Route { input in
-    guard let int = input.first.flatMap(Int64.init) else { return nil }
-    return (int, input.dropFirst())
-}
-
-public let UInt: Route<UInt> = Route { input in
-    guard let uint = input.first.flatMap(Swift.UInt.init) else { return nil }
-    return (uint, input.dropFirst())
-}
-
-public let UInt8: Route<UInt8> = Route { input in
-    guard let uint = input.first.flatMap(Swift.UInt8.init) else { return nil }
-    return (uint, input.dropFirst())
-}
-
-public let UInt16: Route<UInt16> = Route { input in
-    guard let uint = input.first.flatMap(Swift.UInt16.init) else { return nil }
-    return (uint, input.dropFirst())
-}
-
-public let UInt32: Route<UInt32> = Route { input in
-    guard let uint = input.first.flatMap(Swift.UInt32.init) else { return nil }
-    return (uint, input.dropFirst())
-}
-
-public let UInt64: Route<UInt64> = Route { input in
-    guard let uint = input.first.flatMap(Swift.UInt64.init) else { return nil }
-    return (uint, input.dropFirst())
-}
-
-public func query(_ param: String) -> Route<String> {
-    return Route { input in
-        let components = input.first?.split(separator: "=")
-        guard let key = components?.first,
-              let value = components?.last,
-              key == param else { return nil }
-        return (String(value), input.dropFirst())
-    }
-}
-
-public func choice<A>(_ routes: [Route<A>]) -> Route<A> {
-    return routes.dropFirst().reduce(routes[0], { $0.or($1) })
-}
-
-precedencegroup Semigroup {
-    associativity: left
-}
-
-infix operator <>: Semigroup
-
-public protocol Semigroup {
-    static func <>(lhs: Self, rhs: Self) -> Self
-}
-
-public protocol Monoid: Semigroup {
-    static var e: Self { get }
-}
-
-extension Route: Monoid {
-    public static var e: Route { return  Route(parse: const(nil)) }
-
-    public static func <>(lhs: Route, rhs: Route) -> Route {
-        return lhs.or(rhs)
-    }
-
-}
+//precedencegroup Semigroup {
+//    associativity: left
+//}
+//
+//infix operator <>: Semigroup
+//
+//public protocol Semigroup {
+//    static func <>(lhs: Self, rhs: Self) -> Self
+//}
+//
+//public protocol Monoid: Semigroup {
+//    static var e: Self { get }
+//}
+//
+//extension Route: Monoid {
+//    public static var e: Route { return  Route(parse: const(nil)) }
+//
+//    public static func <>(lhs: Route, rhs: Route) -> Route {
+//        return lhs.or(rhs)
+//    }
+//
+//}
