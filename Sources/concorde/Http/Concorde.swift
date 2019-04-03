@@ -13,10 +13,6 @@ private func create(
 }
 //
 //// Fix this!!
-private func start(_ bootstrap: String) -> Reader<Configuration,
-    ()> {
-        return Reader<Configuration, ()> { config in
-
- 
-        }
+private func start(_ bootstrap: String) {
+    
 }
