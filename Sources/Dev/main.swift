@@ -25,19 +25,19 @@ enum SiteRoutes: Sitemap {
 
 }
 
-let routes = [
-    pure(unzurry(SiteRoutes.home)) <*> end,
-    pure(unzurry(SiteRoutes.json)) <*> (path("json") *> end),
-    pure(unzurry(SiteRoutes.advanced)) <*> (path("advanced") *> end),
-    curry(SiteRoutes.routing) <^> (path("routing") *> string) <*> UInt,
-].reduce(.e, <>)
-
-let fileMiddleware = curry(fileServing) <^> (suffix)
-
-let flightPlan = router(register: [routes], middleware: [fileMiddleware], notFound: mainView())
-let wings = Configuration(port: 8080, resources: [])
-let plane = concorde((flightPlan, config: wings))
-plane.apply(wings)
+//let routes = [
+//    pure(unzurry(SiteRoutes.home)) <*> end,
+//    pure(unzurry(SiteRoutes.json)) <*> (path("json") *> end),
+//    pure(unzurry(SiteRoutes.advanced)) <*> (path("advanced") *> end),
+//    curry(SiteRoutes.routing) <^> (path("routing") *> string) <*> UInt,
+//].reduce(.e, <>)
+//
+//let fileMiddleware = curry(fileServing) <^> (suffix)
+//
+//let flightPlan = router(register: [routes], middleware: [fileMiddleware], notFound: mainView())
+//let wings = Configuration(port: 8080, resources: [])
+//let plane = concorde((flightPlan, config: wings))
+//plane.apply(wings)
 
 
 //let route = unzurry(SiteRoutes.benchmark) <^> end
