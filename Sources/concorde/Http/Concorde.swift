@@ -2,18 +2,16 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-public let concorde = create >>> start
+public let fandg = f >>> g
 
-//Conn, (EventLoopFuture<Conn>) -> ()
-private func create(
-    router: @escaping () -> (),
+
+private func f(
+    func: @escaping () -> (),
     other: String
     ) -> String {
-
     return ""
 }
-//
-//// Fix this!!
-private func start(_ bootstrap: String) {
+
+private func g(_ str: String) {
 
 }
