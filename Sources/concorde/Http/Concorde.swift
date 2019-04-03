@@ -2,13 +2,12 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-public let concorde = create >>> start
 
-let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount) //System.coreCount
-private func create(
+let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
+public func takeOff(
     router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
     config: Configuration
-    ) -> ServerBootstrap {
+    ) -> Never {
     
     let variable = ThreadSpecificVariable<ThreadCache>()
 
@@ -65,18 +64,24 @@ private func create(
             ChannelOptions.recvAllocator,
             value: AdaptiveRecvByteBufferAllocator()
     )
-    return bootstrap
+
+
+    let channel = try! bootstrap
+        .bind(host: "localhost", port: config.port)
+        .wait()
+    try! channel.closeFuture.wait()
+    exit(0)
 }
 
-// Fix this!!
-private func start(_ bootstrap: ServerBootstrap) -> Reader<Configuration,
-    Never> {
-        return Reader<Configuration, Never> { config in
-            print("Listening on localhost:\(config.port)")
-            let channel = try! bootstrap
-                .bind(host: "localhost", port: config.port)
-                .wait()
-            try! channel.closeFuture.wait()
-            exit(0)
-        }
-}
+//// Fix this!!
+//private func start(_ bootstrap: ServerBootstrap) -> Reader<Configuration,
+//    Never> {
+//        return Reader<Configuration, Never> { config in
+//            print("Listening on localhost:\(config.port)")
+//            let channel = try! bootstrap
+//                .bind(host: "localhost", port: config.port)
+//                .wait()
+//            try! channel.closeFuture.wait()
+//            exit(0)
+//        }
+//}

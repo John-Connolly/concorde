@@ -36,8 +36,8 @@ let fileMiddleware = curry(fileServing) <^> (suffix)
 
 let flightPlan = router(register: [routes], middleware: [fileMiddleware], notFound: mainView())
 let wings = Configuration(port: 8080, resources: [])
-let plane = concorde((flightPlan, config: wings))
-plane.apply(wings)
+takeOff(router: flightPlan, config: wings)
+
 
 
 //let route = unzurry(SiteRoutes.benchmark) <^> end
