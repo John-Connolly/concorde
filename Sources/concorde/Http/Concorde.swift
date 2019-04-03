@@ -14,9 +14,9 @@ private func create(
 //
 //// Fix this!!
 private func start(_ bootstrap: String) -> Reader<Configuration,
-    Never> {
-        return Reader<Configuration, Never> { config in
+    ()> {
+        return Reader<Configuration, ()> { config in
 
-            exit(0)
+ 
         }
 }
