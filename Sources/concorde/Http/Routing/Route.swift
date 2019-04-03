@@ -71,17 +71,17 @@ extension Route {
 }
 
 
-extension Route where A: ExpressibleByIntegerLiteral {
-
-    init(_ parse: @escaping (Stream) -> (A, Stream)?) {
-        self.parse = parse
-        self.method = .GET // FIX
-        self.inverse =  {
-            return .parameter(String(describing: A.self))
-        }
-    }
-
-}
+//extension Route where A: ExpressibleByIntegerLiteral {
+//
+//    init(_ parse: @escaping (Stream) -> (A, Stream)?) {
+//        self.parse = parse
+//        self.method = .GET // FIX
+//        self.inverse =  {
+//            return .parameter(String(describing: A.self))
+//        }
+//    }
+//
+//}
 
 extension Route {
 
