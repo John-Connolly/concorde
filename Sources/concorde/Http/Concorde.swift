@@ -5,10 +5,7 @@ import NIOHTTP1
 public let fandg = f >>> g
 
 
-private func f(
-    func: @escaping () -> (),
-    other: String
-    ) -> String {
+private func f(h: @escaping () -> (), other: String) -> String {
     return ""
 }
 

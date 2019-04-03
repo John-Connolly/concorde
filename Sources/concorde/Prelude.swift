@@ -11,7 +11,7 @@ infix operator >>>: MonadicPrecedenceLeft
 
 public func >>> <A,B,C>(f: @escaping (A) -> B, g: @escaping (B) -> C) -> (A) -> C {
     return { a in
-        return f(a) |> g
+        return g(f(a))
     }
 }
 
