@@ -16,12 +16,14 @@ func mainView() -> Middleware {
 }
 
 func jsonExample() -> Middleware {
-    struct Car: Codable {
-        let make: String
-        let doors: Int
+    struct Plane: Codable {
+        let type: String
+        let range: String
+        let maxSpeed: String
+        let londonToNewYork: String
     }
-    let car = Car(make: "Ford", doors: 4)
-    return write(status: .ok) >=> write(body: car)
+    let plane = Plane(type: "Concorde", range: "7,250 km", maxSpeed: "2,179 kph", londonToNewYork: "3.5 hours")
+    return write(status: .ok) >=> write(body: plane)
 }
 
 func routingExample(resource: String, id: UInt) -> Middleware {
