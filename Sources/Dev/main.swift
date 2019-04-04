@@ -32,7 +32,7 @@ let routes = [
     curry(SiteRoutes.routing) <^> (path("routing") *> string) <*> UInt,
 ].reduce(.e, <>)
 
-let fileMiddleware = curry(fileServing) <^> (suffix)
+let fileMiddleware = curry(fileServing) <^> (suffix) // TODO Need to move this!
 
 let flightPlan = router(register: [routes], middleware: [fileMiddleware], notFound: mainView())
 let wings = Configuration(port: 8080, resources: [])

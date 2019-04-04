@@ -48,15 +48,13 @@ private enum Code {
                         """
     
     static let run: String =  """
-                        let sitemap: [Route<SiteRoutes>] = [
-                            pure(unzurry(Routes.home)) <*> (path("home") *> end)
-                        ]
+                        let routes = [
+                            pure(unzurry(SiteRoutes.home)) <*> end,
+                        ].reduce(.e, <>)
 
-                        let flightPlan = router(register: sitemap, middleware: [fileMiddleware], notFound: notFoundPage())
-                        let wings = Configuration(port: 8080, resources: preflightCheck)
-                        let plane = concorde(flightPlan, config: wings)
-                        plane.apply(wings)
-
+                        let flightPlan = router(register: [routes], middleware: [fileMiddleware])
+                        let wings = Configuration(port: 8080, resources: [])
+                        takeOff(router: flightPlan, config: wings)
                         """
 }
 
