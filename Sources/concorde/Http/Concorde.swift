@@ -2,8 +2,8 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-
 let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
+
 public func takeOff(
     router: @escaping (Conn, (Future<Conn>) -> ()) -> (),
     config: Configuration
@@ -72,16 +72,3 @@ public func takeOff(
     try! channel.closeFuture.wait()
     exit(0)
 }
-
-//// Fix this!!
-//private func start(_ bootstrap: ServerBootstrap) -> Reader<Configuration,
-//    Never> {
-//        return Reader<Configuration, Never> { config in
-//            print("Listening on localhost:\(config.port)")
-//            let channel = try! bootstrap
-//                .bind(host: "localhost", port: config.port)
-//                .wait()
-//            try! channel.closeFuture.wait()
-//            exit(0)
-//        }
-//}
