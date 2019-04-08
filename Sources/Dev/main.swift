@@ -25,6 +25,7 @@ enum SiteRoutes: Sitemap {
 
 }
 
+
 let routes = [
     pure(unzurry(SiteRoutes.home)) <*> end,
     pure(unzurry(SiteRoutes.json)) <*> (path("json") *> end),
@@ -32,7 +33,7 @@ let routes = [
     curry(SiteRoutes.routing) <^> (path("routing") *> string) <*> UInt,
 ].reduce(.e, <>)
 
-let fileMiddleware = curry(fileServing) <^> (suffix) // TODO Need to move this!
+let fileMiddleware = curry(fileServing) <^> (suffix)
 
 let flightPlan = router(register: [routes], middleware: [fileMiddleware], notFound: mainView())
 let wings = Configuration(port: 8080, resources: [])

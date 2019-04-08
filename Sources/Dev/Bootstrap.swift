@@ -8,46 +8,26 @@
 import Foundation
 import Html
 
-
-//func row(with nodes: [Node]) -> Node {
-//    return div([], [
-//        div([Attribute("class", "container-fluid")], [
-//            div([Attribute("class", "row")], nodes)
-//            ])])
-//}
-
-
-//func card(title: String, content: String) -> Node {
-//    return div([
-//        classAtr("card"),
-//        Attribute("style", "width: 18rem;"),
-//        ], [
-//            div([classAtr("card-body")], [
-//                h5([classAtr("card-title")],[.raw(title)]),
-//                p([classAtr("card-text")], [.raw(content)])
-//                ])
-//
-//        ])
-//}
-
-//func card(with content: Node) -> Node {
-//    return div([classAtr("card")], [content])
-//}
-
-//func navBar(title: String) -> Node {
-//    return nav([
-//        Attribute("class", "navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow")]
-//        ,[
-//            a([Attribute("class","navbar-brand col-sm-3 col-md-2 mr-0")],[.raw(title)]),
-//            ul([Attribute("class","navbar-nav px-3")], [])
-//        ])
-//}
-
-//func h4(content: String) -> Node {
-//    return div([], [br, h4([], [.raw(content)])])
-//}
-
-//let node = Node.l
+func head(style file: String) -> ChildOf<Tag.Html> {
+    return .head([
+        .meta(attributes: [Attribute("charset", "utf-8")]),
+        .meta(attributes: [
+            Attribute("http-equiv", "X-UA-Compatible"),
+            Attribute("content", "IE=edge")
+            ]),
+        .meta(attributes: [
+            Attribute("name", "viewport"),
+            Attribute("content", "width=device-width, initial-scale=1")
+            ]),
+        boostrapCss,
+        boostrapJs,
+        codeCss,
+        codeJS,
+        codeScript,
+        .link(attributes: [Attribute("href", file), Attribute("rel", "stylesheet")]),
+        .link(attributes: [Attribute("rel", "icon"), Attribute("href", "concorde.png")])
+        ])
+}
 
 let jquery = Node.script(attributes: [
     .src("https://code.jquery.com/jquery-3.3.1.slim.min.js"),
@@ -80,41 +60,3 @@ let codeJS = ChildOf<Tag.Head>.script(attributes: [
 ])
 
 let codeScript = ChildOf<Tag.Head>.script(unsafe: "hljs.initHighlightingOnLoad();")
-
-
-func graph(items: [(String, Int)]) -> Node {
-    let labels = items.map { $0.0 }.map { "\"" + $0 + "\"" }.joined(separator: ",")
-    let values = items.map { "\($0.1)" }.joined(separator: ",")
-    let js: String = """
-var context = document.getElementById("myChart");
-var myChart = new Chart(context, {
-type: 'line',
-data: {
-labels: [\(labels)],
-datasets: [{
-
-data: [\(values)],
-lineTension: 0.3,
-backgroundColor: 'transparent',
-borderColor: '#FFD62F',
-borderWidth: 4,
-pointBackgroundColor: '#FFD62F'
-}]
-},
-options: {
-scales: {
-yAxes: [{
-ticks: {
-beginAtZero: false
-}
-}]
-},
-legend: {
-display: false,
-}
-}
-});
-
-"""
-    return Node.element("script", [], [.raw(js)])
-}
