@@ -11,6 +11,7 @@ enum SiteRoutes: Sitemap {
     case advanced
     case routing(String, UInt)
     case benchmark
+    case slowResp(UInt)
 
     func action() -> Middleware {
         switch self {
@@ -20,17 +21,62 @@ enum SiteRoutes: Sitemap {
         case .benchmark: return write(body: "Hello")
         case .routing(let str, let id):
             return routingExample(resource: str, id: id)
+        case let .slowResp(time):
+            return slowResponse(timeInterval: time) >=> write(body: sampleJSON, contentType: .json)
         }
     }
-
 }
 
+import NIO
+func slowResponse(timeInterval: UInt) -> Middleware {
+    return { conn in
+        let promise: Promise<Conn> = conn.promise()
+        conn.eventLoop.scheduleTask(in: TimeAmount.seconds(Int64(timeInterval))) {
+            promise.succeed(conn)
+        }
+        return promise.futureResult
+    }
+}
+
+let sampleJSON = """
+{
+"attendee" : {
+"updated" : [
+
+],
+"elements" : [
+
+],
+"deleted" : [
+
+],
+"lastVersion" : 0,
+"sessionIds" : [
+123149
+],
+"errors" : [
+
+],
+"created" : {
+
+},
+"formIds" : [
+6365
+],
+"totalElements" : 0
+},
+"docTypes" : [
+"attendee"
+]
+}
+"""
 
 let routes = [
     pure(unzurry(SiteRoutes.home)) <*> end,
     pure(unzurry(SiteRoutes.json)) <*> (path("json") *> end),
     pure(unzurry(SiteRoutes.advanced)) <*> (path("advanced") *> end),
     curry(SiteRoutes.routing) <^> (path("routing") *> string) <*> UInt,
+    curry(SiteRoutes.slowResp) <^> (path("slowResp") *> UInt),
 ].reduce(.e, <>)
 
 let fileMiddleware = curry(fileServing) <^> (suffix)
