@@ -66,12 +66,13 @@ let routes = [
     pure(unzurry(SiteRoutes.json)) <*> (path("json") *> end),
     pure(unzurry(SiteRoutes.advanced)) <*> (path("advanced") *> end),
     curry(SiteRoutes.routing) <^> (path("routing") *> string) <*> UInt,
-    curry(SiteRoutes.slowResp) <^> (path("slowResp") *> UInt),
 ].reduce(.e, <>)
 
+//method(.POST, route: routes)
+let route = method(.POST, route: curry(SiteRoutes.slowResp) <^> (path("slowResp") *> UInt))
 let fileMiddleware = curry(fileServing) <^> (suffix)
 
-let flightPlan = router(register: [routes], middleware: [fileMiddleware], notFound: mainView())
+let flightPlan = router(register: [routes, route], middleware: [fileMiddleware], notFound: mainView())
 let wings = Configuration(port: 8080, resources: [])
 takeOff(router: flightPlan, config: wings)
 
