@@ -40,34 +40,24 @@ func slowResponse(timeInterval: UInt) -> Middleware {
 
 let sampleJSON = """
 {
-"attendee" : {
-"updated" : [
-
-],
-"elements" : [
-
-],
-"deleted" : [
-
-],
-"lastVersion" : 0,
-"sessionIds" : [
-123149
-],
-"errors" : [
-
-],
-"created" : {
-
-},
-"formIds" : [
-6365
-],
-"totalElements" : 0
-},
-"docTypes" : [
+"docTypes": [
 "attendee"
-]
+],
+"attendee": {
+"created": {},
+"updated": [],
+"deleted": [],
+"lastVersion": 1563374661934,
+"totalElements": 0,
+"elements": [],
+"formIds": [
+783
+],
+"sessionIds": [
+10132
+],
+"errors": []
+}
 }
 """
 
